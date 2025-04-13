@@ -88,8 +88,10 @@ class Walls:
             x *= 70
             y *= 70
             self.surface.blit(self.tile, (x,y))
-
+    
 
     def render(self,DISPLAY, camera_x, camera_y):
         """Blits the surface to the game"""
         DISPLAY.blit(self.surface, (-camera_x+self.DISPLAY_BASE/2, -camera_y+self.DISPLAY_HEIGHT/2))
+
+    

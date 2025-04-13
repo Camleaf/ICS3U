@@ -1,7 +1,7 @@
 ### Tanks game
 
 # system imports
-import sys,time, pygame as pg
+import sys,time,threading, pygame as pg
 from pygame.locals import *
 
 # local imports
@@ -26,6 +26,8 @@ walls = Walls(GAME_BASE,GAME_HEIGHT, DISPLAY_BASE, DISPLAY_HEIGHT)
 player = Player(PICKLE_GREEN,40,40,DISPLAY_BASE, DISPLAY_HEIGHT, GAME_BASE, GAME_HEIGHT)
 player_container = Create_Container(player)
 
+in_range_walls = threading.Thread(target = player.get_in_range_walls, args = (walls,))
+in_range_walls.start()
 
 # define the camera. will continuosly update as a result of inheritance from player
 
@@ -38,6 +40,7 @@ while True:
     
     for event in pg.event.get():
         if event.type == QUIT:
+            player.is_alive = False
             pg.quit()
             sys.exit()
 
