@@ -49,6 +49,7 @@ while True:
         y_vector = 0
         if keys_pressed[pg.K_LEFT]:
             x_vector -= 2
+            
         if keys_pressed[pg.K_RIGHT]:
             x_vector += 2
         if keys_pressed[pg.K_UP]:
