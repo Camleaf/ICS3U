@@ -1,4 +1,5 @@
 import pygame as pg
+from ..display.colours import *
 import math
 
 class Player(pg.sprite.Sprite):
@@ -20,6 +21,10 @@ class Player(pg.sprite.Sprite):
       self.image_orig = pg.Surface([width,height])
       self.image_orig.set_colorkey((255,255,255))
       self.image_orig.fill(color)
+      pg.draw.rect(self.image_orig,OFF_YELLOW,(0,height-height/9,width,height/9))
+      pg.draw.rect(self.image_orig,OFF_YELLOW,(width/9,0,width/7,height))
+      pg.draw.rect(self.image_orig,OFF_YELLOW,(width-width/9-width/7,0,width/7,height))
+      # self.image_orig.blit()
       self.image = self.image_orig.copy()
       self.rect = self.image.get_rect()
       self.rect.center = (DISPLAY_BASE/2, DISPLAY_HEIGHT/2)

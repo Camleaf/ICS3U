@@ -9,7 +9,6 @@ from utils.display.main import Screen
 from utils.display.colours import *
 
 from utils.player.main import Player, Create_Container
-from utils.walls.barrier import Barrier
 
 # variables
 DISPLAY_BASE = 700
@@ -23,9 +22,8 @@ screen = Screen(DISPLAY_BASE,DISPLAY_HEIGHT, GAME_BASE, GAME_HEIGHT)
 clock = pg.time.Clock()
 
 
-player = Player(BLACK,50,50,DISPLAY_BASE, DISPLAY_HEIGHT, GAME_BASE, GAME_HEIGHT)
+player = Player(PICKLE_GREEN,50,50,DISPLAY_BASE, DISPLAY_HEIGHT, GAME_BASE, GAME_HEIGHT)
 player_container = Create_Container(player)
-barrier = Barrier(GAME_HEIGHT, GAME_BASE)
 
 
 # define the camera. will continuosly update as a result of inheritance from player
@@ -59,7 +57,7 @@ while True:
         if keys_pressed[pg.K_q]:
             time.sleep(10)
         player.move(x_vector,y_vector)
-    screen.render(barrier,player, player_container)
+    screen.render(player, player_container)
 
     pg.display.flip()
     clock.tick(60)
