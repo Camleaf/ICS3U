@@ -13,24 +13,43 @@ class Player(pg.sprite.Sprite):
     def __init__(self,color, width:int, height:int, DISPLAY_BASE:int, DISPLAY_HEIGHT:int, GAME_BASE:int, GAME_HEIGHT:int):
       pg.sprite.Sprite.__init__(self)
 
-      self.image = pg.Surface([width,height])
-      self.image.fill(color)
 
+
+      # image origin
+      self.image_orig = pg.Surface([width,height])
+      self.image_orig.set_colorkey((255,255,255))
+      self.image_orig.fill(color)
+      self.image = self.image_orig.copy()
       self.rect = self.image.get_rect()
       self.rect.center = (DISPLAY_BASE/2, DISPLAY_HEIGHT/2)
 
-      self.xpos = GAME_BASE/2
-      self.ypos = GAME_HEIGHT / 2
+
+      self.GAME_BASE = GAME_BASE
+      self.GAME_HEIGHT = GAME_HEIGHT
+      self.rotation = 0
+      self.camera_x = GAME_BASE/2
+      self.camera_y = GAME_HEIGHT / 2
       
       self.speed = 0
 
-    def move(self, speed, rotate):
-       ...
+    def move(self, x, y):
+        print(x,y, self.camera_x, self.camera_y)
+        if 0 < self.camera_x + x < self.GAME_BASE:
+          self.camera_x += x
+        if 0 < self.camera_y + x < self.GAME_HEIGHT:
+          self.camera_y += y
 
 
+    def rotate(self, rotate):
+        """Rotates the player image (not hitbox) by 'rotate' degrees"""
+        old_centre = self.rect.center
+        self.rotation += rotate
+        self.image = pg.transform.rotate(self.image_orig, self.rotation)
+        self.rect = self.image.get_rect()
+        self.rect.center = old_centre  
 
-
-def Create_Player(player):
+def Create_Container(player):
+  """Creates a container which wraps the player for render. \nInput : object of class Player.\nOutput : pg.sprite.Group() object containing player object"""
   player_list = pg.sprite.Group()
   player_list.add(player)
   return player_list
