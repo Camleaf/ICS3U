@@ -14,8 +14,8 @@ from utils.walls.main import Walls
 # variables
 DISPLAY_BASE = 700
 DISPLAY_HEIGHT = 700
-GAME_BASE = 1200
-GAME_HEIGHT = 1200
+GAME_BASE = 1190
+GAME_HEIGHT = 1190
 
 
 # classes
