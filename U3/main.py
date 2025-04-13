@@ -9,20 +9,21 @@ from utils.display.main import Screen
 from utils.display.colours import *
 
 from utils.player.main import Player, Create_Container
+from utils.walls.main import Walls
 
 # variables
 DISPLAY_BASE = 700
 DISPLAY_HEIGHT = 700
-GAME_BASE = 1000
-GAME_HEIGHT = 1000
+GAME_BASE = 1200
+GAME_HEIGHT = 1200
 
 
 # classes
 screen = Screen(DISPLAY_BASE,DISPLAY_HEIGHT, GAME_BASE, GAME_HEIGHT)
 clock = pg.time.Clock()
 
-
-player = Player(PICKLE_GREEN,50,50,DISPLAY_BASE, DISPLAY_HEIGHT, GAME_BASE, GAME_HEIGHT)
+walls = Walls(GAME_BASE,GAME_HEIGHT, DISPLAY_BASE, DISPLAY_HEIGHT)
+player = Player(PICKLE_GREEN,40,40,DISPLAY_BASE, DISPLAY_HEIGHT, GAME_BASE, GAME_HEIGHT)
 player_container = Create_Container(player)
 
 
@@ -57,7 +58,7 @@ while True:
         if keys_pressed[pg.K_q]:
             time.sleep(10)
         player.move(x_vector,y_vector)
-    screen.render(player, player_container)
+    screen.render(player, player_container, walls)
 
     pg.display.flip()
     clock.tick(60)

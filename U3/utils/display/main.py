@@ -1,5 +1,6 @@
 import pygame as pg
 from ..player.main import Player
+from ..walls.main import Walls
 from .colours import *
 from .background import Background
 class Screen:
@@ -18,7 +19,7 @@ class Screen:
         """Fills the screen with RGB value COLOUR"""
         self.DISPLAY.fill(colour)
     
-    def render(self, player:Player, player_container):
+    def render(self, player:Player, player_container, walls:Walls):
         """Wrapper function to render all objects to the display. Requires the barrier, the walls group, the player container, and the enemies group as input"""
         
 
@@ -26,6 +27,7 @@ class Screen:
         # local render systems
         # reserved for objects which have their own render functions, such as barriers
         self.background.Render(self.DISPLAY, player.camera_x, player.camera_y)
+        walls.render(self.DISPLAY, player.camera_x, player.camera_y)
         #barrier.render(self.DISPLAY, player.camera_x, player.camera_y, self.DISPLAY_BASE, self.DISPLAY_HEIGHT)
         
         
