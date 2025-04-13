@@ -2,6 +2,7 @@ import pygame as pg
 from ..walls.barrier import Barrier
 from ..player.main import Player
 from .colours import *
+from .background import Background
 class Screen:
     """Class which contains all display-related functions, such as outputting"""
     def __init__(self, DISPLAY_BASE, DISPLAY_HEIGHT, GAME_BASE, GAME_HEIGHT):
@@ -11,6 +12,8 @@ class Screen:
         self.DISPLAY_HEIGHT = DISPLAY_HEIGHT
         self.GAME_BASE = GAME_BASE
         self.GAME_HEIGHT = GAME_HEIGHT
+
+        self.background = Background(GAME_BASE,GAME_HEIGHT,DISPLAY_BASE, DISPLAY_HEIGHT)
     
     def fill(self, colour):
         """Fills the screen with RGB value COLOUR"""
@@ -18,11 +21,13 @@ class Screen:
     
     def render(self, barrier:Barrier, player:Player, player_container):
         """Wrapper function to render all objects to the display. Requires the barrier, the walls group, the player container, and the enemies group as input"""
+        
 
 
         # local render systems
         # reserved for objects which have their own render functions, such as barriers
-        barrier.render(self.DISPLAY, player.camera_x, player.camera_y, self.DISPLAY_BASE, self.DISPLAY_HEIGHT)
+        self.background.Render(self.DISPLAY, player.camera_x, player.camera_y)
+        #barrier.render(self.DISPLAY, player.camera_x, player.camera_y, self.DISPLAY_BASE, self.DISPLAY_HEIGHT)
         
         
         # no render systems
@@ -32,3 +37,4 @@ class Screen:
     def blit(self, object):
         """Shorthand for pygame surface.blit function"""
         self.DISPLAY.blit(object)
+    

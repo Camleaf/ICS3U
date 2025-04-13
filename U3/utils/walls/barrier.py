@@ -25,7 +25,7 @@ class Barrier:
             # 350, 350
             # 
             
-            if camera_x - DISPLAY_BASE/2 <= left <= camera_x + DISPLAY_BASE/2 or camera_y - DISPLAY_HEIGHT / 2 <= top <= camera_y + DISPLAY_HEIGHT / 2:
+            if camera_x - DISPLAY_BASE/2 <= left <= camera_x + DISPLAY_BASE/2 or camera_y - DISPLAY_HEIGHT / 2 <= top <= camera_y + DISPLAY_HEIGHT / 2 or camera_y - DISPLAY_HEIGHT / 2 <= top+height <= camera_y + DISPLAY_HEIGHT / 2 or camera_x - DISPLAY_BASE/2 <= left+width <= camera_x + DISPLAY_BASE/2:
                 # print( )
                 # print(left,top)
                 # print((left-camera_x+DISPLAY_BASE/2,top-camera_y+DISPLAY_HEIGHT/2))

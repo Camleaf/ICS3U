@@ -42,7 +42,7 @@ while True:
             pg.quit()
             sys.exit()
 
-    screen.fill(WHITE)
+    screen.fill(BLACK)
 
     if keys_pressed := pg.key.get_pressed():
         x_vector = 0

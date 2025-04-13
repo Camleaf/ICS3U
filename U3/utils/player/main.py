@@ -23,7 +23,8 @@ class Player(pg.sprite.Sprite):
       self.rect = self.image.get_rect()
       self.rect.center = (DISPLAY_BASE/2, DISPLAY_HEIGHT/2)
 
-
+      self.width = width
+      self.height = height
       self.GAME_BASE = GAME_BASE
       self.GAME_HEIGHT = GAME_HEIGHT
       self.rotation = 0
@@ -33,11 +34,14 @@ class Player(pg.sprite.Sprite):
       self.speed = 0
 
     def move(self, x, y):
-        print(x,y, self.camera_x, self.camera_y)
-        if 0 < self.camera_x + x < self.GAME_BASE:
+        # print(x,y, self.camera_x, self.camera_y) # debugging
+        # all this movement code is temporary and for testinguntil i have a good enough base to go do rotation stuff
+        if self.width/2 < self.camera_x + x < self.GAME_BASE - self.width/2:
           self.camera_x += x
-        if 0 < self.camera_y + x < self.GAME_HEIGHT:
+
+        if self.height/2 < self.camera_y + y < self.GAME_HEIGHT - self.height/2:
           self.camera_y += y
+           
 
 
     def rotate(self, rotate):
