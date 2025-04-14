@@ -1,5 +1,5 @@
 import pygame as pg
-
+import os
 class Background:
     def __init__(self, GAME_BASE, GAME_HEIGHT,DISPLAY_BASE, DISPLAY_HEIGHT):
         """Container for the tiled repeating background"""
@@ -11,7 +11,7 @@ class Background:
 
     def Create_Surface(self):
         """Creates the surface used by the display"""
-        self.tile = pg.transform.scale(pg.image.load('.\\assets\\tileable.jpg'), (100,100))
+        self.tile = pg.transform.scale(pg.image.load(os.path.join('assets','tileable.jpg')), (100,100))
         self.surface = pg.Surface([self.GAME_BASE, self.GAME_HEIGHT])
         for x in range(0,self.GAME_BASE,100):
             for y in range(0,self.GAME_HEIGHT,100):

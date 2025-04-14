@@ -1,7 +1,7 @@
 import pygame as pg
 from ..display.colours import *
-import threading as th
 import random
+import os
 
 class Walls:
     """Class which contains all the walls"""
@@ -79,7 +79,7 @@ class Walls:
 
     def create_surface(self):
         """Creates a surface containing all wall positions for fast rendering"""
-        self.tile = pg.transform.scale(pg.image.load('.\\assets\\walltile.jpg'), (70,70))
+        self.tile = pg.transform.scale(pg.image.load(os.path.join('assets','walltile.jpg')), (70,70))
         self.surface = pg.Surface([self.GAME_BASE, self.GAME_HEIGHT])
         self.surface.set_colorkey((0,0,0))
         for wall in self.walls:
