@@ -10,6 +10,7 @@ from utils.display.colours import *
 
 from utils.player.main import Player, Create_Container
 from utils.walls.main import Walls
+from utils.enemies.main import Enemies
 
 # variables
 DISPLAY_BASE = 700
@@ -25,7 +26,10 @@ clock = pg.time.Clock()
 walls = Walls(GAME_BASE,GAME_HEIGHT, DISPLAY_BASE, DISPLAY_HEIGHT)
 player = Player(PICKLE_GREEN,40,40,DISPLAY_BASE, DISPLAY_HEIGHT, GAME_BASE, GAME_HEIGHT)
 player_container = Create_Container(player)
+enemies = Enemies(1,40,40,DISPLAY_BASE, DISPLAY_HEIGHT, GAME_BASE, GAME_HEIGHT)
 
+
+# Threads
 in_range_walls = threading.Thread(target = player.get_in_range_walls, args = (walls,))
 in_range_walls.start()
 
@@ -61,7 +65,7 @@ while True:
         if keys_pressed[pg.K_q]:
             time.sleep(10)
         player.move(x_vector,y_vector)
-    screen.render(player, player_container, walls)
+    screen.render(player, player_container, walls, enemies)
 
     pg.display.flip()
     clock.tick(60)

@@ -13,8 +13,8 @@ Go to 2:18:55 in the video to see the part about collisions
 https://www.youtube.com/watch?v=T4IX36sP_0c
 Thats the only part I watched but it helped my solve my issues with the tank clipping
 
-
-
+Getting file paths through different OS (I worked on this on my windows computer and linux chromebook)
+https://stackoverflow.com/questions/6036129/platform-independent-file-paths
 
 # Textures
 
