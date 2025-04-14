@@ -24,3 +24,11 @@ https://www.istockphoto.com/vector/cartoon-seamless-texture-ground-with-small-st
 
 Wall:
 https://www.vecteezy.com/vector-art/6331976-stone-wall-from-bricks-rock-game-background-in-cartoon-style-seamless-textured-surface-ui-game-asset-road-or-floor-material-vector-illustration
+
+
+For __eq__ in classes # delete this if i don't end up using
+https://medium.com/@DavidHofff/what-is-the-eq-method-in-python-classes-614779526843#:~:text=The%20__eq__%20is,need%20to%20compare%20multiple%20objects.
+
+
+For dataclass implementation and heapq using class objects
+https://stackoverflow.com/questions/3954530/how-to-make-heapq-evaluate-the-heap-off-of-a-specific-attribute?answertab=modifieddesc#tab-top

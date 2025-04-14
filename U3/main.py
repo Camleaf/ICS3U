@@ -26,7 +26,7 @@ clock = pg.time.Clock()
 walls = Walls(GAME_BASE,GAME_HEIGHT, DISPLAY_BASE, DISPLAY_HEIGHT)
 player = Player(PICKLE_GREEN,40,40,DISPLAY_BASE, DISPLAY_HEIGHT, GAME_BASE, GAME_HEIGHT)
 player_container = Create_Container(player)
-enemies = Enemies(1,40,40,DISPLAY_BASE, DISPLAY_HEIGHT, GAME_BASE, GAME_HEIGHT, walls)
+enemies = Enemies(1,40,40,DISPLAY_BASE, DISPLAY_HEIGHT, GAME_BASE, GAME_HEIGHT, walls, player.camera_x, player.camera_y)
 
 
 # Threads
@@ -45,6 +45,7 @@ while True:
     for event in pg.event.get():
         if event.type == QUIT:
             player.is_alive = False
+            enemies.close_threads()
             pg.quit()
             sys.exit()
 
