@@ -114,6 +114,7 @@ class Player(pg.sprite.Sprite):
         n_x = x*70
         n_y = y*70
         
+        # if i need optimizations i can create the rect in the thread
         collider = pg.Rect(n_x-self.camera_x+self.DISPLAY_BASE/2,n_y-self.camera_y+self.DISPLAY_HEIGHT//2,70,70)
 
         if collider.colliderect(self.bounding_box):
