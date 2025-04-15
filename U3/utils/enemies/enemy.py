@@ -35,23 +35,24 @@ class Enemy:
 
     def pathfind(self,maze):
         """A thread which continually runs the a-star algorithm to get the path towards the player"""
-        print("locked")
+        #print("locked")
             
 
         start_node = Tile(None, (int(self.x//70),int(self.y//70)), 0, 0)
         end_node = (int(self.camera_x//70), int(self.camera_y//70))
         visited = [[False for i in range(len(maze[0]))] for _ in range(len(maze))]
-        
+        print(start_node,end_node)
 
         if start_node.position == end_node:
+            self.pathfinding_active = False
             return []
 
         heap = [] # list of tiles
         heapq.heappush(heap, start_node)
         self.path = self.a_star(visited,end_node,heap, maze, start_node)[1:]
-        
+        print(self.path)
         self.pathfinding_active = False
-        print("unlocked")
+        #print("unlocked")
         sys.exit()
 
 
@@ -140,7 +141,7 @@ class Enemy:
         # once bullets get introduced I can just temporarily modify the maze in each cycle to have bullets as the maze. Then the bots will pathfind away from bullets
         while heap:
             current_tile:Tile = heapq.heappop(heap) # because of heap object we always have lowest cost
-
+            visited[current_tile.position[1]][current_tile.position[0]] = True
 
             if current_tile.position == end_node:
                 path = []
