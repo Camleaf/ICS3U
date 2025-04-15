@@ -67,7 +67,7 @@ class Enemies:
             #print(unit.x-camera_x+self.GAME_BASE//2, unit.y-camera_y+self.GAME_HEIGHT//2)
             unit.player_pass(camera_x,camera_y)
             
-            DISPLAY.blit(unit.image, (unit.x-camera_x+self.GAME_BASE//2+(35/2), unit.y-camera_y+self.GAME_HEIGHT//2+(35/2)))
+            DISPLAY.blit(unit.image, (unit.x-camera_x+self.DISPLAY_BASE//2+(35/2), unit.y-camera_y+self.DISPLAY_HEIGHT//2+(35/2)))
     
     def create_pathfinding_grid(self, walls):
         self.grid = []

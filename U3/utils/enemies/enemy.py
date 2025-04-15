@@ -22,7 +22,7 @@ class Enemy:
         self.is_alive = True
         self.image = self.image_orig.copy()
         self.rect = self.image.get_rect()
-        self.rect.center = [posx-DISPLAY_BASE//2+GAME_BASE//2, posy-DISPLAY_HEIGHT//2+GAME_HEIGHT//2] # this is just initial we change it later
+        self.rect.center = [posx-GAME_BASE//2+DISPLAY_BASE//2, posy-GAME_HEIGHT//2+DISPLAY_HEIGHT//2] # this is just initial we change it later
         self.rotation_target = 180
         self.rotation = 180
         self.prev_case = 180
@@ -35,13 +35,11 @@ class Enemy:
 
     def pathfind(self,maze):
         """A thread which continually runs the a-star algorithm to get the path towards the player"""
-        #print("locked")
             
 
         start_node = Tile(None, (int(self.x//70),int(self.y//70)), 0, 0)
         end_node = (int(self.camera_x//70), int(self.camera_y//70))
         visited = [[False for i in range(len(maze[0]))] for _ in range(len(maze))]
-        print(start_node,end_node)
 
         if start_node.position == end_node:
             self.pathfinding_active = False
@@ -50,9 +48,7 @@ class Enemy:
         heap = [] # list of tiles
         heapq.heappush(heap, start_node)
         self.path = self.a_star(visited,end_node,heap, maze, start_node)[1:]
-        print(self.path)
         self.pathfinding_active = False
-        #print("unlocked")
         sys.exit()
 
 
@@ -80,7 +76,6 @@ class Enemy:
             y = -2
         elif self.cur_move_target[1] > self.y:
             y = 2
-        # print(self.cur_move_target, (self.x, self.y),x, y)
         self.x += x
         self.y += y
         
@@ -137,8 +132,10 @@ class Enemy:
 
     def a_star(self,visited,end_node,heap, maze, start_node):
         """A star algorithm modified for the grid used in this projects"""
-
         # once bullets get introduced I can just temporarily modify the maze in each cycle to have bullets as the maze. Then the bots will pathfind away from bullets
+        # so the astar breaks whenever the player goes past or equal to 10 on x or y axis
+        #    update: start node is fine. end node is fine. all the passed inputs are fine WHAT THE HELL IS HAPPENING
+        #    update: i fixed it the issue was I swapped game height/bsae with display height/base :facepalm:
         while heap:
             current_tile:Tile = heapq.heappop(heap) # because of heap object we always have lowest cost
             visited[current_tile.position[1]][current_tile.position[0]] = True
@@ -153,11 +150,13 @@ class Enemy:
 
             # create children of current node
             for vector in ((1,0),(-1,0),(0,1),(0,-1)): # horizontal vectors
+                
                 child_position = (
                     current_tile.position[0]+vector[0], # x
                     current_tile.position[1]+vector[1]  # y
                 )
-                
+                # print()
+                # print(end_node, current_tile.position, child_position)
                 if not 0 <= child_position[0] < len(maze[0]) or not 0 <= child_position[1] < len(maze):
                     # check for out of bounds
                     continue
