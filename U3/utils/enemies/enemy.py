@@ -39,6 +39,7 @@ class Enemy:
         self.cur_move_target = (self.x,self.y)
         self.grid = copy.deepcopy(grid)
         self.id = identity
+        self.rot_offset = 0
 
 
     def pathfind(self,maze):
@@ -198,6 +199,7 @@ class Enemy:
         """Rotates the enemy image (not hitbox) by 'rotate' degrees"""
         self.rotation += rotate
         self.image = pg.transform.rotate(self.image_orig, self.rotation)
+        self.rot_offset = 7.5 - abs((((self.rotation % 90) / 45) -1) * 7.5)
 
     def a_star(self,visited,end_node,heap, maze, start_node):
         """A star algorithm modified for the grid used in this projects"""

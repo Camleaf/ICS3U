@@ -135,30 +135,22 @@ class Player(pg.sprite.Sprite):
           n_x = unit.x  + unit.offset
           n_y = unit.y + unit.offset
           #print(unit.y, unit.x)
-          t_x = n_x -self.camera_x+self.DISPLAY_BASE//2
-          t_y = n_y -self.camera_y+self.DISPLAY_HEIGHT//2
-          #print(t_x,t_y, self.bounding_box.left, self.bounding_box.top)
-          print((t_x,t_y), self.bounding_box.topleft)
-          # print(n_x, n_y, self.bounding_box.left, self.bounding_box.top)
-          t_top = t_y
-          t_bottom = t_y + self.height 
-          t_left = t_x 
-          t_right = t_x + self.width
-            
-          # if t_right > self.bounding_box.left and t_left < self.bounding_box.right and t_bottom > self.bounding_box.top and t_top < self.bounding_box.bottom:
-          #   print("collision")
-          #   if axis == 0:
-          #       print("ycol")
-          #       if t_top < self.bounding_box.bottom and self.bounding_box.top > t_top:
-          #         #print(n_y + unit.height + self.height//2)
-          #         self.camera_y = n_y + unit.height
-          #       elif t_bottom > self.bounding_box.top:
-          #         self.camera_y = n_y 
-          #   else:
-          #       if t_right  >self.bounding_box.left and self.bounding_box.right > t_right:
-          #          self.camera_x = n_x + unit.width 
-          #       elif t_left < self.bounding_box.right:
-          #         self.camera_x = n_x 
+
+          collider = pg.Rect(n_x-self.camera_x+self.DISPLAY_BASE/2,n_y-self.camera_y+self.DISPLAY_HEIGHT//2,unit.width,unit.height)
+          if collider.colliderect(self.bounding_box):
+           if axis == 0:
+            if collider.top < self.bounding_box.bottom and self.bounding_box.top > collider.top:
+                # sets the right edge to edge of left wall. done this way to eliminate clipping
+               self.camera_y = n_y +collider.height+ self.height//2
+               
+            elif collider.bottom > self.bounding_box.top:
+               self.camera_y = n_y - self.height//2
+               
+           else:
+              if collider.right > self.bounding_box.left and self.bounding_box.right > collider.right: # put like and other side must be too or smt
+                 self.camera_x = n_x+collider.width+ self.width//2
+              elif collider.left < self.bounding_box.right:
+                 self.camera_x = n_x- self.width//2
 
     def rotate(self, rotate):
         """Rotates the player image (not hitbox) by 'rotate' degrees"""
