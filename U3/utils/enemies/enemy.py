@@ -2,11 +2,11 @@ from dataclasses import dataclass, field
 from typing import Any
 import pygame as pg
 from ..display.colours import *
-import time, heapq, math
+import sys, heapq, math, copy, threading
 
 class Enemy:
     """The individual class for each enemy"""
-    def __init__(self, color, width, height, posx, posy, DISPLAY_HEIGHT, DISPLAY_BASE, GAME_BASE, GAME_HEIGHT, camera_x, camera_y):
+    def __init__(self, color, width, height, posx, posy, DISPLAY_HEIGHT, DISPLAY_BASE, GAME_BASE, GAME_HEIGHT, camera_x, camera_y, grid):
         self.image_orig = pg.Surface([width,height])
         self.image_orig.set_colorkey((255,255,255))
         self.image_orig.fill(color)
@@ -23,33 +23,111 @@ class Enemy:
         self.image = self.image_orig.copy()
         self.rect = self.image.get_rect()
         self.rect.center = [posx-DISPLAY_BASE//2+GAME_BASE//2, posy-DISPLAY_HEIGHT//2+GAME_HEIGHT//2] # this is just initial we change it later
-        self.rotation = 0
+        self.rotation_target = 180
+        self.rotation = 180
+        self.prev_case = 180
+        self.difference = 0
+        self.path = []
+        self.pathfinding_active = False
+        self.cur_move_target = (self.x,self.y)
+        self.grid = copy.deepcopy(grid)
 
 
-    def pathfind(self,lock,maze):
+    def pathfind(self,maze):
         """A thread which continually runs the a-star algorithm to get the path towards the player"""
-        while self.is_alive:
-            with lock: # we only want one pathfinding algorithm to run at a time given the insane processing overhead, even dealing with multiple threads
-                
-                # code 8 way dijkstra with exclusion 
-                start_node = Tile(None, (self.x//70,self.y//70), 0, 0)
-                end_node = (self.camera_x//70, self.camera_y//70)
-                visited = [[False for i in range(len(maze[0]))] for _ in range(len(maze))]
+        print("locked")
+            
 
+        start_node = Tile(None, (int(self.x//70),int(self.y//70)), 0, 0)
+        end_node = (int(self.camera_x//70), int(self.camera_y//70))
+        visited = [[False for i in range(len(maze[0]))] for _ in range(len(maze))]
+        
 
+        if start_node.position == end_node:
+            return []
 
-
-                heap = [] # list of tiles
-                heapq.heappush(heap, start_node)
-                
-                self.path = self.a_star(visited,end_node,heap, maze, start_node)
-
-                
-            time.sleep(0.5)
+        heap = [] # list of tiles
+        heapq.heappush(heap, start_node)
+        self.path = self.a_star(visited,end_node,heap, maze, start_node)[1:]
+        
+        self.pathfinding_active = False
+        print("unlocked")
+        sys.exit()
 
 
     def move(self):
-        ...
+        if (self.x, self.y) == self.cur_move_target:
+            if (self.x, self.y) == (self.camera_x//70, self.camera_y//70):
+                return
+            if not self.pathfinding_active:
+                self.pathfinding_active = True
+                r = threading.Thread(target = self.pathfind, args = (copy.deepcopy(self.grid),))
+                r.daemon = True
+                r.start()
+            if len(self.path) == 0: return
+            self.cur_move_target = self.path.pop(0)
+            self.cur_move_target = (self.cur_move_target[0] * 70, self.cur_move_target[1] * 70)
+        
+        x = 0
+        if self.cur_move_target[0] < self.x:
+            x = -2
+        elif self.cur_move_target[0] > self.x:
+            x = 2
+
+        y = 0
+        if self.cur_move_target[1] < self.y:
+            y = -2
+        elif self.cur_move_target[1] > self.y:
+            y = 2
+        # print(self.cur_move_target, (self.x, self.y),x, y)
+        self.x += x
+        self.y += y
+        
+        self.rotation_manager(x,y)
+        
+        
+
+
+
+    def rotation_manager(self,x,y):
+        match [x//2,y//2]: # match the rotation to the movement
+          case [1,0]: # right
+            self.rotation_target = 90
+          case [-1,0]:
+            self.rotation_target = 270
+          case [1,1]:
+              self.rotation_target = 45
+          case [-1,-1]:
+              self.rotation_target = 225
+          case [1,-1]:
+              self.rotation_target = 135
+          case [-1,1]:
+              self.rotation_target = 315
+          case [0,1]:
+              self.rotation_target = 0
+          case [0,-1]:
+              self.rotation_target = 180
+        # print(self.rotation, self.rotation_target)
+        if self.rotation <= 0: # handle overflows
+           self.rotation = 360 - self.rotation
+        elif self.rotation > 360:
+           self.rotation = self.rotation - 360
+
+        if self.rotation_target != self.prev_case:
+          self.difference = (self.rotation_target - self.rotation) % 360 # get initial difference
+          
+          if self.difference > 180 :
+            self.difference = -((360 - self.difference)% 360) # move the scale to 180 / -180
+          self.difference = -self.difference #invert the differences so that i can see how much is remaining
+        if self.difference < 0: # if the inverted difference is below zero, (or if the original delta angle was positive), move clockwise
+           self.difference += 5
+           self.rotate(5)
+        elif self.difference > 0:# if the inverted difference is above zero, (or if the original delta angle was negative), move counter clockwise
+          self.difference -= 5
+          self.rotate(-5)
+        
+        self.prev_case = self.rotation_target
+
 
     def rotate(self, rotate):
         """Rotates the enemy image (not hitbox) by 'rotate' degrees"""
@@ -94,7 +172,7 @@ class Enemy:
                 dist_from_start = current_tile.dist + 1
 
                 # pythagorean theorem
-                heuristic = round(math.sqrt(((child_position[0] - end_node[0]) ** 2) + ((child_position[1] - end_node[1]) ** 2)))
+                heuristic = int(round(math.sqrt(((child_position[0] - end_node[0]) ** 2) + ((child_position[1] - end_node[1]) ** 2))))
                 
                 cost = dist_from_start + heuristic
 
@@ -124,7 +202,7 @@ class Enemy:
                 dist_from_start = current_tile.dist + 1
 
                 # pythagorean theorem
-                heuristic = round(math.sqrt(((child_position[0] - end_node[0]) ** 2) + ((child_position[1] - end_node[1]) ** 2)))
+                heuristic = int(round(math.sqrt(((child_position[0] - end_node[0]) ** 2) + ((child_position[1] - end_node[1]) ** 2))))
                 
                 cost = dist_from_start + heuristic
 

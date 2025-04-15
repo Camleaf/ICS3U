@@ -45,7 +45,6 @@ while True:
     for event in pg.event.get():
         if event.type == QUIT:
             player.is_alive = False
-            enemies.close_threads()
             pg.quit()
             sys.exit()
 
@@ -66,6 +65,7 @@ while True:
         if keys_pressed[pg.K_q]:
             time.sleep(10)
         player.move(x_vector,y_vector)
+    enemies.move()
     screen.render(player, player_container, walls, enemies)
 
     pg.display.flip()

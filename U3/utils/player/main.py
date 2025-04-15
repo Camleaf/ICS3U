@@ -11,7 +11,6 @@ class Player(pg.sprite.Sprite):
     image: pg.Surface
     xpos: float
     ypos: float
-    speed: float
 
     def __init__(self,color, width:int, height:int, DISPLAY_BASE:int, DISPLAY_HEIGHT:int, GAME_BASE:int, GAME_HEIGHT:int):
       pg.sprite.Sprite.__init__(self)
@@ -46,7 +45,6 @@ class Player(pg.sprite.Sprite):
       self.camera_x = GAME_BASE/2
       self.camera_y = GAME_HEIGHT / 2
       self.rotation_target = 180
-      self.speed = 0
       self.prev_case = 180
       self.difference = 0
       self.in_range = []

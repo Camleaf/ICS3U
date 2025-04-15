@@ -21,9 +21,9 @@ class Enemies:
         self.DISPLAY_HEIGHT = DISPLAY_HEIGHT
         self.unit_width = width
         self.unit_height = height
-        self.create_units(walls, camera_x, camera_y)
         self.create_pathfinding_grid(walls)
-        self.lock = threading.RLock()
+        self.create_units(walls, camera_x, camera_y)
+        
 
     def create_units(self,walls:Walls ,camera_x, camera_y):
         """Creates the enemy class self.number and stores them in a wrapper"""
@@ -50,14 +50,23 @@ class Enemies:
                       self.GAME_BASE, 
                       self.GAME_HEIGHT,
                       camera_x,
-                      camera_y
+                      camera_y,
+                      self.grid
                       )
             )
+    
+        
+
+    def move(self):
+        for i in range(len(self.units)):
+            self.units[i].move()
+
     def render(self, DISPLAY, camera_x, camera_y):
         # very much a temporary render function
         for unit in self.units:
             #print(unit.x-camera_x+self.GAME_BASE//2, unit.y-camera_y+self.GAME_HEIGHT//2)
             unit.player_pass(camera_x,camera_y)
+            
             DISPLAY.blit(unit.image, (unit.x-camera_x+self.GAME_BASE//2+(35/2), unit.y-camera_y+self.GAME_HEIGHT//2+(35/2)))
     
     def create_pathfinding_grid(self, walls):
@@ -65,12 +74,8 @@ class Enemies:
         for y in range(self.GAME_HEIGHT//70):
             temp = []
             for x in range(self.GAME_BASE//70):
-                if [x,y] in walls:
+                if [x,y] in walls.walls:
                     temp.append(1)
                 else:
                     temp.append(0)
             self.grid.append(temp)
-
-    def close_threads(self):
-        for i in range(len(self.units)):
-            self.units[i].is_alive = False
