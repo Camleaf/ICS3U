@@ -51,7 +51,8 @@ class Enemies:
                       self.GAME_HEIGHT,
                       camera_x,
                       camera_y,
-                      self.grid
+                      self.grid,
+                      i
                       )
             )
     
@@ -59,7 +60,7 @@ class Enemies:
 
     def move(self):
         for i in range(len(self.units)):
-            self.units[i].move()
+            self.units[i].move(self.units)
 
     def render(self, DISPLAY, camera_x, camera_y):
         # very much a temporary render function

@@ -1,12 +1,12 @@
 from dataclasses import dataclass, field
-from typing import Any
+from typing import Any, Self
 import pygame as pg
 from ..display.colours import *
-import sys, heapq, math, copy, threading
+import sys, heapq, math, copy, threading, numpy
 
 class Enemy:
     """The individual class for each enemy"""
-    def __init__(self, color, width, height, posx, posy, DISPLAY_HEIGHT, DISPLAY_BASE, GAME_BASE, GAME_HEIGHT, camera_x, camera_y, grid):
+    def __init__(self, color, width, height, posx, posy, DISPLAY_HEIGHT, DISPLAY_BASE, GAME_BASE, GAME_HEIGHT, camera_x, camera_y, grid, identity):
         self.image_orig = pg.Surface([width,height])
         self.image_orig.set_colorkey((255,255,255))
         self.image_orig.fill(color)
@@ -17,6 +17,10 @@ class Enemy:
 
         self.x = posx
         self.y = posy
+        self.xs = 0
+        self.ys= 0
+        self.width = width
+        self.height = height
         self.camera_x = camera_x
         self.camera_y = camera_y
         self.is_alive = True
@@ -27,10 +31,13 @@ class Enemy:
         self.rotation = 180
         self.prev_case = 180
         self.difference = 0
+        self.collision_count = 0
         self.path = []
+        self.activated = False
         self.pathfinding_active = False
         self.cur_move_target = (self.x,self.y)
         self.grid = copy.deepcopy(grid)
+        self.id = identity
 
 
     def pathfind(self,maze):
@@ -41,49 +48,103 @@ class Enemy:
         end_node = (int(self.camera_x//70), int(self.camera_y//70))
         visited = [[False for i in range(len(maze[0]))] for _ in range(len(maze))]
 
+        estimation = abs(start_node.position[0]-end_node[0]) + abs(start_node.position[1]-end_node[0]) # uses taxicab dist
+        
+
+        if not self.activated:
+            if estimation <= 11:
+                self.activated = True
+            self.pathfinding_active = False
+            self.path = []
+            return 
+
         if start_node.position == end_node:
             self.pathfinding_active = False
-            return []
+            self.path = []
+            return
 
         heap = [] # list of tiles
         heapq.heappush(heap, start_node)
         self.path = self.a_star(visited,end_node,heap, maze, start_node)[1:]
+        if len(self.path) < 3:# this happening after the search could be a problem
+            self.path = []
+        
         self.pathfinding_active = False
         sys.exit()
 
 
-    def move(self):
-        if (self.x, self.y) == self.cur_move_target:
+    def move(self, units):
+        if (self.x, self.y) == self.cur_move_target or self.collision_count > 50: #using this to fix the always stuck issue results in a few going through walls issues
+            # so f
+            self.collision_count = 0
             if (self.x, self.y) == (self.camera_x//70, self.camera_y//70):
                 return
             # pathfinding only really needs to be active when triggered, and in this case the trigger is needing a new move target
-            if not self.pathfinding_active:
-                self.pathfinding_active = True
-                r = threading.Thread(target = self.pathfind, args = (copy.deepcopy(self.grid),))
-                r.daemon = True
-                r.start()
+            self.recalculate_path()
             if len(self.path) == 0: return
             self.cur_move_target = self.path.pop(0)
             self.cur_move_target = (self.cur_move_target[0] * 70, self.cur_move_target[1] * 70)
         
-        x = 0
+
+
+        self.xs = 0
         if self.cur_move_target[0] < self.x:
-            x = -2
+            self.xs = -2
         elif self.cur_move_target[0] > self.x:
-            x = 2
+            self.xs = 2
 
-        y = 0
+        self.collision(units, self.xs, 0, 0)
+
+        self.ys = 0
         if self.cur_move_target[1] < self.y:
-            y = -2
+            self.ys = -2
         elif self.cur_move_target[1] > self.y:
-            y = 2
-        self.x += x
-        self.y += y
-        
-        self.rotation_manager(x,y)
-        
-        
+            self.ys = 2
 
+        self.collision(units, 0, self.ys, 1)
+        
+        
+        self.rotation_manager(self.xs,self.ys)
+    
+    def recalculate_path(self):
+        if not self.pathfinding_active:
+            self.pathfinding_active = True
+            r = threading.Thread(target = self.pathfind, args = (copy.deepcopy(self.grid),))
+            r.daemon = True
+            r.start()
+
+    def collision(self, units:list[Self] , x, y, axis):
+        col_check = False
+        
+        if self.grid[int((self.y+y+(35/2))//70)][int((self.x+x+(35/2))//70)] == 1 or self.grid[int((self.y+y+(35/2)+self.height)//70)][int((self.x+x+(35/2)+self.width)//70)] == 1:
+            self.collision_count += 1
+            col_check = True
+            return
+
+        for i, unit in enumerate(units): # now i just need to extend to the player
+            if i == self.id: continue
+            n_x = unit.x
+            n_y = unit.y
+
+            t_top = n_y
+            t_bottom = n_y + self.height 
+            t_left = n_x 
+            t_right = n_x + self.width
+
+            s_top = self.y + y
+            s_bottom = self.y + self.height + y
+            s_left = self.x + x
+            s_right = self.x + self.width + x
+
+
+            if t_right >= s_left and t_left <= s_right and t_bottom >= s_top and t_top <= s_bottom: # check for collision using the rectangle formula
+                col_check = True
+                break
+        if col_check:
+            self.collision_count += 1
+        else:
+            self.x += x
+            self.y += y
 
 
     def rotation_manager(self,x,y):
@@ -138,6 +199,7 @@ class Enemy:
         # so the astar breaks whenever the player goes past or equal to 10 on x or y axis
         #    update: start node is fine. end node is fine. all the passed inputs are fine WHAT THE HELL IS HAPPENING
         #    update: i fixed it the issue was I swapped game height/bsae with display height/base :facepalm:
+        rng = numpy.random.default_rng()
         while heap:
             current_tile:Tile = heapq.heappop(heap) # because of heap object we always have lowest cost
             visited[current_tile.position[1]][current_tile.position[0]] = True
@@ -176,7 +238,7 @@ class Enemy:
                 # pythagorean theorem
                 heuristic = int(round(math.sqrt(((child_position[0] - end_node[0]) ** 2) + ((child_position[1] - end_node[1]) ** 2))))
                 
-                cost = dist_from_start + heuristic
+                cost = dist_from_start + heuristic + rng.integers(0,3,1)
 
                 heapq.heappush(heap,Tile(current_tile, child_position, dist_from_start, cost))
 
@@ -206,8 +268,7 @@ class Enemy:
                 # pythagorean theorem
                 heuristic = int(round(math.sqrt(((child_position[0] - end_node[0]) ** 2) + ((child_position[1] - end_node[1]) ** 2))))
                 
-                cost = dist_from_start + heuristic
-
+                cost = dist_from_start + heuristic + rng.integers(0,3,1)
                 heapq.heappush(heap,Tile(current_tile, child_position, dist_from_start, cost))
 
 
