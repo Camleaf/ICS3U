@@ -21,6 +21,7 @@ class Enemies:
         self.DISPLAY_HEIGHT = DISPLAY_HEIGHT
         self.unit_width = width
         self.unit_height = height
+        self.offset = (70 - self.unit_width) / 2
         self.create_pathfinding_grid(walls)
         self.create_units(walls, camera_x, camera_y)
         
@@ -52,6 +53,7 @@ class Enemies:
                       camera_x,
                       camera_y,
                       self.grid,
+                      self.offset,
                       i
                       )
             )
@@ -68,8 +70,8 @@ class Enemies:
             #print(unit.x-camera_x+self.GAME_BASE//2, unit.y-camera_y+self.GAME_HEIGHT//2)
             unit.player_pass(camera_x,camera_y)
             
-            DISPLAY.blit(unit.image, (unit.x-camera_x+self.DISPLAY_BASE//2+(35/2), unit.y-camera_y+self.DISPLAY_HEIGHT//2+(35/2)))
-    
+            DISPLAY.blit(unit.image, (unit.x-camera_x+self.DISPLAY_BASE//2+self.offset, unit.y-camera_y+self.DISPLAY_HEIGHT//2+self.offset))
+
     def create_pathfinding_grid(self, walls):
         self.grid = []
         for y in range(self.GAME_HEIGHT//70):

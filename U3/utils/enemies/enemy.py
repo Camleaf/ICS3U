@@ -6,7 +6,7 @@ import sys, heapq, math, copy, threading, numpy
 
 class Enemy:
     """The individual class for each enemy"""
-    def __init__(self, color, width, height, posx, posy, DISPLAY_HEIGHT, DISPLAY_BASE, GAME_BASE, GAME_HEIGHT, camera_x, camera_y, grid, identity):
+    def __init__(self, color, width, height, posx, posy, DISPLAY_HEIGHT, DISPLAY_BASE, GAME_BASE, GAME_HEIGHT, camera_x, camera_y, grid, offset, identity):
         self.image_orig = pg.Surface([width,height])
         self.image_orig.set_colorkey((255,255,255))
         self.image_orig.fill(color)
@@ -19,6 +19,7 @@ class Enemy:
         self.y = posy
         self.xs = 0
         self.ys= 0
+        self.offset = offset
         self.width = width
         self.height = height
         self.camera_x = camera_x
@@ -26,7 +27,7 @@ class Enemy:
         self.is_alive = True
         self.image = self.image_orig.copy()
         self.rect = self.image.get_rect()
-        self.rect.center = [posx-GAME_BASE//2+DISPLAY_BASE//2, posy-GAME_HEIGHT//2+DISPLAY_HEIGHT//2] # this is just initial we change it later
+        # self.rect.center = [posx-camera_x+DISPLAY_BASE//2+self.offset, posy-camera_y+DISPLAY_HEIGHT//2+self.offset] # this is just initial we change it later
         self.rotation_target = 180
         self.rotation = 180
         self.prev_case = 180
@@ -74,6 +75,7 @@ class Enemy:
 
 
     def move(self, units):
+        #print(self.cur_move_target, (self.x, self.y), (self.camera_x, self.camera_y))
         if (self.x, self.y) == self.cur_move_target or self.collision_count > 50: #using this to fix the always stuck issue results in a few going through walls issues
             # so f
             self.collision_count = 0
@@ -88,6 +90,7 @@ class Enemy:
 
 
         self.xs = 0
+        
         if self.cur_move_target[0] < self.x:
             self.xs = -2
         elif self.cur_move_target[0] > self.x:
@@ -107,6 +110,7 @@ class Enemy:
         self.rotation_manager(self.xs,self.ys)
     
     def recalculate_path(self):
+        """Recalculates pathfinding path by starting a daemon thread of the pathfind() func"""
         if not self.pathfinding_active:
             self.pathfinding_active = True
             r = threading.Thread(target = self.pathfind, args = (copy.deepcopy(self.grid),))
@@ -114,9 +118,10 @@ class Enemy:
             r.start()
 
     def collision(self, units:list[Self] , x, y, axis):
+        """Checks for collisions with walls or with other bots"""
         col_check = False
         
-        if self.grid[int((self.y+y+(35/2))//70)][int((self.x+x+(35/2))//70)] == 1 or self.grid[int((self.y+y+(35/2)+self.height)//70)][int((self.x+x+(35/2)+self.width)//70)] == 1:
+        if self.grid[int((self.y+y+self.offset)//70)][int((self.x+x+self.offset)//70)] == 1 or self.grid[int((self.y+y+self.offset+self.height)//70)][int((self.x+x+self.offset+self.width)//70)] == 1:
             self.collision_count += 1
             col_check = True
             return
@@ -125,6 +130,7 @@ class Enemy:
             if i == self.id: continue
             n_x = unit.x
             n_y = unit.y
+            
 
             t_top = n_y
             t_bottom = n_y + self.height 

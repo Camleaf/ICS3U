@@ -26,7 +26,7 @@ clock = pg.time.Clock()
 walls = Walls(GAME_BASE,GAME_HEIGHT, DISPLAY_BASE, DISPLAY_HEIGHT)
 player = Player(PICKLE_GREEN,40,40,DISPLAY_BASE, DISPLAY_HEIGHT, GAME_BASE, GAME_HEIGHT)
 player_container = Create_Container(player)
-enemies = Enemies(10,40,40,GAME_BASE, GAME_HEIGHT,DISPLAY_BASE, DISPLAY_HEIGHT, walls, player.camera_x, player.camera_y)
+enemies = Enemies(1,40,40,GAME_BASE, GAME_HEIGHT,DISPLAY_BASE, DISPLAY_HEIGHT, walls, player.camera_x, player.camera_y)
 
 
 # Threads
@@ -64,7 +64,21 @@ while True:
             y_vector += 2.5
         if keys_pressed[pg.K_q]:
             time.sleep(10)
-        player.move(x_vector,y_vector)
+        if keys_pressed[pg.K_w]:
+            x_vector -= 2.5
+            y_vector += 2.5
+            
+        if keys_pressed[pg.K_s]:
+            x_vector += 2.5
+            y_vector -= 2.5
+        if keys_pressed[pg.K_d]:
+            x_vector += 2.5
+            y_vector += 2.5
+        if keys_pressed[pg.K_a]:
+            x_vector -= 2.5
+            y_vector -= 2.5
+
+        player.move(x_vector,y_vector, enemies.units)
     enemies.move()
     screen.render(player, player_container, walls, enemies)
 
