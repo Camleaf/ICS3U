@@ -65,7 +65,7 @@ class Player(pg.sprite.Sprite):
 
         
         
-        match [x//2,y//2]: # match the rotation to the movement
+        match [x//2.5,y//2.5]: # match the rotation to the movement
           case [1,0]: # right
             self.rotation_target = 90
           case [-1,0]:

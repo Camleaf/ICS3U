@@ -56,6 +56,7 @@ class Enemy:
         if (self.x, self.y) == self.cur_move_target:
             if (self.x, self.y) == (self.camera_x//70, self.camera_y//70):
                 return
+            # pathfinding only really needs to be active when triggered, and in this case the trigger is needing a new move target
             if not self.pathfinding_active:
                 self.pathfinding_active = True
                 r = threading.Thread(target = self.pathfind, args = (copy.deepcopy(self.grid),))
@@ -86,6 +87,7 @@ class Enemy:
 
 
     def rotation_manager(self,x,y):
+        """Gives a rotation target for the bot to match based on its current movement"""
         match [x//2,y//2]: # match the rotation to the movement
           case [1,0]: # right
             self.rotation_target = 90
