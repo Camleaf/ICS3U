@@ -88,6 +88,7 @@ class Walls:
             x *= 70
             y *= 70
             self.surface.blit(self.tile, (x,y))
+        self.surface.convert()
     
 
     def render(self,DISPLAY, camera_x, camera_y):

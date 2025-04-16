@@ -16,6 +16,7 @@ class Background:
         for x in range(0,self.GAME_BASE,100):
             for y in range(0,self.GAME_HEIGHT,100):
                 self.surface.blit(self.tile, (x,y))
+        self.surface = self.surface.convert()
 
     def Render(self, DISPLAY, camera_x, camera_y):
         DISPLAY.blit(self.surface, (-camera_x+self.DISPLAY_BASE/2, -camera_y+self.DISPLAY_HEIGHT/2))
