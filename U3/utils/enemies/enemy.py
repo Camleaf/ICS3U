@@ -77,12 +77,11 @@ class Enemy:
 
 
     def move(self, units):
+        print(self.id)
         #print(self.cur_move_target, (self.x, self.y), (self.camera_x, self.camera_y))
         if (self.x, self.y) == self.cur_move_target or self.collision_count > 50: #using this to fix the always stuck issue results in a few going through walls issues
             # so f
             self.collision_count = 0
-            if (self.x, self.y) == (self.camera_x//70, self.camera_y//70):
-                return
             # pathfinding only really needs to be active when triggered, and in this case the trigger is needing a new move target
             self.recalculate_path()
             if len(self.path) == 0: return
@@ -124,6 +123,7 @@ class Enemy:
         col_check = False
         
         if self.grid[int((self.y+y+self.offset)//70)][int((self.x+x+self.offset)//70)] == 1 or self.grid[int((self.y+y+self.offset+self.height)//70)][int((self.x+x+self.offset+self.width)//70)] == 1:
+            
             self.collision_count += 1
             col_check = True
             return
