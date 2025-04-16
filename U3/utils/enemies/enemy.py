@@ -2,7 +2,7 @@ from dataclasses import dataclass, field
 from typing import Any, Self
 import pygame as pg
 from ..display.colours import *
-import sys, heapq, math, copy, threading, numpy
+import sys, heapq, math, copy, threading, numpy, time
 
 class Enemy:
     """The individual class for each enemy"""
@@ -70,6 +70,7 @@ class Enemy:
         self.path = self.a_star(visited,end_node,heap, maze, start_node)[1:]
         if len(self.path) < 3:# this happening after the search could be a problem
             self.path = []
+            time.sleep(0.3)
         
         self.pathfinding_active = False
         sys.exit()
