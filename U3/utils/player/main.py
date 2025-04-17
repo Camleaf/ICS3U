@@ -2,6 +2,7 @@ import pygame as pg
 from ..display.colours import *
 from ..walls.main import Walls
 from ..enemies.enemy import Enemy
+from .turret import Turret
 import math, time
 
 class Player(pg.sprite.Sprite):
@@ -33,7 +34,7 @@ class Player(pg.sprite.Sprite):
       self.bounding_box = self.rect.copy()
 
 
-
+      self.turret = Turret(20,30,DISPLAY_HEIGHT,DISPLAY_BASE)
 
 
       self.DISPLAY_BASE = DISPLAY_BASE
@@ -180,4 +181,5 @@ def Create_Container(player):
   """Creates a container which wraps the player for render. \nInput : object of class Player.\nOutput : pg.sprite.Group() object containing player object"""
   player_list = pg.sprite.Group()
   player_list.add(player)
+  #player_list.add(player.turret)
   return player_list
