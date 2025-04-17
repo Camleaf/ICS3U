@@ -32,8 +32,8 @@ class Enemies:
             x = None
             y = None
             for r in range(1000):
-                ry = random.randint(2,self.GAME_HEIGHT//70 - 2)
-                rx = random.randint(2, self.GAME_BASE // 70 - 2)
+                ry = random.randint(0,self.GAME_HEIGHT//70 - 1)
+                rx = random.randint(0, self.GAME_BASE // 70 - 1)
                 if [rx,ry] in walls.walls:
                     continue
                 y = ry

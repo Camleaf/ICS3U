@@ -50,7 +50,7 @@ class Enemy:
         end_node = (int(self.camera_x//70), int(self.camera_y//70))
         visited = [[False for i in range(len(maze[0]))] for _ in range(len(maze))]
 
-        estimation = abs(start_node.position[0]-end_node[0]) + abs(start_node.position[1]-end_node[0]) # uses taxicab dist
+        estimation = abs(start_node.position[0]-end_node[0]) + abs(start_node.position[1]-end_node[1]) # uses taxicab dist
         
 
         if not self.activated:
@@ -77,14 +77,15 @@ class Enemy:
 
 
     def move(self, units):
-        print(self.id)
+
         #print(self.cur_move_target, (self.x, self.y), (self.camera_x, self.camera_y))
         if (self.x, self.y) == self.cur_move_target or self.collision_count > 50: #using this to fix the always stuck issue results in a few going through walls issues
             # so f
             self.collision_count = 0
             # pathfinding only really needs to be active when triggered, and in this case the trigger is needing a new move target
             self.recalculate_path()
-            if len(self.path) == 0: return
+            if len(self.path) == 0: 
+                return
             self.cur_move_target = self.path.pop(0)
             self.cur_move_target = (self.cur_move_target[0] * 70, self.cur_move_target[1] * 70)
         
