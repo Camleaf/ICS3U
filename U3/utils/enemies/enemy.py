@@ -127,8 +127,13 @@ class Enemy:
             
             self.collision_count += 1
             col_check = True
+            return 
+        # split this into two checks just for any readability
+        elif self.grid[int((self.y+y+self.offset + self.height)//70)][int((self.x+x+self.offset)//70)] == 1 or self.grid[int((self.y+y+self.offset)//70)][int((self.x+x+self.offset+self.width)//70)] == 1:
+            self.collision_count += 1
+            col_check = True
             return
-
+        
         for i, unit in enumerate(units): # now i just need to extend to the player
             if i == self.id: continue
             n_x = unit.x
@@ -209,7 +214,7 @@ class Enemy:
         # so the astar breaks whenever the player goes past or equal to 10 on x or y axis
         #    update: start node is fine. end node is fine. all the passed inputs are fine WHAT THE HELL IS HAPPENING
         #    update: i fixed it the issue was I swapped game height/bsae with display height/base :facepalm:
-        rng = numpy.random.default_rng()
+        
         while heap:
             current_tile:Tile = heapq.heappop(heap) # because of heap object we always have lowest cost
             visited[current_tile.position[1]][current_tile.position[0]] = True
@@ -290,6 +295,7 @@ class Enemy:
         """Passes camera_x and camera_y to the local class so that the pathfinding thread can use it"""
         self.camera_x = camera_x
         self.camera_y = camera_y
+
 
 @dataclass(order=True)
 class Tile:
