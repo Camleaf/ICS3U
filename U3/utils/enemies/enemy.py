@@ -248,7 +248,7 @@ class Enemy:
                 # pythagorean theorem
                 heuristic = int(round(math.sqrt(((child_position[0] - end_node[0]) ** 2) + ((child_position[1] - end_node[1]) ** 2))))
                 
-                cost = dist_from_start + heuristic + rng.integers(0,3,1)
+                cost = dist_from_start + heuristic
 
                 heapq.heappush(heap,Tile(current_tile, child_position, dist_from_start, cost))
 
@@ -278,7 +278,7 @@ class Enemy:
                 # pythagorean theorem
                 heuristic = int(round(math.sqrt(((child_position[0] - end_node[0]) ** 2) + ((child_position[1] - end_node[1]) ** 2))))
                 
-                cost = dist_from_start + heuristic + rng.integers(0,3,1)
+                cost = dist_from_start + heuristic
                 heapq.heappush(heap,Tile(current_tile, child_position, dist_from_start, cost))
 
 
