@@ -28,6 +28,7 @@ class Enemies:
 
     def create_units(self,walls:Walls ,camera_x, camera_y):
         """Creates the enemy class self.number and stores them in a wrapper"""
+        already_created = []
         for i in range(self.number):
             x = None
             y = None
@@ -36,10 +37,14 @@ class Enemies:
                 rx = random.randint(0, self.GAME_BASE // 70 - 1)
                 if [rx,ry] in walls.walls:
                     continue
+                if [rx,ry] in already_created:
+                    continue
+                if ry > 4 and not ry > 13:continue
+                elif rx > 4 and not rx > 13: continue
                 y = ry
                 x = rx
                 break
-
+            already_created.append([x,y])
             self.units.append(
                 Enemy( self.unit_width, 
                       self.unit_height, 
