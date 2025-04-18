@@ -32,7 +32,7 @@ class Turret:
 
     def rotation_manager(self, x, y, camera_x, camera_y):
 
-        relative_x, relative_y = camera_x-x, camera_y-y
+        relative_x, relative_y = camera_x-x-35, camera_y-y-35 # relative positions use the base's coords as that doesn't rely on an approximate function for positioning
 
         angle = math.degrees(math.atan2(relative_y,relative_x))
         self.rotation = -angle -90

@@ -82,7 +82,7 @@ class Enemy:
 
 
     def move(self, units):
-        self.turret.rotation_manager(self.x+self.offset-self.rot_offset, self.y+self.offset-self.rot_offset, self.camera_x, self.camera_y)
+        self.turret.rotation_manager(self.x, self.y, self.camera_x, self.camera_y)
         #print(self.cur_move_target, (self.x, self.y), (self.camera_x, self.camera_y))
         if (self.x, self.y) == self.cur_move_target or self.collision_count > 50: #using this to fix the always stuck issue results in a few going through walls issues
             # so f
