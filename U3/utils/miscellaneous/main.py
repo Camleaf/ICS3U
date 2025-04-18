@@ -13,30 +13,51 @@ class Magazine:
         self.DISPLAY_HEIGHT = DISPLAY_HEIGHT
         self.owner = owner
         self.walls = walls.walls
-        self.targets = []
-        if owner == "player":
-            for unit in enemies.units:
-                self.targets.append((unit.x, unit.y))
-            
-        else:
-            self.targets = [(player.camera_x-player.width//2, player.camera_y-player.height//2)] # all coordinates will be based off of top left so that writing code later is easier
+         # all coordinates will be based off of top left so that writing code later is easier
+        self.create_grid()
+
 
     def create_bullet(self,angle, x, y): # x,y refers to centre of playing object
-        start = (x, y)
+
         self.magazine.append(
             Bullet(
-                3,
-                3,
+                4,
+                4,
                 self.owner,
-                5,
+                8,
                 angle,
-                start,
-                self.targets,
-                self.walls
+                (x, y),
+                self.grid
             )
         )
-    
-    def render(self, DISPLAY):
+    def update_bullets(self, enemies, player):
+        self.targets = []
+        if self.owner == "player": # recalculate targets every runthrough
+            for unit in enemies.units:
+                self.targets.append(unit)
+            
+        else:
+            self.targets = [(player.camera_x-player.width//2, player.camera_y-player.height//2)]
+
+        r = len(self.magazine)
+        new = []
+        for i in range(r):
+            if not self.magazine[i].move(self.targets):
+                new.append(self.magazine[i])
+        self.magazine = new
+            
+    def create_grid(self):
+        self.grid = []
+        for y in range(self.GAME_HEIGHT//70):
+            temp = []
+            for x in range(self.GAME_BASE//70):
+                if [x,y] in self.walls:
+                    temp.append(1)
+                else:
+                    temp.append(0)
+            self.grid.append(temp)
+
+    def render(self, DISPLAY, camera_x, camera_y):
         for bullet in self.magazine:
-            DISPLAY.blit(DISPLAY, (bullet.x,bullet.y))
+            DISPLAY.blit(bullet.image, (bullet.x-camera_x+self.DISPLAY_BASE//2,bullet.y-camera_y+self.DISPLAY_HEIGHT//2))
             

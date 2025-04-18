@@ -18,14 +18,14 @@ class Turret(pg.sprite.Sprite):
         self.image = self.image_orig.copy()
         self.rect = self.image.get_rect()
         self.rect.center = (DISPLAY_BASE/2, DISPLAY_HEIGHT/2)
-
+        self.raw_x, self.raw_y = 0,0
         self.DISPLAY_HEIGHT = DISPLAY_HEIGHT
         self.DISPLAY_BASE = DISPLAY_BASE
 
 
     def rotation_manager(self):
-        raw_x, raw_y = pg.mouse.get_pos()
-        relative_x, relative_y = raw_x - self.DISPLAY_BASE // 2, raw_y - self.DISPLAY_HEIGHT//2
+        self.raw_x, self.raw_y = pg.mouse.get_pos()
+        relative_x, relative_y = self.raw_x - self.DISPLAY_BASE // 2, self.raw_y - self.DISPLAY_HEIGHT//2
 
         angle = math.degrees(math.atan2(relative_y,relative_x))
         self.rotation = -angle -90

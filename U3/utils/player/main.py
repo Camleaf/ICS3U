@@ -3,6 +3,7 @@ from ..display.colours import *
 from ..walls.main import Walls
 from ..enemies.enemy import Enemy
 from .turret import Turret
+from ..miscellaneous.main import Magazine
 import math, time
 
 class Player(pg.sprite.Sprite):
@@ -11,9 +12,7 @@ class Player(pg.sprite.Sprite):
       - move | moves the player
     """
     image: pg.Surface
-    xpos: float
-    ypos: float
-
+    magazine: Magazine
     def __init__(self, width:int, height:int, DISPLAY_BASE:int, DISPLAY_HEIGHT:int, GAME_BASE:int, GAME_HEIGHT:int):
       pg.sprite.Sprite.__init__(self)
 
@@ -34,7 +33,7 @@ class Player(pg.sprite.Sprite):
       self.rect.center = (DISPLAY_BASE/2, DISPLAY_HEIGHT/2)
       # self.rect is used for rotating, but for collisions i need a bounding box as the rect slightly deforms with rotation causing clipping issues
       self.bounding_box = self.rect.copy()
-
+      
 
       self.turret = Turret(width+20,height+20,DISPLAY_HEIGHT,DISPLAY_BASE)
 
@@ -53,7 +52,9 @@ class Player(pg.sprite.Sprite):
       self.difference = 0
       self.in_range = []
       self.is_alive = True
-
+    def create_magazine(self, enemies, walls):
+       self.magazine = Magazine("player",self, enemies, walls, self.GAME_BASE, self.GAME_HEIGHT, self.DISPLAY_BASE, self.DISPLAY_HEIGHT)
+      
     def move(self, x, y, units):
         self.turret.rotation_manager() #may have to optimize so that this doesn't run every time but for now it should work
        

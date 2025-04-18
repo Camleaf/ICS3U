@@ -30,6 +30,7 @@ class Screen:
         self.background.Render(self.DISPLAY, player.camera_x, player.camera_y)
         walls.render(self.DISPLAY, player.camera_x, player.camera_y)
         enemies.render(self.DISPLAY,player.camera_x, player.camera_y)
+        player.magazine.render(self.DISPLAY, player.camera_x, player.camera_y)
         #barrier.render(self.DISPLAY, player.camera_x, player.camera_y, self.DISPLAY_BASE, self.DISPLAY_HEIGHT)
         
         

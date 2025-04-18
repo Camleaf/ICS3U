@@ -1,23 +1,72 @@
 import pygame as pg
 from ..display.colours import *
+import math
 
 class Bullet:
     """Your standard tank bullet"""
 
-    def __init__(self, width, height, owner, speed, angle, start, targets, walls):
+    def __init__(self, width, height, owner, speed, angle, start, grid):
         
         self.rotation = 0
         self.width = width
         self.height = height
         self.owner = owner
-        self.walls = walls
         self.speed = speed
         self.angle = angle
+        self.grid = grid
         self.x, self.y = start
+        self.image = pg.Surface([width,height])
+        self.image.set_colorkey((255,255,255))
+        self.image.fill(WHITE)
+        pg.draw.circle(self.image, OFF_BLACK, (self.width/2, self.height/2),radius=2)
+
+        vector = pg.math.Vector2((0,1))
+        vector = vector.rotate(-angle+180)
+        self.xspeed = speed * vector[0]
+        self.yspeed = speed * vector[1]
         
 
 
         
     
-    def move(self):
-        ...
+    def move(self, targets):
+        self.x += self.xspeed
+        self.y += self.yspeed
+        return self.collision(targets)
+        
+
+    def collision(self,targets):
+
+        if self.y < 0 or (len(self.grid))*70 <= self.y or self.x < 0 or (len(self.grid[0]))*70 <=self.x: 
+            return True
+        if self.grid[int((self.y)//70)][int((self.x)//70)] == 1:
+            self.hit(player=False, bot=False, bot_index=None)
+            return True
+        if self.owner == "player":
+            for i,unit in enumerate(targets):
+                n_x = unit.x  + unit.offset
+                n_y = unit.y + unit.offset
+          #print(unit.y, unit.x)
+
+                collider = pg.Rect(n_x,n_y, unit.width, unit.height)
+                if collider.collidepoint(self.x, self.y):
+                    self.hit(player=False, bot=True, bot_index=unit.id)
+                    return True
+        else:
+            n_x, n_y = targets[0]
+            collider = pg.Rect(n_x,n_y, 40, 40)
+            if collider.collidepoint(self.x, self.y):
+                self.hit(player=True, bot=False, bot_index=None)
+                return True
+        
+
+
+        return False
+    
+
+    def hit(self, player=False, bot=False, bot_index=None):
+        if player:
+            ... # trigger a game over
+        elif bot:
+            ... # code to destroy a bot here. And i'll have to make bot work with this
+        
