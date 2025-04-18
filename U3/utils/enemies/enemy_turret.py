@@ -10,7 +10,7 @@ class Turret:
         self.rotation = 0
         self.fwidth = width
         self.fheight = height
-        self.image_orig = pg.Surface([width,height])
+        self.image_orig = pg.Surface([self.fwidth,self.fheight])
         self.image_orig.set_colorkey(BLACK)
         self.image_orig.fill(BLACK)
         pg.draw.rect(self.image_orig, OFF_BLACK, (self.fwidth/2-5,self.fheight/2-5,10,10),border_radius=4)
@@ -22,8 +22,9 @@ class Turret:
 
         self.offset = (70 - self.fwidth) / 2
         self.rot_offset = 0
+        # print(self.fwidth,self.fheight)
         # print(self.image.get_rect().center)
-        # self.rotation = 65
+        # self.rotation = 20
         # self.rotate()
         # print(self.image.get_rect().center)
         # still has jittering on rotation due to a "well i've tried everything i can think of and this is the best result" solution to the image rescaling and rebalancing issue
@@ -31,6 +32,7 @@ class Turret:
         
 
     def rotation_manager(self, x, y, camera_x, camera_y):
+        """Manages rotation based on the angle between the unit and the player"""
 
         relative_x, relative_y = camera_x-x-35, camera_y-y-35 # relative positions use the base's coords as that doesn't rely on an approximate function for positioning
 
@@ -44,4 +46,4 @@ class Turret:
     def rotate(self):
         """Rotates the turret image to rotation"""
         self.image = pg.transform.rotate(self.image_orig, self.rotation)
-        self.rot_offset = 12 - abs(((((self.rotation % 90) / 45) -1)**1.872) * 12)
+        self.rot_offset = 12 - abs(((((self.rotation % 90) / 45) -1)**1.872) * 12) # this is the curve gained from the equations found on the desmos doc

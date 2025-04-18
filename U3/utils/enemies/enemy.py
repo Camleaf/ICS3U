@@ -103,7 +103,8 @@ class Enemy:
         elif self.cur_move_target[0] > self.x:
             self.xs = 2
 
-        self.collision(units, self.xs, 0, 0)
+        if self.collision(units, self.xs, 0, 0):
+            self.xs = 0
 
         self.ys = 0
         if self.cur_move_target[1] < self.y:
@@ -111,7 +112,8 @@ class Enemy:
         elif self.cur_move_target[1] > self.y:
             self.ys = 2
 
-        self.collision(units, 0, self.ys, 1)
+        if self.collision(units, 0, self.ys, 1):
+            self.ys = 0
         
         
         self.rotation_manager(self.xs,self.ys)
@@ -161,9 +163,11 @@ class Enemy:
                 break
         if col_check:
             self.collision_count += 1
+            return True
         else:
             self.x += x
             self.y += y
+            return False
 
 
     def rotation_manager(self,x,y):
