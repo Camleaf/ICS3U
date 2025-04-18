@@ -14,7 +14,7 @@ class Player(pg.sprite.Sprite):
     xpos: float
     ypos: float
 
-    def __init__(self,color, width:int, height:int, DISPLAY_BASE:int, DISPLAY_HEIGHT:int, GAME_BASE:int, GAME_HEIGHT:int):
+    def __init__(self, width:int, height:int, DISPLAY_BASE:int, DISPLAY_HEIGHT:int, GAME_BASE:int, GAME_HEIGHT:int):
       pg.sprite.Sprite.__init__(self)
 
 
@@ -22,10 +22,12 @@ class Player(pg.sprite.Sprite):
       # image origin
       self.image_orig = pg.Surface([width,height])
       self.image_orig.set_colorkey((255,255,255))
-      self.image_orig.fill(color)
-      pg.draw.rect(self.image_orig,OFF_YELLOW,(0,height-height/9,width,height/9))
-      pg.draw.rect(self.image_orig,OFF_YELLOW,(width/9,0,width/7,height))
-      pg.draw.rect(self.image_orig,OFF_YELLOW,(width-width/9-width/7,0,width/7,height))
+      self.image_orig.fill(WHITE)
+     
+      pg.draw.rect(self.image_orig,OFF_BLACK, (0, 1, width, height-2), border_radius=2)
+      pg.draw.rect(self.image_orig, PICKLE_GREEN, (7,0,width-14,height),border_radius=2)
+      pg.draw.rect(self.image_orig,DARK_PICKLE_GREEN,(width/2-10, height/2-15,20,30),border_radius=2)
+      #pg.draw.rect(self.image_orig, PICKLE_GREEN, (0,0,width,height))
       # self.image_orig.blit()
       self.image = self.image_orig.copy()
       self.rect = self.image.get_rect()
@@ -34,7 +36,7 @@ class Player(pg.sprite.Sprite):
       self.bounding_box = self.rect.copy()
 
 
-      self.turret = Turret(20,30,DISPLAY_HEIGHT,DISPLAY_BASE)
+      self.turret = Turret(width+20,height+20,DISPLAY_HEIGHT,DISPLAY_BASE)
 
 
       self.DISPLAY_BASE = DISPLAY_BASE
@@ -53,8 +55,8 @@ class Player(pg.sprite.Sprite):
       self.is_alive = True
 
     def move(self, x, y, units):
-        
-        # TODO turn movement into a vector so that we can normalize it
+        self.turret.rotation_manager() #may have to optimize so that this doesn't run every time but for now it should work
+       
         if self.width/2 < self.camera_x + x < self.GAME_BASE - self.width/2:
             self.camera_x += x
    
@@ -181,5 +183,5 @@ def Create_Container(player):
   """Creates a container which wraps the player for render. \nInput : object of class Player.\nOutput : pg.sprite.Group() object containing player object"""
   player_list = pg.sprite.Group()
   player_list.add(player)
-  #player_list.add(player.turret)
+  player_list.add(player.turret)
   return player_list

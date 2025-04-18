@@ -2,18 +2,23 @@ from dataclasses import dataclass, field
 from typing import Any, Self
 import pygame as pg
 from ..display.colours import *
+from .enemy_turret import Turret
 import sys, heapq, math, copy, threading, numpy, time
 
 class Enemy:
     """The individual class for each enemy"""
-    def __init__(self, color, width, height, posx, posy, DISPLAY_HEIGHT, DISPLAY_BASE, GAME_BASE, GAME_HEIGHT, camera_x, camera_y, grid, offset, identity):
+    def __init__(self, width, height, posx, posy, DISPLAY_HEIGHT, DISPLAY_BASE, GAME_BASE, GAME_HEIGHT, camera_x, camera_y, grid, offset, identity):
         self.image_orig = pg.Surface([width,height])
         self.image_orig.set_colorkey((255,255,255))
-        self.image_orig.fill(color)
-        pg.draw.rect(self.image_orig,OFF_YELLOW,(0,height-height/9,width,height/9))
-        pg.draw.rect(self.image_orig,OFF_YELLOW,(width/9,0,width/7,height))
-        pg.draw.rect(self.image_orig,OFF_YELLOW,(width-width/9-width/7,0,width/7,height))
+        self.image_orig.fill(WHITE)
+     
+        pg.draw.rect(self.image_orig,OFF_BLACK, (0, 1, width, height-2), border_radius=2)
+        pg.draw.rect(self.image_orig, RED, (7,0,width-14,height),border_radius=2)
+        pg.draw.rect(self.image_orig,DARK_RED,(width/2-10, height/2-15,20,30),border_radius=2)
 
+
+
+        self.turret = Turret(width+20,height+20,DISPLAY_HEIGHT,DISPLAY_BASE)
 
         self.x = posx
         self.y = posy
@@ -77,7 +82,7 @@ class Enemy:
 
 
     def move(self, units):
-
+        self.turret.rotation_manager(self.x+self.offset-self.rot_offset, self.y+self.offset-self.rot_offset, self.camera_x, self.camera_y)
         #print(self.cur_move_target, (self.x, self.y), (self.camera_x, self.camera_y))
         if (self.x, self.y) == self.cur_move_target or self.collision_count > 50: #using this to fix the always stuck issue results in a few going through walls issues
             # so f
