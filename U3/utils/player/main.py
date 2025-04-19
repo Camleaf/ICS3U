@@ -37,7 +37,8 @@ class Player(pg.sprite.Sprite):
 
       self.turret = Turret(width+20,height+20,DISPLAY_HEIGHT,DISPLAY_BASE)
 
-
+      self.xspeed = 0
+      self.yspeed = 0
       self.DISPLAY_BASE = DISPLAY_BASE
       self.DISPLAY_HEIGHT = DISPLAY_HEIGHT
       self.width = width
@@ -52,8 +53,8 @@ class Player(pg.sprite.Sprite):
       self.difference = 0
       self.in_range = []
       self.is_alive = True
-    def create_magazine(self, enemies, walls):
-       self.magazine = Magazine("player",self, enemies, walls, self.GAME_BASE, self.GAME_HEIGHT, self.DISPLAY_BASE, self.DISPLAY_HEIGHT)
+    def create_magazine(self, walls):
+       self.magazine = Magazine("player", walls, self.GAME_BASE, self.GAME_HEIGHT, self.DISPLAY_BASE, self.DISPLAY_HEIGHT)
       
     def move(self, x, y, units):
         self.turret.rotation_manager() #may have to optimize so that this doesn't run every time but for now it should work
@@ -69,7 +70,8 @@ class Player(pg.sprite.Sprite):
 
         if self.collision(0,y,0,units):
            y= 0
-        
+        self.xspeed = x
+        self.yspeed = y
         
         
         match [x//2.5,y//2.5]: # match the rotation to the movement

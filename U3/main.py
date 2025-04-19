@@ -26,8 +26,8 @@ clock = pg.time.Clock()
 walls = Walls(GAME_BASE,GAME_HEIGHT, DISPLAY_BASE, DISPLAY_HEIGHT)
 player = Player(40,40,DISPLAY_BASE, DISPLAY_HEIGHT, GAME_BASE, GAME_HEIGHT)
 player_container = Create_Container(player)
-enemies = Enemies(10,40,40,GAME_BASE, GAME_HEIGHT,DISPLAY_BASE, DISPLAY_HEIGHT, walls, player.camera_x, player.camera_y)
-player.create_magazine(enemies,walls)
+enemies = Enemies(5,40,40,GAME_BASE, GAME_HEIGHT,DISPLAY_BASE, DISPLAY_HEIGHT, walls, player.camera_x, player.camera_y, 15)
+player.create_magazine(walls)
 
 # Threads
 in_range_walls = threading.Thread(target = player.get_in_range_walls, args = (walls,))

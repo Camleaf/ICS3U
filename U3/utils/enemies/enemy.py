@@ -6,7 +6,17 @@ from .enemy_turret import Turret
 import sys, heapq, math, copy, threading, numpy, time
 
 class Enemy:
-    """The individual class for each enemy"""
+    """The individual class for each enemy
+    - width and height should be same num of pixels. Preferably 40
+    - posx and posy (int) are starting x and y of enemy
+    - DISPLAY_HEIGHT, DISPLAY_BASE are height and width of user display
+    - GAME_BASE, GAME_HEIGHT are height and width of game field
+    - camera_x and camera_y can be anything => they are placeholders for when real value gets assigned later
+    - a grid as defined in parent file main.py Class Enemies
+    - offset => as defined in Enemies in file main.py
+    
+    
+    """
     def __init__(self, width, height, posx, posy, DISPLAY_HEIGHT, DISPLAY_BASE, GAME_BASE, GAME_HEIGHT, camera_x, camera_y, grid, offset, identity):
         self.image_orig = pg.Surface([width,height])
         self.image_orig.set_colorkey((255,255,255))
@@ -73,7 +83,7 @@ class Enemy:
         heap = [] # list of tiles
         heapq.heappush(heap, start_node)
         self.path = self.a_star(visited,end_node,heap, maze, start_node)[1:]
-        if len(self.path) < 3:# this happening after the search could be a problem
+        if len(self.path) < 2:# this happening after the search could be a problem
             self.path = []
             time.sleep(0.3)
         
@@ -142,7 +152,7 @@ class Enemy:
             return
         
         for i, unit in enumerate(units): # now i just need to extend to the player
-            if i == self.id: continue
+            if unit.id == self.id: continue
             n_x = unit.x
             n_y = unit.y
             

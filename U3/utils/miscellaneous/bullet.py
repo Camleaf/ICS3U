@@ -18,29 +18,38 @@ class Bullet:
         self.image = pg.Surface([width,height])
         self.image.set_colorkey((255,255,255))
         self.image.fill(WHITE)
-        pg.draw.circle(self.image, OFF_BLACK, (self.width/2, self.height/2),radius=2)
+        pg.draw.circle(self.image, OFF_BLACK, (self.width/2, self.height/2),radius=4)
 
         vector = pg.math.Vector2((0,1))
         vector = vector.rotate(-angle+180)
         self.xspeed = speed * vector[0]
         self.yspeed = speed * vector[1]
+        self.traveled = 0
+        self.max_dist = 300 if self.owner == "player" else 350 # bots have longer range than players to force close engagement
         
 
 
         
     
-    def move(self, targets):
+    def move(self, targets, enemies, player):
         self.x += self.xspeed
         self.y += self.yspeed
-        return self.collision(targets)
+        self.traveled += self.speed
+        if self.collision(targets, enemies, player):
+            return True
+        elif self.traveled > self.max_dist:
+            return True
+        else:
+            return False
+        
         
 
-    def collision(self,targets):
+    def collision(self,targets, enemies, player):
 
         if self.y < 0 or (len(self.grid))*70 <= self.y or self.x < 0 or (len(self.grid[0]))*70 <=self.x: 
             return True
         if self.grid[int((self.y)//70)][int((self.x)//70)] == 1:
-            self.hit(player=False, bot=False, bot_index=None)
+            self.hit(enemies, player,playerhit=False, bot=False, bot_index=None)
             return True
         if self.owner == "player":
             for i,unit in enumerate(targets):
@@ -50,13 +59,13 @@ class Bullet:
 
                 collider = pg.Rect(n_x,n_y, unit.width, unit.height)
                 if collider.collidepoint(self.x, self.y):
-                    self.hit(player=False, bot=True, bot_index=unit.id)
+                    self.hit( enemies, player,playerhit=False, bot=True, bot_index=unit.id)
                     return True
         else:
             n_x, n_y = targets[0]
             collider = pg.Rect(n_x,n_y, 40, 40)
             if collider.collidepoint(self.x, self.y):
-                self.hit(player=True, bot=False, bot_index=None)
+                self.hit(enemies, player,playerhit=True, bot=False, bot_index=None)
                 return True
         
 
@@ -64,9 +73,10 @@ class Bullet:
         return False
     
 
-    def hit(self, player=False, bot=False, bot_index=None):
-        if player:
+    def hit(self, enemies, player, playerhit=False, bot=False, bot_index=None):
+        if playerhit:
             ... # trigger a game over
+            
         elif bot:
-            ... # code to destroy a bot here. And i'll have to make bot work with this
+            enemies.destroy_unit(bot_index)
         

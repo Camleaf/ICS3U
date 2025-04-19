@@ -4,7 +4,7 @@ from .bullet import Bullet
 class Magazine:
     """Container for all the bullets"""
 
-    def __init__(self, owner, player, enemies, walls, GAME_BASE, GAME_HEIGHT, DISPLAY_BASE, DISPLAY_HEIGHT):
+    def __init__(self, owner, walls, GAME_BASE, GAME_HEIGHT, DISPLAY_BASE, DISPLAY_HEIGHT):
 
         self.magazine:list[Bullet] = []
         self.GAME_BASE = GAME_BASE
@@ -18,11 +18,11 @@ class Magazine:
 
 
     def create_bullet(self,angle, x, y): # x,y refers to centre of playing object
-
+        # if i need ideas for any QOL stuff make it so the bullet spawns at the end of the turret not the centre of the tank
         self.magazine.append(
             Bullet(
-                4,
-                4,
+                8,
+                8,
                 self.owner,
                 8,
                 angle,
@@ -42,7 +42,7 @@ class Magazine:
         r = len(self.magazine)
         new = []
         for i in range(r):
-            if not self.magazine[i].move(self.targets):
+            if not self.magazine[i].move(self.targets, enemies, player):
                 new.append(self.magazine[i])
         self.magazine = new
             

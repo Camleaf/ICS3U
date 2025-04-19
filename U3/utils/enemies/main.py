@@ -9,7 +9,7 @@ class Enemies:
     units: list[Enemy]
     active_paths: list[threading.Thread]
 
-    def __init__(self, enemies_num, width, height, GAME_BASE, GAME_HEIGHT, DISPLAY_BASE, DISPLAY_HEIGHT,walls:Walls, camera_x, camera_y):
+    def __init__(self, enemies_num, width, height, GAME_BASE, GAME_HEIGHT, DISPLAY_BASE, DISPLAY_HEIGHT,walls:Walls, camera_x, camera_y, stocks):
         
         self.number = enemies_num
         self.active_paths = []
@@ -22,10 +22,48 @@ class Enemies:
         self.unit_width = width
         self.unit_height = height
         self.offset = (70 - self.unit_width) / 2
+        self.stocks = stocks
+        self.cur_id = 0
+        self.walls = walls
         self.create_pathfinding_grid(walls)
         self.create_units(walls, camera_x, camera_y)
         
-
+        
+    def create_indiv(self):
+        """Same as create_units function but for individual units, and requiring less positional arguments. Slightly less efficient as well as can't group create"""
+        # maybe as QOL later I could make it so that this function spawns units outside of the player's POV
+        y = None
+        x = None
+        for r in range(1000):
+            ry = random.randint(0,self.GAME_HEIGHT//70 - 1)
+            rx = random.randint(0, self.GAME_BASE // 70 - 1)
+            if [rx,ry] in self.walls.walls:
+                continue
+            if any([round(unit.x//70), round(unit.y//70)] == [rx,ry] for unit in self.units):
+                
+                continue
+            y = ry
+            x = rx
+        self.cur_id += 1
+        if self.stocks == 0: return
+        self.stocks -= 1
+        self.units.append(
+                Enemy( self.unit_width, 
+                      self.unit_height, 
+                      x*70,
+                      y*70, 
+                      self.DISPLAY_HEIGHT, 
+                      self.DISPLAY_BASE, 
+                      self.GAME_BASE, 
+                      self.GAME_HEIGHT,
+                      0,
+                      0,
+                      self.grid,
+                      self.offset,
+                      self.cur_id
+                      )
+        )
+                    
     def create_units(self,walls:Walls ,camera_x, camera_y):
         """Creates the enemy class self.number and stores them in a wrapper"""
         already_created = []
@@ -44,6 +82,8 @@ class Enemies:
                 y = ry
                 x = rx
                 break
+            self.cur_id = i
+            self.stocks -= 1
             already_created.append([x,y])
             self.units.append(
                 Enemy( self.unit_width, 
@@ -62,6 +102,15 @@ class Enemies:
                       )
             )
     
+        
+    def destroy_unit(self,id):
+        new = []
+        for unit in self.units:
+            if unit.id != id:
+                new.append(unit)
+        self.units = new
+        if self.stocks != 0:
+            self.create_indiv()
         
 
     def move(self):
