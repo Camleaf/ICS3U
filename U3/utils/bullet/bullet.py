@@ -75,7 +75,7 @@ class Bullet:
 
     def hit(self, enemies, player, playerhit=False, bot=False, bot_index=None):
         if playerhit:
-            ... # trigger a game over
+            player.game_over()
             
         elif bot:
             enemies.destroy_unit(bot_index)

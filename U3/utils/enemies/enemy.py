@@ -42,6 +42,7 @@ class Enemy:
         self.is_alive = True
         self.image = self.image_orig.copy()
         self.rect = self.image.get_rect()
+        self.shot_cooldown = 0
         # self.rect.center = [posx-camera_x+DISPLAY_BASE//2+self.offset, posy-camera_y+DISPLAY_HEIGHT//2+self.offset] # this is just initial we change it later
         self.rotation_target = 180
         self.rotation = 180
@@ -307,7 +308,35 @@ class Enemy:
 
 
         return [start_node.position]
+    
+    def shoot(self):
+        ...
+
+    def raycast(self, bullet_speed):
+        """Sends a ray using the vector a bullet would take to determine line of sight and whether or not the path is unobstructed"""
+        # use the wall detection system from the grid that I used and make 1 check every 20 frames (1 per 20 iterations to limit lag)
+        # start rotation code derived in the bullet class
+        vector = pg.math.Vector2((0,1))
+        vector = vector.rotate(-self.turret.rotation+180)
+        self.xspeed = bullet_speed * vector[0]
+        self.yspeed = bullet_speed * vector[1]
+        # end rotation code
+        ray_x = self.x +35-self.rot_offset
+        ray_y = self.y +35-self.rot_offset
+        
+        while True: # this function should always end even if it is while True because the ray will always reach the edge of the field
+            ray_x += self.xspeed
+            ray_y += self.yspeed
+            if ray_y < 0 or (len(self.grid))*70 <= ray_y or  ray_x < 0 or (len(self.grid[0]))*70 <= ray_x: 
+                return False
+            if self.grid[int(ray_y//70)][int( ray_x//70)] == 1:
+                return False
+            if [self.camera_x//70, self.camera_y // 70] == [ray_x//70, ray_y//70]:
+                # All it has to do is reach the square since the angle will always be pointing directly at the player
+                return True
             
+                
+
             
 
     def player_pass(self,camera_x,camera_y):

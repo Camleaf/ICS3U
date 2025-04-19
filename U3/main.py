@@ -73,10 +73,11 @@ while True:
 
 
         player.move(x_vector,y_vector, enemies.units)
+    enemies.check_shots(tick)
     player.magazine.update_bullets(enemies,player)
-    enemies.move()
+    enemies.move(player)
     screen.render(player, player_container, walls, enemies)
 
     pg.display.flip()
-    tick += 1
+    tick = (tick%60) + 1
     clock.tick(60)

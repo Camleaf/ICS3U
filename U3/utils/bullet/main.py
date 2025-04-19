@@ -13,6 +13,7 @@ class Magazine:
         self.DISPLAY_HEIGHT = DISPLAY_HEIGHT
         self.owner = owner
         self.walls = walls.walls
+        self.bullet_speed = 8
          # all coordinates will be based off of top left so that writing code later is easier
         self.create_grid()
 
@@ -24,7 +25,7 @@ class Magazine:
                 8,
                 8,
                 self.owner,
-                8,
+                self.bullet_speed,
                 angle,
                 (x, y),
                 self.grid

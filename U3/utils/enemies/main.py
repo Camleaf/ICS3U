@@ -4,6 +4,7 @@ import threading, random
 from ..display.colours import *
 from .enemy import Enemy
 from ..walls.main import Walls
+from ..bullet.main import Magazine
 class Enemies:
     """Class which contains all the enemies"""
     units: list[Enemy]
@@ -25,6 +26,7 @@ class Enemies:
         self.stocks = stocks
         self.cur_id = 0
         self.walls = walls
+        self.magazine = Magazine("bot",walls,GAME_BASE,GAME_HEIGHT,DISPLAY_BASE,DISPLAY_HEIGHT)
         self.create_pathfinding_grid(walls)
         self.create_units(walls, camera_x, camera_y)
         
@@ -113,7 +115,8 @@ class Enemies:
             self.create_indiv()
         
 
-    def move(self):
+    def move(self,player):
+        self.magazine.update_bullets(self,player)
         for i in range(len(self.units)):
             self.units[i].move(self.units)
 
@@ -137,3 +140,14 @@ class Enemies:
                 else:
                     temp.append(0)
             self.grid.append(temp)
+    
+    def check_shots(self,tick):
+            for unit in self.units:
+                if unit.activated:
+                    if tick <= 5: continue
+                    if unit.shot_cooldown < 20: 
+                        unit.shot_cooldown += 1
+                        continue
+                    unit.shot_cooldown  = 0
+                    if unit.raycast(self.magazine.bullet_speed):
+                        self.magazine.create_bullet(unit.turret.rotation,unit.x+35-unit.rot_offset,unit.y+35-unit.rot_offset)

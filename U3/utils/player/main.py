@@ -3,7 +3,7 @@ from ..display.colours import *
 from ..walls.main import Walls
 from ..enemies.enemy import Enemy
 from .turret import Turret
-from ..miscellaneous.main import Magazine
+from ..bullet.main import Magazine
 import math, time
 
 class Player(pg.sprite.Sprite):
@@ -188,6 +188,11 @@ class Player(pg.sprite.Sprite):
           self.in_range = [x for x in temp_in_range]
           # print(self.in_range)
           time.sleep(0.01)
+
+    def game_over(self):
+       """Calls all necessary game over function"""
+       # creates game over
+       ...
 
 
 def Create_Container(player):
