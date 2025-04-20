@@ -57,6 +57,7 @@ class Player(pg.sprite.Sprite):
        self.magazine = Magazine("player", walls, self.GAME_BASE, self.GAME_HEIGHT, self.DISPLAY_BASE, self.DISPLAY_HEIGHT)
       
     def move(self, x, y, units):
+        if not self.is_alive: return
         self.turret.rotation_manager() #may have to optimize so that this doesn't run every time but for now it should work
        
         if self.width/2 < self.camera_x + x < self.GAME_BASE - self.width/2:
@@ -192,8 +193,21 @@ class Player(pg.sprite.Sprite):
     def game_over(self):
        """Calls all necessary game over function"""
        # creates game over
-       ...
+       self.is_alive = False
+       self.image_orig = pg.Surface([self.width,self.height])
+       self.image_orig.set_colorkey((255,255,255))
+       self.image_orig.fill(WHITE)
+     
+       pg.draw.rect(self.image_orig,OFF_BLACK, (0, 1, self.width, self.height-2), border_radius=2)
+       pg.draw.rect(self.image_orig, BLACK, (7,0,self.width-14,self.height),border_radius=2)
+       pg.draw.rect(self.image_orig,BLACK,(self.width/2-10, self.height/2-15,20,30),border_radius=2)
+       self.rotate(0)
+       # change appearance
 
+
+    def fire(self):
+       if not self.is_alive: return
+       self.magazine.create_bullet(self.turret.rotation,self.camera_x,self.camera_y)
 
 def Create_Container(player):
   """Creates a container which wraps the player for render. \nInput : object of class Player.\nOutput : pg.sprite.Group() object containing player object"""

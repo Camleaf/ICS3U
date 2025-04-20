@@ -26,6 +26,11 @@ class Enemies:
         self.stocks = stocks
         self.cur_id = 0
         self.walls = walls
+        # init the surface which holds the image of all the dead enemies
+        self.dead_surf:pg.Surface = pg.Surface([GAME_BASE,GAME_HEIGHT])
+        self.dead_surf.set_colorkey((255,255,255))
+        self.dead_surf.fill(WHITE)
+        # end init
         self.magazine = Magazine("bot",walls,GAME_BASE,GAME_HEIGHT,DISPLAY_BASE,DISPLAY_HEIGHT)
         self.create_pathfinding_grid(walls)
         self.create_units(walls, camera_x, camera_y)
@@ -110,25 +115,43 @@ class Enemies:
         for unit in self.units:
             if unit.id != id:
                 new.append(unit)
+            else:
+                self.add_to_dead(unit)
+
+
         self.units = new
         if self.stocks != 0:
-            self.create_indiv()
-        
+            self.create_indiv() # add cam x and cam y to this
+    
+    def add_to_dead(self, unit:Enemy):
+        unit.image_orig = pg.Surface([unit.width,unit.height])
+        unit.image_orig.set_colorkey((255,255,255))
+        unit.image_orig.fill(WHITE)
+     
+        pg.draw.rect(unit.image_orig,OFF_BLACK, (0, 1, unit.width, unit.height-2), border_radius=2)
+        pg.draw.rect(unit.image_orig, BLACK, (7,0,unit.width-14,unit.height),border_radius=2)
+        pg.draw.rect(unit.image_orig,BLACK,(unit.width/2-10, unit.height/2-15,20,30),border_radius=2)
+        unit.rotate(0)
+
+
+        self.dead_surf.blit(unit.image, (unit.x+unit.offset-unit.rot_offset, unit.y+unit.offset-unit.rot_offset))
+        self.dead_surf.blit(unit.turret.image, (unit.x+unit.turret.offset-unit.turret.rot_offset, unit.y+unit.turret.offset-unit.turret.rot_offset))
 
     def move(self,player):
         self.magazine.update_bullets(self,player)
         for i in range(len(self.units)):
             self.units[i].move(self.units)
 
-    def render(self, DISPLAY, camera_x, camera_y):
+    def render(self, DISPLAY:pg.Surface, camera_x:int, camera_y:int):
         # very much a temporary render function
         for unit in self.units:
             #print(unit.x-camera_x+self.GAME_BASE//2, unit.y-camera_y+self.GAME_HEIGHT//2)
             unit.player_pass(camera_x,camera_y)
 
+            DISPLAY.blit(self.dead_surf, (-camera_x+self.DISPLAY_BASE/2, -camera_y+self.DISPLAY_HEIGHT/2))
             DISPLAY.blit(unit.image, (unit.x-camera_x+self.DISPLAY_BASE//2+self.offset-unit.rot_offset, unit.y-camera_y+self.DISPLAY_HEIGHT//2+self.offset-unit.rot_offset))
             DISPLAY.blit(unit.turret.image, (unit.x-camera_x+self.DISPLAY_BASE//2+unit.turret.offset-unit.turret.rot_offset, unit.y-camera_y+self.DISPLAY_HEIGHT//2+unit.turret.offset-unit.turret.rot_offset))
-        
+            
 
     def create_pathfinding_grid(self, walls):
         self.grid = []
@@ -141,6 +164,12 @@ class Enemies:
                     temp.append(0)
             self.grid.append(temp)
     
+    def end_game(self):
+        for unit in self.units:
+            # when game end is True, it only turns off shooting => I want them to swarm around the player after death just not shoot
+            unit.game_end = True
+            unit.activated = True
+
     def check_shots(self,tick):
             for unit in self.units:
                 if unit.activated:

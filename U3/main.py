@@ -37,7 +37,7 @@ in_range_walls.start()
 
 camera_x = player.camera_x
 camera_y = player.camera_y
-
+game_end = False
 
 # mainloop
 tick = 0
@@ -66,9 +66,11 @@ while True:
         if keys_pressed[pg.K_q]:
             time.sleep(10)
         if keys_pressed[pg.K_SPACE]:
+            
             if tick > 20:
                 tick = 0
-                player.magazine.create_bullet(player.turret.rotation,player.camera_x,player.camera_y)
+                player.fire()
+                
 
 
 
@@ -77,6 +79,11 @@ while True:
     player.magazine.update_bullets(enemies,player)
     enemies.move(player)
     screen.render(player, player_container, walls, enemies)
+
+    if not player.is_alive: 
+        game_end = True
+        enemies.end_game()
+
 
     pg.display.flip()
     tick = (tick%60) + 1

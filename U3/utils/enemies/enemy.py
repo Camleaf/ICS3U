@@ -52,6 +52,7 @@ class Enemy:
         self.path = []
         self.activated = False
         self.pathfinding_active = False
+        self.game_end = False
         self.cur_move_target = (self.x,self.y)
         self.grid = copy.deepcopy(grid)
         self.id = identity
@@ -309,10 +310,10 @@ class Enemy:
 
         return [start_node.position]
     
-    def shoot(self):
-        ...
+
 
     def raycast(self, bullet_speed):
+        if self.game_end: return False
         """Sends a ray using the vector a bullet would take to determine line of sight and whether or not the path is unobstructed"""
         # use the wall detection system from the grid that I used and make 1 check every 20 frames (1 per 20 iterations to limit lag)
         # start rotation code derived in the bullet class
