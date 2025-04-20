@@ -1,6 +1,7 @@
 import pygame as pg
 from ..player.main import Player
 from ..walls.main import Walls
+from ..menu.main import Menu
 from ..enemies.main import Enemies
 from .colours import *
 from .background import Background
@@ -20,7 +21,7 @@ class Screen:
         """Fills the screen with RGB value COLOUR"""
         self.DISPLAY.fill(colour)
     
-    def render(self, player:Player, player_container, walls:Walls, enemies:Enemies):
+    def render(self, player:Player, player_container, walls:Walls, enemies:Enemies, menu:Menu):
         """Wrapper function to render all objects to the display. Requires the barrier, the walls group, the player container, and the enemies group as input"""
         
 
@@ -32,12 +33,10 @@ class Screen:
         enemies.render(self.DISPLAY,player.camera_x, player.camera_y)
         player.magazine.render(self.DISPLAY, player.camera_x, player.camera_y)
         enemies.magazine.render(self.DISPLAY, player.camera_x, player.camera_y)
-        #barrier.render(self.DISPLAY, player.camera_x, player.camera_y, self.DISPLAY_BASE, self.DISPLAY_HEIGHT)
-        
-        
-        # no render systems
-        # reserved for objects without a local render system such as the player class
         player_container.draw(self.DISPLAY)
+        menu.render(self.DISPLAY)
+        
+        
 
     def blit(self, object):
         """Shorthand for pygame surface.blit function"""

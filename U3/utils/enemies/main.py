@@ -1,17 +1,20 @@
 import pygame as pg
-import threading, random
+import threading
+import random
 
 from ..display.colours import *
 from .enemy import Enemy
 from ..walls.main import Walls
 from ..bullet.main import Magazine
+
+
 class Enemies:
     """Class which contains all the enemies"""
     units: list[Enemy]
     active_paths: list[threading.Thread]
 
-    def __init__(self, enemies_num, width, height, GAME_BASE, GAME_HEIGHT, DISPLAY_BASE, DISPLAY_HEIGHT,walls:Walls, camera_x, camera_y, stocks):
-        
+    def __init__(self, enemies_num, width, height, GAME_BASE, GAME_HEIGHT, DISPLAY_BASE, DISPLAY_HEIGHT, walls: Walls, camera_x, camera_y, stocks):
+
         self.number = enemies_num
         self.active_paths = []
 
@@ -27,79 +30,82 @@ class Enemies:
         self.cur_id = 0
         self.walls = walls
         # init the surface which holds the image of all the dead enemies
-        self.dead_surf:pg.Surface = pg.Surface([GAME_BASE,GAME_HEIGHT])
-        self.dead_surf.set_colorkey((255,255,255))
+        self.dead_surf: pg.Surface = pg.Surface([GAME_BASE, GAME_HEIGHT])
+        self.dead_surf.set_colorkey((255, 255, 255))
         self.dead_surf.fill(WHITE)
         # end init
-        self.magazine = Magazine("bot",walls,GAME_BASE,GAME_HEIGHT,DISPLAY_BASE,DISPLAY_HEIGHT)
+        self.magazine = Magazine(
+            "bot", walls, GAME_BASE, GAME_HEIGHT, DISPLAY_BASE, DISPLAY_HEIGHT)
         self.create_pathfinding_grid(walls)
         self.create_units(walls, camera_x, camera_y)
-        
-        
+
     def create_indiv(self):
         """Same as create_units function but for individual units, and requiring less positional arguments. Slightly less efficient as well as can't group create"""
         # maybe as QOL later I could make it so that this function spawns units outside of the player's POV
         y = None
         x = None
         for r in range(1000):
-            ry = random.randint(0,self.GAME_HEIGHT//70 - 1)
+            ry = random.randint(0, self.GAME_HEIGHT//70 - 1)
             rx = random.randint(0, self.GAME_BASE // 70 - 1)
-            if [rx,ry] in self.walls.walls:
+            if [rx, ry] in self.walls.walls:
                 continue
-            if any([round(unit.x//70), round(unit.y//70)] == [rx,ry] for unit in self.units):
-                
+            if any([round(unit.x//70), round(unit.y//70)] == [rx, ry] for unit in self.units):
+
                 continue
             y = ry
             x = rx
         self.cur_id += 1
-        if self.stocks == 0: return
+        if self.stocks == 0:
+            return
         self.stocks -= 1
         self.units.append(
-                Enemy( self.unit_width, 
-                      self.unit_height, 
-                      x*70,
-                      y*70, 
-                      self.DISPLAY_HEIGHT, 
-                      self.DISPLAY_BASE, 
-                      self.GAME_BASE, 
-                      self.GAME_HEIGHT,
-                      0,
-                      0,
-                      self.grid,
-                      self.offset,
-                      self.cur_id
-                      )
+            Enemy(self.unit_width,
+                  self.unit_height,
+                  x*70,
+                  y*70,
+                  self.DISPLAY_HEIGHT,
+                  self.DISPLAY_BASE,
+                  self.GAME_BASE,
+                  self.GAME_HEIGHT,
+                  0,
+                  0,
+                  self.grid,
+                  self.offset,
+                  self.cur_id
+                  )
         )
-                    
-    def create_units(self,walls:Walls ,camera_x, camera_y):
+
+    def create_units(self, walls: Walls, camera_x, camera_y):
         """Creates the enemy class self.number and stores them in a wrapper"""
         already_created = []
         for i in range(self.number):
             x = None
             y = None
             for r in range(1000):
-                ry = random.randint(0,self.GAME_HEIGHT//70 - 1)
+                ry = random.randint(0, self.GAME_HEIGHT//70 - 1)
                 rx = random.randint(0, self.GAME_BASE // 70 - 1)
-                if [rx,ry] in walls.walls:
+                if [rx, ry] in walls.walls:
                     continue
-                if [rx,ry] in already_created:
+                if [rx, ry] in already_created:
                     continue
-                if ry > 4 and not ry > 13:continue
-                elif rx > 4 and not rx > 13: continue
+                if ry > 4 and not ry > 13:
+                    continue
+                elif rx > 4 and not rx > 13:
+                    continue
                 y = ry
                 x = rx
                 break
             self.cur_id = i
             self.stocks -= 1
-            already_created.append([x,y])
+            already_created.append([x, y])
             self.units.append(
-                Enemy( self.unit_width, 
-                      self.unit_height, 
+                Enemy(self.unit_width,
+                      self.unit_height,
                       x*70,
-                      y*70, 
-                      self.DISPLAY_HEIGHT, 
-                      self.DISPLAY_BASE, 
-                      self.GAME_BASE, 
+                      y*70,
+                      self.DISPLAY_HEIGHT,
+                      self.DISPLAY_BASE,
+                      self.GAME_BASE,
                       self.GAME_HEIGHT,
                       camera_x,
                       camera_y,
@@ -108,9 +114,8 @@ class Enemies:
                       i
                       )
             )
-    
-        
-    def destroy_unit(self,id):
+
+    def destroy_unit(self, id):
         new = []
         for unit in self.units:
             if unit.id != id:
@@ -118,65 +123,72 @@ class Enemies:
             else:
                 self.add_to_dead(unit)
 
-
         self.units = new
         if self.stocks != 0:
-            self.create_indiv() # add cam x and cam y to this
-    
-    def add_to_dead(self, unit:Enemy):
-        unit.image_orig = pg.Surface([unit.width,unit.height])
-        unit.image_orig.set_colorkey((255,255,255))
+            self.create_indiv()  # add cam x and cam y to this
+
+    def add_to_dead(self, unit: Enemy):
+        unit.image_orig = pg.Surface([unit.width, unit.height])
+        unit.image_orig.set_colorkey((255, 255, 255))
         unit.image_orig.fill(WHITE)
-     
-        pg.draw.rect(unit.image_orig,OFF_BLACK, (0, 1, unit.width, unit.height-2), border_radius=2)
-        pg.draw.rect(unit.image_orig, BLACK, (7,0,unit.width-14,unit.height),border_radius=2)
-        pg.draw.rect(unit.image_orig,BLACK,(unit.width/2-10, unit.height/2-15,20,30),border_radius=2)
+
+        pg.draw.rect(unit.image_orig, OFF_BLACK,
+                     (0, 1, unit.width, unit.height-2), border_radius=2)
+        pg.draw.rect(unit.image_orig, BLACK,
+                     (7, 0, unit.width-14, unit.height), border_radius=2)
+        pg.draw.rect(unit.image_orig, BLACK, (unit.width/2-10,
+                     unit.height/2-15, 20, 30), border_radius=2)
         unit.rotate(0)
 
+        self.dead_surf.blit(unit.image, (unit.x+unit.offset -
+                            unit.rot_offset, unit.y+unit.offset-unit.rot_offset))
+        self.dead_surf.blit(unit.turret.image, (unit.x+unit.turret.offset -
+                            unit.turret.rot_offset, unit.y+unit.turret.offset-unit.turret.rot_offset))
 
-        self.dead_surf.blit(unit.image, (unit.x+unit.offset-unit.rot_offset, unit.y+unit.offset-unit.rot_offset))
-        self.dead_surf.blit(unit.turret.image, (unit.x+unit.turret.offset-unit.turret.rot_offset, unit.y+unit.turret.offset-unit.turret.rot_offset))
-
-    def move(self,player):
-        self.magazine.update_bullets(self,player)
+    def move(self, player):
+        self.magazine.update_bullets(self, player)
         for i in range(len(self.units)):
             self.units[i].move(self.units)
 
-    def render(self, DISPLAY:pg.Surface, camera_x:int, camera_y:int):
+    def render(self, DISPLAY: pg.Surface, camera_x: int, camera_y: int):
         # very much a temporary render function
-        DISPLAY.blit(self.dead_surf, (-camera_x+self.DISPLAY_BASE/2, -camera_y+self.DISPLAY_HEIGHT/2))
+        DISPLAY.blit(self.dead_surf, (-camera_x+self.DISPLAY_BASE /
+                     2, -camera_y+self.DISPLAY_HEIGHT/2))
         for unit in self.units:
-            #print(unit.x-camera_x+self.GAME_BASE//2, unit.y-camera_y+self.GAME_HEIGHT//2)
-            unit.player_pass(camera_x,camera_y)
+            # print(unit.x-camera_x+self.GAME_BASE//2, unit.y-camera_y+self.GAME_HEIGHT//2)
+            unit.player_pass(camera_x, camera_y)
 
-            DISPLAY.blit(unit.image, (unit.x-camera_x+self.DISPLAY_BASE//2+self.offset-unit.rot_offset, unit.y-camera_y+self.DISPLAY_HEIGHT//2+self.offset-unit.rot_offset))
-            DISPLAY.blit(unit.turret.image, (unit.x-camera_x+self.DISPLAY_BASE//2+unit.turret.offset-unit.turret.rot_offset, unit.y-camera_y+self.DISPLAY_HEIGHT//2+unit.turret.offset-unit.turret.rot_offset))
-            
+            DISPLAY.blit(unit.image, (unit.x-camera_x+self.DISPLAY_BASE//2+self.offset -
+                         unit.rot_offset, unit.y-camera_y+self.DISPLAY_HEIGHT//2+self.offset-unit.rot_offset))
+            DISPLAY.blit(unit.turret.image, (unit.x-camera_x+self.DISPLAY_BASE//2+unit.turret.offset -
+                         unit.turret.rot_offset, unit.y-camera_y+self.DISPLAY_HEIGHT//2+unit.turret.offset-unit.turret.rot_offset))
 
     def create_pathfinding_grid(self, walls):
         self.grid = []
         for y in range(self.GAME_HEIGHT//70):
             temp = []
             for x in range(self.GAME_BASE//70):
-                if [x,y] in walls.walls:
+                if [x, y] in walls.walls:
                     temp.append(1)
                 else:
                     temp.append(0)
             self.grid.append(temp)
-    
+
     def end_game(self):
         for unit in self.units:
             # when game end is True, it only turns off shooting => I want them to swarm around the player after death just not shoot
             unit.game_end = True
             unit.activated = True
 
-    def check_shots(self,tick):
-            for unit in self.units:
-                if unit.activated:
-                    if tick <= 5: continue
-                    if unit.shot_cooldown < 20: 
-                        unit.shot_cooldown += 1
-                        continue
-                    unit.shot_cooldown  = 0
-                    if unit.raycast(self.magazine.bullet_speed):
-                        self.magazine.create_bullet(unit.turret.rotation,unit.x+35-unit.rot_offset,unit.y+35-unit.rot_offset)
+    def check_shots(self, tick):
+        for unit in self.units:
+            if unit.activated:
+                if tick <= 5:
+                    continue
+                if unit.shot_cooldown < 20:
+                    unit.shot_cooldown += 1
+                    continue
+                unit.shot_cooldown = 0
+                if unit.raycast(self.magazine.bullet_speed):
+                    self.magazine.create_bullet(
+                        unit.turret.rotation, unit.x+35-unit.rot_offset, unit.y+35-unit.rot_offset)
