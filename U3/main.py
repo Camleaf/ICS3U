@@ -40,7 +40,9 @@ camera_y = player.camera_y
 game_end = False
 
 # mainloop
+frames_num = 1
 tick = 0
+player_shot_cooldown = 0
 while True:
     
     for event in pg.event.get():
@@ -67,8 +69,8 @@ while True:
             time.sleep(10)
         if keys_pressed[pg.K_SPACE]:
             
-            if tick > 20:
-                tick = 0
+            if player_shot_cooldown > 20:
+                player_shot_cooldown = 0
                 player.fire()
                 
 
@@ -86,5 +88,12 @@ while True:
 
 
     pg.display.flip()
-    tick = (tick%60) + 1
+    
+
+    player_shot_cooldown += 1
+    if tick == 0:
+        print(f"{frames_num} second")
+        frames_num += 1
+    tick += 1
+    tick %= 60
     clock.tick(60)
