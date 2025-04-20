@@ -26,7 +26,8 @@ class Bullet:
         self.yspeed = speed * vector[1]
         self.traveled = 0
         self.max_dist = 300 if self.owner == "player" else 350 # bots have longer range than players to force close engagement
-        
+        # add a medium significance random distance for the bullet max distance so that it isn't as easy for the player to use the
+        # disappearance to their advantage
 
 
         
