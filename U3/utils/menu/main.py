@@ -14,8 +14,13 @@ class Menu:
         self.DISPLAY_BASE = DISPLAY_BASE
         self.DISPLAY_HEIGHT = DISPLAY_HEIGHT
 
-        # there will be four menus. One for endscreen, one for start screen, one for pause, and one for during play
+        self.dark_surf = pg.Surface([DISPLAY_BASE,DISPLAY_HEIGHT])
+        self.dark_surf.fill(OFF_BLACK)
+        self.dark_surf.set_alpha(160)
 
+
+        # there will be four menus. One for endscreen, one for start screen, one for pause, and one for during play
+        self.darken = False
         self.menu_list: dict[str,Any] = { # add more as I go
             "start": StartGui(DISPLAY_BASE, DISPLAY_HEIGHT), # working on pausegui atm
             "pause": PauseGui(DISPLAY_BASE, DISPLAY_HEIGHT),
@@ -24,6 +29,7 @@ class Menu:
         self.switch_gui("ingame")
 
     def switch_gui(self, version):
+        self.darken = True if version != "ingame" else False
         self.surf = pg.Surface([self.DISPLAY_BASE, self.DISPLAY_HEIGHT])
         self.surf.set_colorkey(WHITE)
         self.surf.fill(WHITE)
@@ -31,4 +37,5 @@ class Menu:
         time.sleep(0.2)
     
     def render(self, DISPLAY:pg.Surface):
+        if self.darken: DISPLAY.blit(self.dark_surf, (0,0))
         DISPLAY.blit(self.surf,(0,0))
