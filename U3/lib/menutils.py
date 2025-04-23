@@ -1,11 +1,14 @@
 # make a tkinter style ui library for the gui
+# two names I'm thinking of: menutils and pykinter
 # except keep pygame style limitations as defining positions because I'm not coding a full packing
+# no text boxes: I could code them but that would be painful and messy
 
 import pygame as pg
 from typing import NewType
 from collections import defaultdict
-from ..utils.display.colours import *
-
+#from ..utils.display.colours import *
+from typing import Any
+BLACK = (0,0,0)
 class Window:
     """Window class. Fix up definition later. will use pack system like tkinters"""
     transparency_key = BLACK
@@ -25,15 +28,15 @@ class Window:
 
     def pack(self, object, position: tuple[float]=(0,0), dimensions: tuple[int]=(0,0),ID = None) -> None:
 
-        if ID is None: # add a identity creation func
-            ID = __create_id(object)
         
         if object == "grid":
             self.__gridhandler(object, position)
         else:
+            if ID is None: # add a identity creation func
+                ID = __create_id(object)
             object: Object = object
-
-            self.__surf.blit(object.image,position)
+            object.width = dimensions[0]
+            object.height = dimensions[1]
 
             self.__objects[ID] = object
             self.__collidables[ID] = pg.Rect(
@@ -42,7 +45,8 @@ class Window:
                 dimensions[0],
                 dimensions[1]
             )
-
+            self.__update(ID)
+    
     
 
     def __gridhandler(self, grid, position):
@@ -57,11 +61,48 @@ class Window:
             y = position[1] + row_position * grid._row_height
             self.pack(object,(x,y), (grid._column_width*column_span, grid._row_height), identity)
 
+    def mouseInteraction(self, position):
+        """Function which handles all mouseclick"""
+        for ID in self.__collidables:
+            object = self.__objects[ID]
+            collidable = self.__collidables[ID]
+            if not collidable.collidepoint(position[0],position[1]):
+
+                if object.type == "val": object.activated = False
+
+                continue
+            
+            if object.type == "func":
+                self.__objects[ID]._func(*self.__objects[ID]._args)
+            else:
+                self.__objects[ID].activated = True
+            self.__update(ID)
+
+            
+
+    def keyboardInteractions(self, key):
+        """Function which handles all keyboard interactions with objects"""
+
+        for ID in self.__objects:
+            object = self.__objects[ID]
+            collidable = self.__collidables[ID]
+            if object.type == "func": continue
+
+            if not object.activated: continue
+            
+            self.__objects[ID].text += key
+            self.__update(ID)
+
+    def __update(self, ID):
+        collidable = self.__collidables[ID]
+        self.__objects[ID].render()
+        self.__surf.blit(self.__objects[ID]._image,collidable.topleft)
+        
 
 
 class Grid:
     """Grid class. will work similary to tkinter grid"""
-    def __init__(self, window:Window, columns:int=1, rows:int=1, columnwidth:float = 10, rowheight:float = 10):
+    def __init__(self, columns:int=1, rows:int=1, columnwidth:float = 10, rowheight:float = 10):
         # if an object doesn't fit in its defined grid space crop it
 
         self._column_count = columns
@@ -73,6 +114,23 @@ class Grid:
         self._objects:dict[objectID, list] = {}
         # list is defined as [object, (col_pos, row_pos, span)]
 
+    def pack(self, object, row:int = 0, column:int = 0, columnspan:int = 1):
+        object:Object = object
+        if object == "grid":
+            raise Exception("Grid object attempted to pack other Grid object")
+
+        if row < 0 or row > self._row_count-1 or column < 0 or column > self._column_count-1:
+            raise Exception("Row or column greater than defined limit of Grid object")
+        
+        if columnspan > self._column_count or columnspan < 1:
+            raise Exception("Columnspan either greater than number of columns, is zero, or is negative")
+        
+        ID = __create_id(object)
+        self._objects[ID] = [object, (column, row, columnspan)]
+        
+
+
+
     def __eq__(self,other):
         return other == "grid"
 
@@ -83,20 +141,41 @@ class Grid:
 class Object:
     """Default object class which all sub-objects like buttons inherit from"""
 
-    def __init__(self):
-        self.image = pg.Surface([0,0])
-        self.value = None
+    def __init__(self, value:bool=None, text:str = '', command=None, args:tuple[Any]=None):
+        self.width = 0
+        self.height = 0
+        self._image = pg.Surface([0,0])
+        self.activated = value
+        self._func = command
+        self._args = args
+        self.text = text
+
+        if value is not None and command is not None:
+            raise Exception("Objects can not be defined with both a value and a command")
+        elif value is not None:
+            self.type = "val"
+        elif command is not None:
+            self.type = "func"
+        else:
+            raise Exception("Objects can not be defined without either a value or a command")
+
+    def render(self):
+        ...
+        # add the color purple when this finishes, as all indiv functions will need their own render func
+
 
     def __str__(self):
         return "object"
 
 
 
+
 __past_ids = []
-def __create_id(object) -> str:
+def __create_id(object:Object) -> str:
     """Given an object inherited from the Object class, returns a unique id"""
     id_suffix = 0
     object_type = str(object)
+
     while (id := object_type+str(id_suffix)) in __past_ids: 
         id_suffix += 1
     __past_ids.append(id)
@@ -112,4 +191,3 @@ grid = NewType('grid', Grid)
 if __name__ == "__main__":
     # for testing
     BLACK = (0, 0, 0)
-    Obj = Object()

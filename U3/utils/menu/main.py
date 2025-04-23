@@ -7,7 +7,7 @@ from .pausegui import PauseGui
 from .gamegui import GameGui
 
 class Menu:
-    """The container for all instances of the menu"""
+    """The container for all instances of the menu""" # will completely redo this once menutils is done
 
     def __init__(self, DISPLAY_BASE:int, DISPLAY_HEIGHT:int):
 
