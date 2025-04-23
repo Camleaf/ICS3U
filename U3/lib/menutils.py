@@ -156,8 +156,6 @@ class Object:
             self.type = "val"
         elif command is not None:
             self.type = "func"
-        else:
-            raise Exception("Objects can not be defined without either a value or a command")
 
     def render(self):
         ...
