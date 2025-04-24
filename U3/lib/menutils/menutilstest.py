@@ -5,13 +5,21 @@ import sys
 
 pg.init()
 
-display = pg.display.set_mode((300,300))
-window = mu.Window(100,100, (101,101,100))
+display = pg.display.set_mode((400,400))
+window = mu.Window(400,400, (101,101,100))
 
 WHITE=(255,255,255)
-label = mu.Label(window, "Hello yes I would like to do the coding", width=90, text_padding=4, text_size=20, border_width=3, corner_radius=5)
-window.pack(label, (0,0))
 
+grid = mu.Grid(2,2,200,100)
+
+
+label = mu.Label(window, "Labels finally work", width=170, text_size=15, border_width=3, corner_radius=5)
+grid.pack(label, 0, 0, 1, "testlabel")
+
+label = mu.Label(window, "And so do grids", width=170, text_size=15, border_width=3, corner_radius=5)
+grid.pack(label, 1, 1, 1, "testlabel1")
+
+window.pack(grid, (0,0))
 
 while True:
     for event in pg.event.get():
