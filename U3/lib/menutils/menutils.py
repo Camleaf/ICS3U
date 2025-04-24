@@ -6,15 +6,19 @@
 import pygame as pg
 from typing import NewType
 from collections import defaultdict
-#from ..utils.display.colours import *
 from typing import Any
+import os as __os
+
+# default color declarations just since it is a library
 BLACK = (0,0,0)
+WHITE = (0,0,0)
+GRAY = (100,100,100)
+
 class Window:
     """Window class. Fix up definition later. will use pack system like tkinters"""
-    transparency_key = BLACK
     def __init__(self, width:int, height:int, transparency_key: tuple[int] = BLACK):
-
-
+        
+        self.transparency_key = transparency_key
         self.__width = width
         self.__height = height
         self.__surf = pg.Surface([self.__width, self.__height])
@@ -22,7 +26,7 @@ class Window:
         self.__surf.fill(transparency_key)
 
         self.__collidables: dict[objectID, pg.Rect] = defaultdict()
-        self.__objects: dict[objectID, Object] = defaultdict()
+        self.__objects: dict[objectID, __Object] = defaultdict()
         # objects are held in __objects for recalculations based on hover and data status
         # object rects are held in __collidables for mouse collision purposes
 
@@ -33,18 +37,20 @@ class Window:
             self.__gridhandler(object, position)
         else:
             if ID is None: # add a identity creation func
-                ID = __create_id(object)
-            object: Object = object
-            object.width = dimensions[0]
-            object.height = dimensions[1]
+                ID = _create_id(object)
+            object: __Object = object
 
             self.__objects[ID] = object
-            self.__collidables[ID] = pg.Rect(
-                position[0], 
-                position[1],
-                dimensions[0],
-                dimensions[1]
-            )
+            if dimensions != (0,0):
+                self.__collidables[ID] = pg.Rect(
+                    position[0], 
+                    position[1],
+                    dimensions[0],
+                    dimensions[1]
+                )
+            else:
+                self.__collidables[ID] = object._image.get_rect()
+                self.__collidables[ID].topleft = position
             self.__update(ID)
     
     
@@ -74,18 +80,17 @@ class Window:
             
             if object.type == "func":
                 self.__objects[ID]._func(*self.__objects[ID]._args)
-            else:
+            elif object.type == "val":
                 self.__objects[ID].activated = True
             self.__update(ID)
 
             
 
-    def keyboardInteractions(self, key):
+    def keyboardInteraction(self, key):
         """Function which handles all keyboard interactions with objects"""
 
         for ID in self.__objects:
             object = self.__objects[ID]
-            collidable = self.__collidables[ID]
             if object.type == "func": continue
 
             if not object.activated: continue
@@ -97,7 +102,9 @@ class Window:
         collidable = self.__collidables[ID]
         self.__objects[ID].render()
         self.__surf.blit(self.__objects[ID]._image,collidable.topleft)
-        
+    
+    def surface(self):
+        return self.__surf
 
 
 class Grid:
@@ -115,7 +122,7 @@ class Grid:
         # list is defined as [object, (col_pos, row_pos, span)]
 
     def pack(self, object, row:int = 0, column:int = 0, columnspan:int = 1):
-        object:Object = object
+        object:__Object = object
         if object == "grid":
             raise Exception("Grid object attempted to pack other Grid object")
 
@@ -125,7 +132,7 @@ class Grid:
         if columnspan > self._column_count or columnspan < 1:
             raise Exception("Columnspan either greater than number of columns, is zero, or is negative")
         
-        ID = __create_id(object)
+        ID = _create_id(object)
         self._objects[ID] = [object, (column, row, columnspan)]
         
 
@@ -136,19 +143,52 @@ class Grid:
 
     def __str__(self):
         return "grid"
-    
 
-class Object:
+_default_font_filepath = __os.path.join(f"{__os.getcwd()}","gameFont.ttf")
+def _create_multiline_text(window:Window, text:str,font_file:str=_default_font_filepath, size=20, width=100, color: tuple[int]=BLACK) -> pg.SurfaceType:
+    # this won't run very much so the overhead can be greater
+    font = pg.font.Font(font_file, size)
+    lines = [[]]
+    current_width = 0
+    current_line = 0
+    # handle multiline generation
+    for word in text.split(' '):
+        word_width = font.render(word, False, color).get_rect().width 
+
+        
+
+        if current_width + word_width > width:
+            if word_width > width:
+                raise Exception(f"Word {word} greater pixel length ({word_width}) than width ({width})") 
+            current_line += 1
+            lines.append([word])
+            current_width = word_width
+            continue
+
+
+        lines[current_line].append(word)
+        current_width += word_width 
+    
+    # create the surface
+    surf = pg.Surface([width,len(lines)*size])
+    surf.set_colorkey(window.transparency_key)
+    surf.fill(window.transparency_key)
+    for index, line in enumerate(lines):
+        text = font.render(' '.join(line),True,color)
+        surf.blit(text, (0,index*size))
+    
+    return surf
+
+class __Object:
     """Default object class which all sub-objects like buttons inherit from"""
 
-    def __init__(self, value:bool=None, text:str = '', command=None, args:tuple[Any]=None):
-        self.width = 0
-        self.height = 0
+    def __init__(self, window, value:bool=None, text:str = '', command=None, args:tuple[Any]=None):
         self._image = pg.Surface([0,0])
         self.activated = value
         self._func = command
         self._args = args
         self.text = text
+        self.window:Window = window
 
         if value is not None and command is not None:
             raise Exception("Objects can not be defined with both a value and a command")
@@ -156,6 +196,8 @@ class Object:
             self.type = "val"
         elif command is not None:
             self.type = "func"
+        else:
+            self.type = "label"
 
     def render(self):
         ...
@@ -163,13 +205,13 @@ class Object:
 
 
     def __str__(self):
-        return "object"
-
-
+        return "object"    
+        
+    
 
 
 __past_ids = []
-def __create_id(object:Object) -> str:
+def _create_id(object:__Object) -> str:
     """Given an object inherited from the Object class, returns a unique id"""
     id_suffix = 0
     object_type = str(object)
@@ -185,7 +227,78 @@ objectID = NewType('objectID', str)
 objectRect = NewType('objectRect', list[float])
 grid = NewType('grid', Grid)
 
+# everything above is for infrastructure, below is usable Objects
+
+
+class Label(__Object):
+    """A label class meant for storing multiline text inheriting from __Object"""
+    def __init__(self, window, text:str = '', width:int=100, text_padding:int=8, text_size:int=20, border_width:int=3, corner_radius:int=5, background_color: tuple[int] = WHITE, text_color: tuple[int] = BLACK, border_color:tuple[int] = GRAY):
+        super().__init__(window, value=None, text=text, command=None, args=None)
+
+        self.width = width
+        self.text_padding = text_padding
+        self.border_width = border_width
+        self.corner_radius = corner_radius
+        self.background_color = background_color
+        self.text_color = text_color
+        self.border_color = border_color
+        self.text_size = text_size
+        
+    
+    def render(self):
+        self.text_surf = _create_multiline_text(self.window, text=self.text, size=self.text_size, width=self.width, color=self.text_color)
+        # image is absed around self.text_surf plus the text padding needed for the border
+        self._image = pg.Surface([self.width+self.text_padding*2,self.text_surf.get_rect().height+self.text_padding*2])
+        self._image.set_colorkey(self.window.transparency_key)
+
+        pg.draw.rect( # make one slightly bigger
+            self._image, self.border_color, 
+            (0,0,self.width+self.text_padding*2,self.text_surf.get_rect().height+self.text_padding*2),  
+            border_radius=self.corner_radius
+        )
+        pg.draw.rect(
+            self._image, self.background_color,
+            (self.border_width, self.border_width, self.width+self.text_padding*2-self.border_width*2,self.text_surf.get_rect().height+self.text_padding*2-self.border_width*2),
+            border_radius = self.corner_radius
+        )
+        self._image.blit(self.text_surf, (self.text_padding,self.text_padding))
+        
+        
+
+
+
+
+    def __str__(self):
+        return "label"
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 if __name__ == "__main__":
     # for testing
     BLACK = (0, 0, 0)
+    WHITE = (0,0,0)
