@@ -6,6 +6,7 @@ Dependencies:
 - Pygame >= 2.2.6
 """
 import pygame as pg
+import pygame.freetype as ft
 from typing import NewType
 from collections import defaultdict
 from typing import Any
@@ -53,7 +54,7 @@ class Window:
             else:
                 self.__collidables[ID] = object._image.get_rect()
                 self.__collidables[ID].topleft = position
-            self.__update(ID)
+            self.update(ID)
     
     
 
@@ -84,7 +85,7 @@ class Window:
                 self.__objects[ID]._func(*self.__objects[ID]._args)
             elif object.type == "val":
                 self.__objects[ID].activated = True
-            self.__update(ID)
+            self.update(ID)
 
             
 
@@ -98,9 +99,9 @@ class Window:
             if not object.activated: continue
             
             self.__objects[ID].text += key
-            self.__update(ID)
+            self.update(ID)
 
-    def __update(self, ID):
+    def update(self, ID):
         collidable = self.__collidables[ID]
         self.__objects[ID].render()
         self.__surf.blit(self.__objects[ID]._image,collidable.topleft)
@@ -148,15 +149,16 @@ class Grid:
 
 _default_font_filepath = __os.path.join(f"{__os.getcwd()}","gameFont.ttf")
 def _create_multiline_text(window:Window, text:str, padding=10, font_file:str=_default_font_filepath, size=20, width=100, color: tuple[int]=BLACK) -> pg.SurfaceType:
+    if not ft.get_init():
+        ft.init()
     # this won't run very much so the overhead can be greater
-    font = pg.font.Font(font_file, size)
+    font = ft.Font(font_file,size=size, resolution=90)
     lines = [[]]
     current_width = 0
     current_line = 0
     # handle multiline generation
     for word in text.split(' '):
-        word_width = font.render(word, False, color).get_rect().width 
-
+        word_width = font.get_rect(word, rotation=0, size=size).width
         
 
         if current_width + word_width > width-padding*2:
@@ -176,8 +178,9 @@ def _create_multiline_text(window:Window, text:str, padding=10, font_file:str=_d
     surf.set_colorkey(window.transparency_key)
     surf.fill(window.transparency_key)
     for index, line in enumerate(lines):
-        text = font.render(' '.join(line),False,color)
-        surf.blit(text, (0,index*size))
+        text = font.render(' '.join(line),color,size=size)
+        print(text)
+        surf.blit(text[0], (0,index*size))
     
     return surf
 
@@ -266,34 +269,9 @@ class Label(__Object):
             border_radius = self.corner_radius
         )
         self._image.blit(self.text_surf, (self.text_padding,self.text_padding))
-        
-        
-
-
-
 
     def __str__(self):
         return "label"
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 
