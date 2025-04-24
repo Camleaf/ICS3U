@@ -1,8 +1,10 @@
-# make a tkinter style ui library for the gui
-# two names I'm thinking of: menutils and pykinter
-# except keep pygame style limitations as defining positions because I'm not coding a full packing
-# no text boxes: I could code them but that would be painful and messy
+"""
+The pygame menu library that I made just for a school tanks game
 
+Dependencies: 
+- Python >= 3.11.9
+- Pygame >= 2.2.6
+"""
 import pygame as pg
 from typing import NewType
 from collections import defaultdict
