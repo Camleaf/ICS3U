@@ -111,9 +111,9 @@ class Window:
                 self.__objects[ID].text = self.__objects[ID].text[:-1]
             elif key == "\r":
                 self.__objects[ID].activated = False
-            elif self.input_type == "num" and key in "1234567890":
+            elif object.input_type == "num" and key in "1234567890":
                 self.__objects[ID].text += key
-            elif self.input_type == "all":
+            elif object.input_type == "all":
                 self.__objects[ID].text += key
             self.update_surf(ID)
 
@@ -123,7 +123,7 @@ class Window:
         pg.draw.rect(self.__surf, self.bg_color, collidable)
         self.__objects[ID].render()
         self.__collidables[ID] = self.__objects[ID]._image.get_rect()
-        self.__collidables[ID].topleft = collidable.topleft
+        self.__collidables[ID].topleft = orig_coords
         self.__surf.blit(self.__objects[ID]._image,collidable)
     
 
