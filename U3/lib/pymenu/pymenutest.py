@@ -25,20 +25,24 @@ def button_test(an_arg, otherID):
 
 
 
-grid = mu.Grid(2,2,200,100)
+grid = mu.Grid(4,2,100,100)
 label = mu.Label(window, "Colors finally work", width=170, text_size=15, border_width=3, corner_radius=2, border_color=RED, background_color=BLUE, text_color=WHITE)
-grid.pack(label, 0, 0, 1, "testlabel")
+grid.pack(label, column=0, row=0, columnspan=2, ID="testlabel")
 
-label = mu.Label(window, "And so do grids apaprently with multi lines what does this look like", width=170, text_size=15, border_width=3, corner_radius=2)
-grid.pack(label, 1, 1, 1, "testlabel1")
+label = mu.Label(window, "Next to me is a checkbox", width=70, text_size=15, border_width=3, corner_radius=2)
+grid.pack(label, column=2, row=1, columnspan=1, ID="testlabel1")
 
-button = mu.Button(window, text="click me", command=button_test, args=("The function works!", "textbox"), width=170, text_size=15, border_width=3, corner_radius=2)
-grid.pack(button, 0, 1, 1, "testbutton")
+label = mu.CheckBox(window, value=False, width=20, height=20, border_width=1, corner_radius=10)
+grid.pack(label, column=3, row=1, columnspan=1, ID="testcheckbox")
+
+button = mu.Button(window, text="click me", command=button_test, args=("The function works!", "testlabel"), width=170, text_size=15, border_width=3, corner_radius=2)
+grid.pack(button, column=2, row=0, columnspan=2, ID="testbutton")
 
 textbox = mu.TextBox(window, "I'm a buggy as hell textbox!", width=170, max_rows=3, text_size=15, border_width=3, corner_radius=2)
-grid.pack(textbox, 1,0,1, "textbox")
+grid.pack(textbox, column=0,row=1,columnspan=2, ID="textbox")
 
-
+frame_ids = ["f1", "f2"]
+current_frame = 0
 window.pack(grid, (0,0))
 tick = 0
 while True:
@@ -52,21 +56,28 @@ while True:
             
             key = event.dict['unicode']
             
-            if key.lower() in 'abcdefghijklmnopqrstuvwxyz1234567890!@#$%^&*()-_=+|?/~.,<>;:' or key in ["\r", "\t"]:
+            if key.lower() in 'abcdefghijklmnopqrstuvwxyz1234567890!@#$%^&*()-_=+|?/~.,<>;: ' or key in ["\r", "\t"]:
                 window.keyboardInteraction(key)
             
     keys = pg.key.get_pressed()
     
-    if keys[pg.K_BACKSPACE] and tick == 3:
+    if keys[pg.K_BACKSPACE] and tick == 3: # delete letter key
         tick = 0 
         window.keyboardInteraction("\x08")
-    elif keys[pg.K_LEFT] and tick == 3:
+    elif keys[pg.K_LEFT] and tick == 3: # demonstrates textbox cursor moving left
         tick = 0
         window.keyboardInteraction("lspr")
-    elif keys[pg.K_RIGHT] and tick == 3:
+    elif keys[pg.K_RIGHT] and tick == 3: # demonstrates textbox cursor moving right
         tick = 0
         window.keyboardInteraction("rspr")
+    elif keys[pg.K_RIGHTBRACKET] and tick ==3: # demonstrates frame save feature
+        tick =0
+        window.save_frame(frame_ids[current_frame])
+        current_frame = 1 if current_frame == 0 else 0
+    elif keys[pg.K_LEFTBRACKET] and tick == 3: # demonstrates frame load
         
+        window.load_frame(frame_ids[0])
+        tick = 0
 
 
 

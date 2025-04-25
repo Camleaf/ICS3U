@@ -7,14 +7,15 @@ Dependencies:
 """
 import pygame as pg
 from typing import NewType
-from collections import defaultdict
 from typing import Any
+from copy import deepcopy
 import os as __os
 
 # default color declarations just since it is a library
 BLACK = (0,0,0)
 WHITE = (255,255,255)
 GRAY = (100,100,100)
+BLUE = (0,0,255)
 
 class Empty:
     ...
@@ -28,16 +29,17 @@ class Window:
         self.__width = width
         self.__height = height
         self.__surf = pg.Surface([self.__width, self.__height])
-        self.__surf.set_colorkey(transparency_key)
-        self.__surf.fill(bg_color)
+        self.__surf.set_colorkey(self.transparency_key)
+        self.__surf.fill(self.bg_color)
 
-        self.__collidables: dict[objectID, pg.Rect] = defaultdict()
-        self.__objects: dict[objectID, __Object] = defaultdict()
+        self.__collidables: dict[objectID, pg.Rect] = {}
+        self.__objects: dict[objectID, __Object] = {}
+        self.__frames: dict[objectID, Any] = {}
         # objects are held in __objects for recalculations based on hover and data status
         # object rects are held in __collidables for mouse collision purposes
 
     def pack(self, object, position: tuple[float]=(0,0), dimensions: tuple[int]=(0,0),ID = None) -> None:
-
+        """Assign the object to the current frame"""
         
         if object == "grid":
             self.__gridhandler(object, position)
@@ -47,14 +49,14 @@ class Window:
             object: __Object = object
 
             self.__objects[ID] = object
-            if dimensions != (0,0):
+            if dimensions != (0,0): # if dimensions are given use them
                 self.__collidables[ID] = pg.Rect(
                     position[0], 
                     position[1],
                     dimensions[0],
                     dimensions[1]
                 )
-            else:
+            else: # otherwise use the rect of the image
                 self.__collidables[ID] = object._image.get_rect()
                 self.__collidables[ID].topleft = position
             self.update_surf(ID)
@@ -68,6 +70,7 @@ class Window:
         for identity in grid._objects:
             identity:objectID
 
+            # create positions based off the grid position and the row and column position
             object, (column_position, row_position, column_span) = grid._objects[identity]
             x = position[0] + column_position * grid._column_width
             y = position[1] + row_position * grid._row_height
@@ -176,6 +179,40 @@ class Window:
         state_export.image_path = object.image_path
         return state_export
 
+    def save_frame(self,ID:str,flush:bool = True):
+        """Saves the frame by ID, and has the option to flush the current frame"""
+
+        self.__frames[ID] = { # if inheritance issues show up just put copies on everything
+            "collidables" : self.__collidables, #{x:self.__collidables[x] for x in self.__collidables}, 
+            "objects" : self.__objects, #{x:self.__objects[x] for x in self.__objects},
+            "surface": self.__surf
+        }
+        if flush:
+            self.flush()
+            
+
+    def delete_frame(self, ID:str):
+        """Deletes frame ID"""
+        del self.__frames[ID]
+
+    def load_frame(self,ID:str):
+        """Loads frame ID"""
+        frame = self.__frames[ID]
+        self.__collidables = frame['collidables']
+        self.__objects = frame['objects']
+        self.__surf = frame['surface']
+
+
+
+
+    def flush(self):
+        """Flushes the current frame, removing all data from it. Data in stored frames are unaffected."""
+        self.__surf = pg.Surface([self.__width, self.__height])
+        self.__surf.set_colorkey(self.transparency_key)
+        self.__surf.fill(self.bg_color)
+
+        self.__collidables: dict[objectID, pg.Rect] = {}
+        self.__objects: dict[objectID, __Object] = {}
 
     def surface(self):
         return self.__surf
@@ -333,6 +370,7 @@ class Label(__Object):
 
 
 class Button(Label):
+    """A button which triggers a function onclick"""
     # inherits from label for styling options but also contains command
     def __init__(self, window, text:str = '', command=None, args:tuple[Any]=None, width:int=100, text_padding:int=8, text_size:int=20, border_width:int=3, corner_radius:int=5, background_color: tuple[int] = WHITE, text_color: tuple[int] = BLACK, border_color:tuple[int] = GRAY):
         super().__init__(window, text, width, text_padding, text_size, border_width, corner_radius, background_color, text_color, border_color)
@@ -346,7 +384,7 @@ class Button(Label):
 
 
 class TextBox(__Object):
-    """"""
+    """A textbox which the user can type in"""
     def __init__(self, window, text:str = '', width:int=100, max_rows:int=1, text_padding:int=8, text_size:int=20, border_width:int=3, corner_radius:int=5, background_color: tuple[int] = WHITE, text_color: tuple[int] = BLACK, border_color:tuple[int] = GRAY):
         super().__init__(window, value=False, text=text, command=None, args=None)
         self.width = width
@@ -389,3 +427,46 @@ class TextBox(__Object):
 
     def __str__(self):
         return "textbox"
+
+class CheckBox(__Object):
+    """A box which the user can tick on and off"""
+    def __init__(self, window, value:bool=False, width=20, height=20, border_width:int=1, corner_radius:int=10, background_color: tuple[int] = WHITE, on_color: tuple[int] = BLUE, border_color:tuple[int] = GRAY):
+        super().__init__(window, value=value)
+        self.width = width
+        self.height = height
+        self.border_width = border_width
+        self.corner_radius = corner_radius
+        self.background_color = background_color
+        self.on_color = on_color
+        self.border_color = border_color
+        self.type = "val"
+
+    def render(self):
+
+        # redefine image in case of any state changes
+        self._image = pg.Surface([self.width,self.height])
+        self._image.set_colorkey(self.window.transparency_key)
+        self._image.fill(self.window.transparency_key)
+
+        pg.draw.rect( # make one slightly bigger
+            self._image, self.border_color, 
+            (0,0,self.width,+self.height),  
+            border_radius=self.corner_radius
+        )
+        # switch the color of the check if it is on
+        if self.activated:
+            pg.draw.rect(
+                self._image, self.on_color,
+                (self.border_width, self.border_width, self.width-self.border_width*2,self.height-self.border_width*2),
+                border_radius = self.corner_radius
+            )
+        else:
+            pg.draw.rect(
+                self._image, self.background_color,
+                (self.border_width, self.border_width, self.width-self.border_width*2,self.height-self.border_width*2),
+                border_radius = self.corner_radius
+            )
+    
+    def __str__(self):
+        return "checkbox"
+
