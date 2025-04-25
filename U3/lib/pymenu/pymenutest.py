@@ -5,7 +5,7 @@ import sys
 
 pg.init()
 
-# this code (lines 9-21) runs like 250 lines behind the scenes
+# now i just need clipboard integration
 display = pg.display.set_mode((400,400))
 window = mu.Window(400,400, (101,101,100))
 
@@ -13,7 +13,7 @@ WHITE=(255,255,255)
 BLUE = (0, 0, 255)
 RED = (255, 0, 0)
 
-switch = ["updates work!", "And so do grids"]
+switch = ["updates work!", "And so do grids apaprently with multi lines what does this look like"]
 idx = 0
 def button_test(an_arg, otherID):
     global idx
