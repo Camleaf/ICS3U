@@ -108,7 +108,7 @@ class Window:
             if object.type != "textbox": continue
             if not object.activated: continue
 
-            new_text = object.text[:object.cursor_pos] + key + object.text[object.cursor_pos:]
+            new_text = object.text[:object.cursor_pos+1] + key + object.text[object.cursor_pos+1:]
             if key == "\x08":
                 if len(object.text) != 0:
                     self.__objects[ID].text = object.text[:object.cursor_pos] + object.text[object.cursor_pos+1:]
@@ -346,6 +346,7 @@ class Button(Label):
 
 
 class TextBox(__Object):
+    """"""
     def __init__(self, window, text:str = '', width:int=100, max_rows:int=1, text_padding:int=8, text_size:int=20, border_width:int=3, corner_radius:int=5, background_color: tuple[int] = WHITE, text_color: tuple[int] = BLACK, border_color:tuple[int] = GRAY):
         super().__init__(window, value=False, text=text, command=None, args=None)
         self.width = width
