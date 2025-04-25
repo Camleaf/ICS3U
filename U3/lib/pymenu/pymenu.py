@@ -95,6 +95,7 @@ class Window:
                 self.__objects[ID].activated = True if not self.__objects[ID].activated else False
             elif object.type == "textbox":
                 self.__objects[ID].activated = True
+                self.__objects[ID].cursor_pos = len(object.text)-1
             self.update_surf(ID)
 
             
@@ -105,16 +106,31 @@ class Window:
         for ID in self.__objects:
             object = self.__objects[ID]
             if object.type != "textbox": continue
-
             if not object.activated: continue
+
+            new_text = object.text[:object.cursor_pos] + key + object.text[object.cursor_pos:]
             if key == "\x08":
-                self.__objects[ID].text = self.__objects[ID].text[:-1]
+                if len(object.text) != 0:
+                    self.__objects[ID].text = object.text[:object.cursor_pos] + object.text[object.cursor_pos+1:]
+                    self.__objects[ID].cursor_pos -= 1
             elif key == "\r":
                 self.__objects[ID].activated = False
+            elif key == "lspr":
+                self.__objects[ID].cursor_pos -= 1
+                if self.__objects[ID].cursor_pos != 0:
+                    self.__objects[ID].cursor_pos %= len(object.text)
+            elif key == "rspr":
+                self.__objects[ID].cursor_pos += 1
+                if self.__objects[ID].cursor_pos != 0:
+                    self.__objects[ID].cursor_pos %= len(object.text)
             elif object.input_type == "num" and key in "1234567890":
-                self.__objects[ID].text += key
+                
+                self.__objects[ID].text = new_text
+                self.__objects[ID].cursor_pos += len(key)
             elif object.input_type == "all":
-                self.__objects[ID].text += key
+
+                self.__objects[ID].text = new_text
+                self.__objects[ID].cursor_pos += len(key)
             self.update_surf(ID)
 
     def update_surf(self, ID):
@@ -223,7 +239,7 @@ def _create_multiline_text(window:Window, text:str, padding=10, font_file:str=_d
     """Handles creating pygame text objects automatically using pg.freetype"""
     # this won't run very much so the overhead can be greater
     font = pg.font.Font(font_file,size=size)
-    surf = font.render(text,True, color, wraplength=width- padding*2)
+    surf = font.render(text,True, color, wraplength=width- padding//2)
     return surf
 
 class __Object:
@@ -330,7 +346,7 @@ class Button(Label):
 
 
 class TextBox(__Object):
-    def __init__(self, window, text:str = '', width:int=100, text_padding:int=8, text_size:int=20, border_width:int=3, corner_radius:int=5, background_color: tuple[int] = WHITE, text_color: tuple[int] = BLACK, border_color:tuple[int] = GRAY):
+    def __init__(self, window, text:str = '', width:int=100, max_rows:int=1, text_padding:int=8, text_size:int=20, border_width:int=3, corner_radius:int=5, background_color: tuple[int] = WHITE, text_color: tuple[int] = BLACK, border_color:tuple[int] = GRAY):
         super().__init__(window, value=False, text=text, command=None, args=None)
         self.width = width
         self.text_padding = text_padding
@@ -340,12 +356,18 @@ class TextBox(__Object):
         self.text_color = text_color
         self.border_color = border_color
         self.text_size = text_size
+        self.max_height = text_size * max_rows + self.text_padding*2
         self.type = "textbox"
         self.input_type = "all"
+        self.cursor_pos = len(text)
     
     def render(self):
-        self.text_surf = _create_multiline_text(self.window, padding=self.text_padding, text=self.text+'|' if self.activated else self.text, size=self.text_size, width=self.width, color=self.text_color, error="cut")
-        
+        cursortext = self.text[:self.cursor_pos+1] + '|' + self.text[self.cursor_pos+1:] if self.activated else self.text
+        self.text_surf = _create_multiline_text(self.window, padding=self.text_padding, text=cursortext, size=self.text_size, width=self.width, color=self.text_color, error="cut")
+        while self.text_surf.height > self.max_height:
+            self.text = self.text[:-1]
+            self.text_surf = _create_multiline_text(self.window, padding=self.text_padding, text=self.text+'|' if self.activated else self.text, size=self.text_size, width=self.width, color=self.text_color, error="cut")
+            
         # image is absed around self.text_surf plus the text padding needed for the border
         self._image = pg.Surface([self.width+self.text_padding*2,self.text_surf.get_rect().height+self.text_padding*2])
         self._image.set_colorkey(self.window.transparency_key)

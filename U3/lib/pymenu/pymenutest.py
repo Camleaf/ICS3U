@@ -14,10 +14,11 @@ WHITE=(255,255,255)
 BLUE = (0, 0, 255)
 RED = (255, 0, 0)
 
-switch = ["updates work!", "And so do grids apaprently with multi lines what does this look like"]
+switch = ["Overwrites work", "Hehehehehehheehe"]
 idx = 0
 def button_test(an_arg, otherID):
     global idx
+    print(an_arg)
     window.update_stat(otherID, text=switch[idx])
     window.update_surf(otherID)
     idx = 1 if idx == 0 else 0
@@ -31,10 +32,10 @@ grid.pack(label, 0, 0, 1, "testlabel")
 label = mu.Label(window, "And so do grids apaprently with multi lines what does this look like", width=170, text_size=15, border_width=3, corner_radius=2)
 grid.pack(label, 1, 1, 1, "testlabel1")
 
-button = mu.Button(window, text="click me", command=button_test, args=("The function works!", "testlabel1"), width=170, text_size=15, border_width=3, corner_radius=2)
+button = mu.Button(window, text="click me", command=button_test, args=("The function works!", "textbox"), width=170, text_size=15, border_width=3, corner_radius=2)
 grid.pack(button, 0, 1, 1, "testbutton")
 
-textbox = mu.TextBox(window, "I'm a buggy as hell textbox!", width=170, text_size=15, border_width=3, corner_radius=2)
+textbox = mu.TextBox(window, "I'm a buggy as hell textbox!", width=170, max_rows=3, text_size=15, border_width=3, corner_radius=2)
 grid.pack(textbox, 1,0,1, "textbox")
 
 
@@ -50,12 +51,21 @@ while True:
         if event.type == pg.KEYDOWN:
             
             key = event.dict['unicode']
-            if key.lower() in 'abcdefghijklmnopqrstuvwxyz1234567890!@#$%^&*()-_=+|?/~.,<>;: \\\'\"' or key in ["\r", "\t"]:
+            
+            if key.lower() in 'abcdefghijklmnopqrstuvwxyz1234567890!@#$%^&*()-_=+|?/~.,<>;:' or key in ["\r", "\t"]:
                 window.keyboardInteraction(key)
+            
     keys = pg.key.get_pressed()
+    
     if keys[pg.K_BACKSPACE] and tick == 3:
         tick = 0 
         window.keyboardInteraction("\x08")
+    elif keys[pg.K_LEFT] and tick == 3:
+        tick = 0
+        window.keyboardInteraction("lspr")
+    elif keys[pg.K_RIGHT] and tick == 3:
+        tick = 0
+        window.keyboardInteraction("rspr")
         
 
 
