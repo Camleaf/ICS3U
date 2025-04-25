@@ -13,6 +13,8 @@ clock = pg.Clock()
 WHITE=(255,255,255)
 BLUE = (0, 0, 255)
 RED = (255, 0, 0)
+GREY = (100,100,100)
+GREEN = (0,255,0)
 
 switch = ["Overwrites work", "Hehehehehehheehe"]
 idx = 0
@@ -44,6 +46,13 @@ grid.pack(textbox, column=0,row=1,columnspan=2, ID="textbox")
 frame_ids = ["f1", "f2"]
 current_frame = 0
 window.pack(grid, (0,0))
+window.save_frame("f1", flush=True)
+
+label = mu.Label(window, "Ooh new frame", width=170, text_size=15, border_width=3, corner_radius=2, border_color=GREEN, background_color=GREY, text_color=WHITE)
+window.pack(label,(0,0),ID="testlabel")
+window.save_frame("f2", flush=True)
+
+window.load_frame("f1")
 tick = 0
 while True:
     for event in pg.event.get():
@@ -70,13 +79,12 @@ while True:
     elif keys[pg.K_RIGHT] and tick == 3: # demonstrates textbox cursor moving right
         tick = 0
         window.keyboardInteraction("rspr")
-    elif keys[pg.K_RIGHTBRACKET] and tick ==3: # demonstrates frame save feature
+    elif keys[pg.K_RIGHTBRACKET] and tick ==3: # demonstrates frame load feature
         tick =0
-        window.save_frame(frame_ids[current_frame])
-        current_frame = 1 if current_frame == 0 else 0
+        window.load_frame("f2")
     elif keys[pg.K_LEFTBRACKET] and tick == 3: # demonstrates frame load
         
-        window.load_frame(frame_ids[0])
+        window.load_frame("f1")
         tick = 0
 
 
