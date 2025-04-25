@@ -111,15 +111,20 @@ class Window:
                 self.__objects[ID].text = self.__objects[ID].text[:-1]
             elif key == "\r":
                 self.__objects[ID].activated = False
-            else:
+            elif self.input_type == "num" and key in "1234567890":
+                self.__objects[ID].text += key
+            elif self.input_type == "all":
                 self.__objects[ID].text += key
             self.update_surf(ID)
 
     def update_surf(self, ID):
         collidable = self.__collidables[ID]
+        orig_coords = collidable.topleft
         pg.draw.rect(self.__surf, self.bg_color, collidable)
         self.__objects[ID].render()
-        self.__surf.blit(self.__objects[ID]._image,collidable.topleft)
+        self.__collidables[ID] = self.__objects[ID]._image.get_rect()
+        self.__collidables[ID].topleft = collidable.topleft
+        self.__surf.blit(self.__objects[ID]._image,collidable)
     
 
     def update_stat(self,ID,activated:bool=None,text:str=None, command=None, args:tuple[Any]=None, image_path:str=None):
@@ -336,6 +341,7 @@ class TextBox(__Object):
         self.border_color = border_color
         self.text_size = text_size
         self.type = "textbox"
+        self.input_type = "all"
     
     def render(self):
         self.text_surf = _create_multiline_text(self.window, padding=self.text_padding, text=self.text+'|' if self.activated else self.text, size=self.text_size, width=self.width, color=self.text_color, error="cut")

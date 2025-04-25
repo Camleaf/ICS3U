@@ -8,6 +8,7 @@ pg.init()
 # now i just need clipboard integration
 display = pg.display.set_mode((400,400))
 window = mu.Window(400,400, (101,101,100))
+clock = pg.Clock()
 
 WHITE=(255,255,255)
 BLUE = (0, 0, 255)
@@ -38,7 +39,7 @@ grid.pack(textbox, 1,0,1, "textbox")
 
 
 window.pack(grid, (0,0))
-
+tick = 0
 while True:
     for event in pg.event.get():
         if event.type == QUIT:
@@ -47,12 +48,21 @@ while True:
         if event.type == pg.MOUSEBUTTONDOWN:
             window.mouseInteraction(pg.mouse.get_pos())
         if event.type == pg.KEYDOWN:
+            
             key = event.dict['unicode']
-            if key.lower() in 'abcdefghijklmnopqrstuvwxyz1234567890!@#$%^&*()-_=+|?/~.,<>;: \\\'\"' or key in ["\x08","\r", "\t"]:
+            if key.lower() in 'abcdefghijklmnopqrstuvwxyz1234567890!@#$%^&*()-_=+|?/~.,<>;: \\\'\"' or key in ["\r", "\t"]:
                 window.keyboardInteraction(key)
+    keys = pg.key.get_pressed()
+    if keys[pg.K_BACKSPACE] and tick == 3:
+        tick = 0 
+        window.keyboardInteraction("\x08")
+        
 
 
 
     display.fill(WHITE)
     display.blit(window.surface(), (0,0))
-    pg.display.update()
+    if tick < 3:
+        tick += 1
+    pg.display.flip()
+    clock.tick(24)
