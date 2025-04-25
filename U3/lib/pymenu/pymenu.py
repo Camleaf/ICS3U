@@ -366,9 +366,3 @@ class TextBox(__Object):
 
     def __str__(self):
         return "textbox"
-
-
-if __name__ == "__main__":
-    # for testing
-    BLACK = (0, 0, 0)
-    WHITE = (0,0,0)
