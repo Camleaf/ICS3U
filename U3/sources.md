@@ -32,3 +32,7 @@ https://medium.com/@DavidHofff/what-is-the-eq-method-in-python-classes-614779526
 
 For dataclass implementation and heapq using class objects
 https://stackoverflow.com/questions/3954530/how-to-make-heapq-evaluate-the-heap-off-of-a-specific-attribute?answertab=modifieddesc#tab-top
+
+
+The switch to pygame CE was from this function which fixed a problem I spent hours on: multiline text generation
+https://pyga.me/docs/ref/font.html#pygame.font.Font.render
