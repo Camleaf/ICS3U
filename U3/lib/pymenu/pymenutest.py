@@ -17,7 +17,6 @@ switch = ["updates work!", "And so do grids"]
 idx = 0
 def button_test(an_arg, otherID):
     global idx
-    print(an_arg)
     window.update_stat(otherID, text=switch[idx])
     window.update_surf(otherID)
     idx = 1 if idx == 0 else 0
@@ -49,7 +48,6 @@ while True:
             window.mouseInteraction(pg.mouse.get_pos())
         if event.type == pg.KEYDOWN:
             key = event.dict['unicode']
-            print(event.dict)
             if key.lower() in 'abcdefghijklmnopqrstuvwxyz1234567890!@#$%^&*()-_=+|?/~.,<>;: \\\'\"' or key in ["\x08","\r", "\t"]:
                 window.keyboardInteraction(key)
 
