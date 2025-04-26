@@ -10,7 +10,7 @@ class Screen:
     """Class which contains all display-related functions, such as outputting"""
     def __init__(self, DISPLAY_BASE, DISPLAY_HEIGHT, GAME_BASE, GAME_HEIGHT):
         """Takes DISPLAY_BASE and DISPLAY_HEIGHT and uses them as width and height respectively for the Display"""
-        self.DISPLAY= pg.display.set_mode((DISPLAY_BASE,DISPLAY_HEIGHT))
+        self.DISPLAY= pg.display.set_mode((DISPLAY_BASE,DISPLAY_HEIGHT),pg.SRCALPHA)
         self.DISPLAY_BASE = DISPLAY_BASE
         self.DISPLAY_HEIGHT = DISPLAY_HEIGHT
         self.GAME_BASE = GAME_BASE

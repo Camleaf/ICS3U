@@ -23,6 +23,19 @@ GAME_HEIGHT = 1190
 # init pygame
 pg.init()
 
+# functions for menu
+
+class PauseControl:
+    def __init__(self):
+        self.interrupt_menu_active = False
+    def time_control(self, on_off:bool):
+        if on_off:
+            self.interrupt_menu_active = True
+        else:
+            self.interrupt_menu_active = False
+pause_control = PauseControl()
+
+
 # classes
 screen = Screen(DISPLAY_BASE,DISPLAY_HEIGHT, GAME_BASE, GAME_HEIGHT)
 clock = pg.time.Clock()
@@ -32,7 +45,7 @@ player = Player(40,40,DISPLAY_BASE, DISPLAY_HEIGHT, GAME_BASE, GAME_HEIGHT)
 player_container = Create_Container(player)
 enemies = Enemies(5,40,40,GAME_BASE, GAME_HEIGHT,DISPLAY_BASE, DISPLAY_HEIGHT, walls, player.camera_x, player.camera_y, 15)
 player.create_magazine(walls)
-menu = Menu(GAME_BASE, GAME_HEIGHT)
+menu = Menu(GAME_BASE, GAME_HEIGHT, pause_control)
 
 # Threads
 in_range_walls = threading.Thread(target = player.get_in_range_walls, args = (walls,))
@@ -48,15 +61,21 @@ game_end = False
 frames_num = 1
 tick = 0
 player_shot_cooldown = 0
-menu_active = 0
 
 while True:
-    
+
     for event in pg.event.get():
         if event.type == QUIT:
             player.is_alive = False
             pg.quit()
             sys.exit()
+        if event.type == pg.MOUSEBUTTONDOWN:
+            menu.window.mouseInteraction(pg.mouse.get_pos())
+        # If i end up needing text I'll add it then
+    
+
+
+
 
     screen.fill(BLACK)
 
@@ -86,11 +105,11 @@ while True:
 
                 
 
-    
-    player.move(x_vector,y_vector, enemies.units)
-    enemies.check_shots(tick)
-    player.magazine.update_bullets(enemies,player)
-    enemies.move(player)
+    if not pause_control.interrupt_menu_active:
+        player.move(x_vector,y_vector, enemies.units)
+        enemies.check_shots(tick)
+        player.magazine.update_bullets(enemies,player)
+        enemies.move(player)
     # run all the time
     screen.render(player, player_container, walls, enemies, menu)
 

@@ -26,12 +26,11 @@ class Window:
         
         self.transparency_key = transparency_key
 
-        self._default_font_filepath = os.path.join(f"{os.getcwd()}","gameFont.ttf")
+        self._default_font_file = os.path.join(f"{os.getcwd()}","gameFont.ttf")
         self.__width = width
         self.__height = height
-        self.__surf = pg.Surface([self.__width, self.__height])
-        self.__surf.set_colorkey(self.transparency_key)
-        self.__surf.fill(self.transparency_key)
+        self.__surf = pg.Surface([self.__width, self.__height],pg.SRCALPHA)
+        self.__surf.fill((0,0,0,0))
 
         self.__collidables: dict[objectID, pg.Rect] = {}
         self.__objects: dict[objectID, __Object] = {}
@@ -96,7 +95,9 @@ class Window:
                 continue
             
             if object.type == "func":
-                self.__objects[ID]._func(*self.__objects[ID]._args)
+                print(*self.__objects[ID]._args)
+                if not self.__objects[ID]._func(*self.__objects[ID]._args): # if the function returns false, it means it should not update the surface
+                    return
             elif object.type == "val":
                 self.__objects[ID].activated = True if not self.__objects[ID].activated else False
             elif object.type == "textbox":
@@ -210,9 +211,8 @@ class Window:
 
     def flush(self):
         """Flushes the current frame, removing all data from it. Data in stored frames are unaffected."""
-        self.__surf = pg.Surface([self.__width, self.__height])
-        self.__surf.set_colorkey(self.transparency_key)
-        self.__surf.fill(self.transparency_key)
+        self.__surf = pg.Surface([self.__width, self.__height],pg.SRCALPHA)
+        self.__surf.fill((0,0,0,0))
 
         self.__collidables: dict[objectID, pg.Rect] = {}
         self.__objects: dict[objectID, __Object] = {}
@@ -277,19 +277,23 @@ def _splice(word,font,width,padding,current_width,word_width,size,lines,current_
             break
     return [lines,current_line,current_width, word]
 
-def _create_multiline_text(window:Window, text:str, padding=10, size=20, width=100, color: tuple[int]=BLACK) -> pg.Surface:
+def _create_multiline_text(window:Window, text:str, padding=10, size=20, width=100, color: tuple[int]=BLACK, font_file=None) -> pg.Surface:
     """Handles creating pygame text objects automatically using pg.freetype"""
     # this won't run very much so the overhead can be greater
-    font_file = window._default_font_file
+    if font_file is None:
+        font_file = window._default_font_file
     font = pg.font.Font(font_file,size=size)
+    if width == -1:
+        width = padding//2
     surf = font.render(text,True, color, wraplength=width- padding//2)
+    surf.convert_alpha()
     return surf
 
 class __Object:
     """Default object class which all sub-objects like buttons inherit from"""
 
     def __init__(self, window, value:bool=None, text:str = '', command=None, args:tuple[Any]=None, image_path:str = ''):
-        self._image = pg.Surface([0,0])
+        self._image = pg.Surface([0,0],pg.SRCALPHA)
         self.activated = value
         self._func = command
         self._args = args
@@ -341,6 +345,8 @@ class Label(__Object):
     """A label class meant for storing multiline text inheriting from __Object"""
     def __init__(self, window, text:str = '', width:int=100, text_padding:int=8, text_size:int=20, border_width:int=3, corner_radius:int=5, background_color: tuple[int] = WHITE, text_color: tuple[int] = BLACK, border_color:tuple[int] = GRAY, background_alpha:int=255, text_alpha:int=255):
         super().__init__(window, value=None, text=text, command=None, args=None)
+        self.window = window
+        self._default_font_file = self.window._default_font_file
         self.width = width
         self.text_padding = text_padding
         self.border_width = border_width
@@ -354,28 +360,32 @@ class Label(__Object):
         
     
     def render(self):
-        self.text_surf = _create_multiline_text(self.window, padding=self.text_padding, text=self.text, size=self.text_size, width=self.width, color=self.text_color)
+        text_color = [x for x in self.text_color] + [self.text_alpha]
+        self.text_surf = _create_multiline_text(self.window, padding=self.text_padding, text=self.text, size=self.text_size, width=self.width, color=text_color, font_file=self._default_font_file)
         # image is absed around self.text_surf plus the text padding needed for the border
-        self._image = pg.Surface([self.width+self.text_padding*2,self.text_surf.get_rect().height+self.text_padding*2])
-        self._image.set_colorkey(self.window.transparency_key)
-        self._image.fill(self.window.transparency_key)
+        if self.width == -1:
+            self.width = self.text_surf.get_rect().width
+
+        self._image = pg.Surface([self.width+self.text_padding*2,self.text_surf.get_rect().height+self.text_padding*2],pg.SRCALPHA)
+        self._image.fill((0,0,0,0))
 
         temp_surf = self._image.copy()
+        border_color = [x for x in self.border_color] + [self.background_alpha]
+        background_color = [x for x in self.background_color] + [self.background_alpha]
+
 
         text_surf_height = self.text_surf.get_rect().height
         pg.draw.rect( # make one slightly bigger
-            temp_surf, self.border_color, 
+            temp_surf, border_color, 
             (0,0,self.width+self.text_padding*2,text_surf_height+self.text_padding*2),  
             border_radius=self.corner_radius
         )
         pg.draw.rect(
-            temp_surf, self.background_color,
+            temp_surf, background_color,
             (self.border_width, self.border_width, self.width+self.text_padding*2-self.border_width*2,text_surf_height+self.text_padding*2-self.border_width*2),
             border_radius = self.corner_radius
         )
 
-        temp_surf.set_alpha(self.background_alpha)
-        self.text_surf.set_alpha(self.text_alpha)
         self._image.blit(temp_surf, (0,0))
         self._image.blit(self.text_surf, (self.text_padding,self.text_padding))
 
@@ -401,6 +411,7 @@ class TextBox(__Object):
     """A textbox which the user can type in"""
     def __init__(self, window, text:str = '', width:int=100, max_rows:int=1, text_padding:int=8, text_size:int=20, border_width:int=3, corner_radius:int=5, background_color: tuple[int] = WHITE, text_color: tuple[int] = BLACK, border_color:tuple[int] = GRAY, background_alpha:int=255, text_alpha:int=255):
         super().__init__(window, value=False, text=text, command=None, args=None)
+        self._default_font_file = window._default_font_file
         self.width = width
         self.text_padding = text_padding
         self.border_width = border_width
@@ -417,33 +428,34 @@ class TextBox(__Object):
         self.cursor_pos = len(text)
     
     def render(self):
+        text_color = [x for x in self.text_color] + [self.text_alpha]
         cursortext = self.text[:self.cursor_pos+1] + '|' + self.text[self.cursor_pos+1:] if self.activated else self.text
-        self.text_surf = _create_multiline_text(self.window, padding=self.text_padding, text=cursortext, size=self.text_size, width=self.width, color=self.text_color)
+        self.text_surf = _create_multiline_text(self.window, padding=self.text_padding, text=cursortext, size=self.text_size, width=self.width, color=text_color, font_file=self._default_font_file)
         while self.text_surf.height > self.max_height:
             self.text = self.text[:-1]
-            self.text_surf = _create_multiline_text(self.window, padding=self.text_padding, text=self.text+'|' if self.activated else self.text, size=self.text_size, width=self.width, color=self.text_color)
+            self.text_surf = _create_multiline_text(self.window, padding=self.text_padding, text=self.text+'|' if self.activated else self.text, size=self.text_size, width=self.width, color=self.text_color, font_file=self.window._default_font_file)
             
         # image is based around self.text_surf plus the text padding needed for the border
-        self._image = pg.Surface([self.width+self.text_padding*2,self.text_surf.get_rect().height+self.text_padding*2])
-        self._image.set_colorkey(self.window.transparency_key)
-        self._image.fill(self.window.transparency_key)
+        self._image = pg.Surface([self.width+self.text_padding*2,self.text_surf.get_rect().height+self.text_padding*2],pg.SRCALPHA)
+        self._image.fill((0,0,0,0))
 
         temp_surf = self._image.copy()
-
+        border_color = [x for x in self.border_color] + [self.background_alpha]
+        background_color = [x for x in self.background_color] + [self.background_alpha]
+        
 
         text_surf_height = self.text_surf.get_rect().height
         pg.draw.rect( # make one slightly bigger
-            temp_surf, self.border_color, 
+            temp_surf, border_color, 
             (0,0,self.width+self.text_padding*2,text_surf_height+self.text_padding*2),  
             border_radius=self.corner_radius
         )
         pg.draw.rect(
-            temp_surf, self.background_color,
+            temp_surf, background_color,
             (self.border_width, self.border_width, self.width+self.text_padding*2-self.border_width*2,text_surf_height+self.text_padding*2-self.border_width*2),
             border_radius = self.corner_radius
         )
-        temp_surf.set_alpha(self.background_alpha)
-        self.text_surf.set_alpha(self.text_alpha)
+
         self._image.blit(temp_surf, (0,0))
         self._image.blit(self.text_surf, (self.text_padding,self.text_padding))
 
@@ -466,9 +478,8 @@ class CheckBox(__Object):
     def render(self):
 
         # redefine image in case of any state changes
-        self._image = pg.Surface([self.width,self.height])
-        self._image.set_colorkey(self.window.transparency_key)
-        self._image.fill(self.window.transparency_key)
+        self._image = pg.Surface([self.width,self.height],pg.SRCALPHA)
+        self._image.fill((0,0,0,0))
 
         pg.draw.rect( # make one slightly bigger
             self._image, self.border_color, 
@@ -506,23 +517,23 @@ class Background(__Object):
         
     
     def render(self):
-        self._image = pg.Surface([self.width,self.height])
-        self._image.set_colorkey(self.window.transparency_key)
-        self._image.fill(self.window.transparency_key)
+        self._image = pg.Surface([self.width,self.height],pg.SRCALPHA)
+        self._image.fill((0,0,0,0))
         # I could do this more efficiently but it's a template for the others where I can't
-        temp_surf = pg.Surface([self.width,self.height])
-        temp_surf.set_colorkey(self.window.transparency_key)
-        temp_surf.fill(self.window.transparency_key)
+        temp_surf = self._image.copy()
+
+        border_color = [x for x in self.border_color] + [self.alpha]
+        background_color = [x for x in self.background_color] + [self.alpha]
 
         pg.draw.rect( # make one slightly bigger
-            temp_surf, self.border_color, 
+            temp_surf, border_color, 
             (0,0,self.width,self.height),  
             border_radius=self.corner_radius
         )
         pg.draw.rect(
-            temp_surf, self.background_color,
+            temp_surf, background_color,
             (self.border_width, self.border_width, self.width-self.border_width*2,self.height-self.border_width*2),
             border_radius = self.corner_radius
         )
-        temp_surf.set_alpha(self.alpha)
+        
         self._image.blit(temp_surf,(0,0))
