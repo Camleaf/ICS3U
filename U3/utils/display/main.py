@@ -1,10 +1,11 @@
 import pygame as pg
 from ..player.main import Player
 from ..walls.main import Walls
-from ..menu.main import Menu
 from ..enemies.main import Enemies
 from .colours import *
 from .background import Background
+from ..menu.main import Menu
+
 class Screen:
     """Class which contains all display-related functions, such as outputting"""
     def __init__(self, DISPLAY_BASE, DISPLAY_HEIGHT, GAME_BASE, GAME_HEIGHT):
@@ -21,7 +22,7 @@ class Screen:
         """Fills the screen with RGB value COLOUR"""
         self.DISPLAY.fill(colour)
     
-    def render(self, player:Player, player_container, walls:Walls, enemies:Enemies, menu:Menu):
+    def render(self, player:Player, player_container, walls:Walls, enemies:Enemies, menu: Menu):
         """Wrapper function to render all objects to the display. Requires the barrier, the walls group, the player container, and the enemies group as input"""
         
 
@@ -34,7 +35,9 @@ class Screen:
         player.magazine.render(self.DISPLAY, player.camera_x, player.camera_y)
         enemies.magazine.render(self.DISPLAY, player.camera_x, player.camera_y)
         player_container.draw(self.DISPLAY)
+
         menu.render(self.DISPLAY)
+
         
         
 

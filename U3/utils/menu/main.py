@@ -2,40 +2,25 @@ import time
 import pygame as pg
 from typing import Any
 from ..display.colours import *
-from .startgui import StartGui
-from .pausegui import PauseGui
-from .gamegui import GameGui
+from lib.pymenu import pymenu as mu
+from .frames import create_frames
+import os
+
 
 class Menu:
-    """The container for all instances of the menu""" # will completely redo this once menutils is done
+    """Menu container which uses Pymenu to create a dynamic menu screen"""
+    def __init__(self, GAME_BASE, GAME_HEIGHT):
 
-    def __init__(self, DISPLAY_BASE:int, DISPLAY_HEIGHT:int):
-
-        self.DISPLAY_BASE = DISPLAY_BASE
-        self.DISPLAY_HEIGHT = DISPLAY_HEIGHT
-
-        self.dark_surf = pg.Surface([DISPLAY_BASE,DISPLAY_HEIGHT])
-        self.dark_surf.fill(OFF_BLACK)
-        self.dark_surf.set_alpha(160)
+        self.window = mu.Window(GAME_BASE,GAME_HEIGHT, OFF_GREY)
+        self.window.set_font_file(os.path.join(f'{os.getcwd()}','lib','pymenu','gameFont.ttf'))
+        create_frames(self.window)
 
 
-        # there will be four menus. One for endscreen, one for start screen, one for pause, and one for during play
-        self.darken = False
-        self.menu_list: dict[str,Any] = { # add more as I go
-            "start": StartGui(DISPLAY_BASE, DISPLAY_HEIGHT), # working on pausegui atm
-            "pause": PauseGui(DISPLAY_BASE, DISPLAY_HEIGHT),
-            "ingame": GameGui(DISPLAY_BASE, DISPLAY_HEIGHT)
-        }
-        self.switch_gui("ingame")
+        self.window.load_frame("start")
 
-    def switch_gui(self, version):
-        self.darken = True if version != "ingame" else False
-        self.surf = pg.Surface([self.DISPLAY_BASE, self.DISPLAY_HEIGHT])
-        self.surf.set_colorkey(WHITE)
-        self.surf.fill(WHITE)
-        self.surf.blit(self.menu_list[version].surf,(0,0))
-        time.sleep(0.2)
-    
-    def render(self, DISPLAY:pg.Surface):
-        if self.darken: DISPLAY.blit(self.dark_surf, (0,0))
-        DISPLAY.blit(self.surf,(0,0))
+
+    def render(self, DISPLAY: pg.Surface):
+        DISPLAY.blit(self.surface())
+
+    def surface(self):
+        return self.window.surface()

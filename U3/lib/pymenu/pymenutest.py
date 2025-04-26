@@ -6,15 +6,18 @@ import sys
 pg.init()
 
 # now i just need clipboard integration
-display = pg.display.set_mode((400,400))
-window = mu.Window(400,400, (101,101,100))
-clock = pg.Clock()
+
 
 WHITE=(255,255,255)
 BLUE = (0, 0, 255)
 RED = (255, 0, 0)
 GREY = (100,100,100)
 GREEN = (0,255,0)
+
+display = pg.display.set_mode((400,400))
+window = mu.Window(400,400, (101,101,100))
+clock = pg.Clock()
+
 
 switch = ["Overwrites work", "Hehehehehehheehe"]
 idx = 0
@@ -28,18 +31,23 @@ def button_test(an_arg, otherID):
 
 
 grid = mu.Grid(4,2,100,100)
+# label example
 label = mu.Label(window, "Colors finally work", width=170, text_size=15, border_width=3, corner_radius=2, border_color=RED, background_color=BLUE, text_color=WHITE)
 grid.pack(label, column=0, row=0, columnspan=2, ID="testlabel")
 
+# just some info for clarity
 label = mu.Label(window, "Next to me is a checkbox", width=70, text_size=15, border_width=3, corner_radius=2)
 grid.pack(label, column=2, row=1, columnspan=1, ID="testlabel1")
 
+# checkbox example
 label = mu.CheckBox(window, value=False, width=20, height=20, border_width=1, corner_radius=10)
 grid.pack(label, column=3, row=1, columnspan=1, ID="testcheckbox")
 
+# button example
 button = mu.Button(window, text="click me", command=button_test, args=("The function works!", "testlabel"), width=170, text_size=15, border_width=3, corner_radius=2)
 grid.pack(button, column=2, row=0, columnspan=2, ID="testbutton")
 
+# textbox example
 textbox = mu.TextBox(window, "I'm a buggy as hell textbox!", width=170, max_rows=3, text_size=15, border_width=3, corner_radius=2)
 grid.pack(textbox, column=0,row=1,columnspan=2, ID="textbox")
 
@@ -48,7 +56,7 @@ current_frame = 0
 window.pack(grid, (0,0))
 window.save_frame("f1", flush=True)
 
-label = mu.Label(window, "Ooh new frame", width=170, text_size=15, border_width=3, corner_radius=2, border_color=GREEN, background_color=GREY, text_color=WHITE)
+label = mu.Label(window, "Ooh new frame", width=170, text_size=15, border_width=3, corner_radius=2, border_color=GREEN, background_color=GREY, text_color=BLUE)
 window.pack(label,(0,0),ID="testlabel")
 window.save_frame("f2", flush=True)
 
@@ -89,7 +97,7 @@ while True:
 
 
 
-    display.fill(WHITE)
+    display.fill(GREEN)
     display.blit(window.surface(), (0,0))
     if tick < 3:
         tick += 1
