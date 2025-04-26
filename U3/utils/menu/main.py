@@ -40,7 +40,6 @@ class Menu:
     def end_game(self, win):
         self.c.end_game()
         self.switch_frame('endgame')
-        print(win)
         if win:
             self.update_text('You Win!!!!', 'StatusLabel',(0,0,0,100))
         else:

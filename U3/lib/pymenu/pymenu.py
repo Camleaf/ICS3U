@@ -95,7 +95,6 @@ class Window:
                 continue
             
             if object.type == "func":
-                print(*self._objects[ID]._args)
                 ret = self._objects[ID]._func(*self._objects[ID]._args)
                 if not ret and ret is not None: # if the function returns false, it means it should not update the surface, however if it is none it should by default update
                     return
