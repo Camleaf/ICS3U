@@ -174,12 +174,6 @@ class Enemies:
                     temp.append(0)
             self.grid.append(temp)
 
-    def end_game(self):
-        for unit in self.units:
-            # when game end is True, it only turns off shooting => I want them to swarm around the player after death just not shoot
-            unit.game_end = True
-            unit.activated = True
-
     def check_shots(self, tick):
         for unit in self.units:
             if unit.activated:

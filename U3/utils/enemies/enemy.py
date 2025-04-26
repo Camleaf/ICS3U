@@ -3,7 +3,7 @@ from typing import Any, Self
 import pygame as pg
 from ..display.colours import *
 from .enemy_turret import Turret
-import sys, heapq, math, copy, threading, numpy, time
+import sys, heapq, math, copy, threading, time
 
 class Enemy:
     """The individual class for each enemy

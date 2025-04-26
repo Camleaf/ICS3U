@@ -18,17 +18,23 @@ def create_frames(window:mu.Window, menu, GAME_BASE,GAME_HEIGHT):
     background = mu.Background(window, width=GAME_BASE, height=GAME_HEIGHT, border_width=3, corner_radius=2,background_color=BLACK,border_color=BLACK,alpha=100)
     window.pack(background, (0,0))
 
+
+
     background = mu.Background(window, width=500, height=400, border_width=6, corner_radius=10,background_color=VERY_DARK_PICKLE_GREEN,border_color=OFF_GREY,alpha=255)
     window.pack(background, (100,150))
 
+
+
     grid = mu.Grid(columns=10, rows=10, columnwidth=50,rowheight=50)
 
-    window.set_font_file(os.path.join(f'{os.getcwd()}','assets','titleFont.ttf')) # switch to title font for the title
 
+
+    window.set_font_file(os.path.join(f'{os.getcwd()}','assets','titleFont.ttf')) # switch to title font for the title
     label = mu.Label(window, "VERY COOL TANKS", width=1000, text_size=60, text_color=LIGHT_ORANGE,background_alpha=0)
     grid.pack(label, row=0, column=1, columnspan=8, ID="Title")
-
     window.set_font_file(os.path.join(f'{os.getcwd()}','assets','gameFont.ttf'))
+
+
 
     label = mu.Label(window, "Welcome!", width=200, text_size=40, border_width=0, text_color=LIGHT_ORANGE, background_alpha=0)
     grid.pack(label, row=2, column=3, columnspan=8, ID="WelcomeLabel")
@@ -43,11 +49,13 @@ def create_frames(window:mu.Window, menu, GAME_BASE,GAME_HEIGHT):
     grid.pack(label,row=4,column=1,columnspan=8, ID="DescriptionText")
 
     button = mu.Button(window, "Continue", command=menu.switch_frame, args=("main",), width=-1, text_size=25, border_width=3, corner_radius=2, border_color=OFF_GREY, background_color=LIGHT_ORANGE, text_color=VERY_DARK_PICKLE_GREEN)
-    window.pack(button, (299,475), ID="ContinueButton") # I did this one manually because of the custom width fit
+    window.pack(button, (294,475), ID="ContinueButton") # I did this one manually because of the custom width fit
 
 
+    # pack the grid into the frame and then save the frame
     window.pack(grid, (100,50))
     window.save_frame("welcome",flush=True)
+
 
 
 
@@ -61,6 +69,19 @@ def create_frames(window:mu.Window, menu, GAME_BASE,GAME_HEIGHT):
     window.pack(background, (100,150))
 
     grid = mu.Grid(columns=10, rows=10, columnwidth=50,rowheight=50)
+
+
+    window.set_font_file(os.path.join(f'{os.getcwd()}','assets','titleFont.ttf')) # switch to title font for the title
+    label = mu.Label(window, "VERY COOL TANKS", width=1000, text_size=60, text_color=LIGHT_ORANGE,background_alpha=0)
+    grid.pack(label, row=0, column=1, columnspan=8, ID="Title")
+    window.set_font_file(os.path.join(f'{os.getcwd()}','assets','gameFont.ttf'))
+
+
+    label = mu.Label(window, "Main Menu", width=300, text_size=40, border_width=0, text_color=LIGHT_ORANGE, background_alpha=0)
+    grid.pack(label, row=2, column=3, columnspan=8, ID="WelcomeLabel")
+
+
+
     
     button = mu.Button(window, "Play", command=menu.enter_game, args=tuple(), width=-1, text_size=25, border_width=3, corner_radius=2, border_color=OFF_GREY, background_color=LIGHT_ORANGE, text_color=VERY_DARK_PICKLE_GREEN)
     window.pack(button, (327,475), ID="Playbutton")
@@ -68,3 +89,58 @@ def create_frames(window:mu.Window, menu, GAME_BASE,GAME_HEIGHT):
 
     window.pack(grid, (100,50))
     window.save_frame("main", flush=True)
+
+
+
+
+
+
+    ### Pause game screen
+    
+    background = mu.Background(window, width=GAME_BASE, height=GAME_HEIGHT, border_width=3, corner_radius=2,background_color=BLACK,border_color=BLACK,alpha=100)
+    window.pack(background, (0,0))
+
+
+    grid = mu.Grid(columns=10, rows=10, columnwidth=50,rowheight=50)
+
+    window.set_font_file(os.path.join(f'{os.getcwd()}','assets','titleFont.ttf')) # switch to title font for the title
+    label = mu.Label(window, "VERY COOL TANKS", width=1000, text_size=60, text_color=LIGHT_ORANGE,background_alpha=0)
+    grid.pack(label, row=0, column=1, columnspan=8, ID="Title")
+    window.set_font_file(os.path.join(f'{os.getcwd()}','assets','gameFont.ttf'))
+
+
+    button = mu.Button(window, "Resume Game", command=menu.enter_game, args=tuple(), width=-1, text_size=25, border_width=3, corner_radius=3, border_color=OFF_GREY, background_color=VERY_DARK_PICKLE_GREEN, text_color=LIGHT_ORANGE)
+    window.pack(button, (269,250), ID="Playbutton")
+
+
+    button = mu.Button(window, "Main Menu", command=menu.restart_game, args=tuple(), width=-1, text_size=25, border_width=3, corner_radius=3, border_color=OFF_GREY, background_color=VERY_DARK_PICKLE_GREEN, text_color=LIGHT_ORANGE)
+    window.pack(button, (288,350), ID="Menubutton")
+
+
+    window.pack(grid, (100,50))
+    window.save_frame("pause", flush=True)
+
+
+
+    ### End game
+
+    background = mu.Background(window, width=GAME_BASE, height=GAME_HEIGHT, border_width=3, corner_radius=2,background_color=BLACK,border_color=BLACK,alpha=100)
+    window.pack(background, (0,0))
+
+
+    grid = mu.Grid(columns=10, rows=10, columnwidth=50,rowheight=50)
+
+    window.set_font_file(os.path.join(f'{os.getcwd()}','assets','titleFont.ttf')) # switch to title font for the title
+    label = mu.Label(window, "VERY COOL TANKS", width=1000, text_size=60, text_color=LIGHT_ORANGE,background_alpha=0)
+    grid.pack(label, row=0, column=1, columnspan=8, ID="Title")
+    window.set_font_file(os.path.join(f'{os.getcwd()}','assets','gameFont.ttf'))
+
+
+    label = mu.Label(window, "You WIN!", width=300, text_size=40, text_color=LIGHT_ORANGE, background_alpha=0)
+    grid.pack(label, row=2, column=3, columnspan=8, ID="StatusLabel")
+
+    button = mu.Button(window, "Main Menu", command=menu.restart_game, args=tuple(), width=-1, text_size=25, border_width=3, corner_radius=3, border_color=OFF_GREY, background_color=VERY_DARK_PICKLE_GREEN, text_color=LIGHT_ORANGE)
+    window.pack(button, (288,450), ID="Menubutton")
+
+    window.pack(grid, (100,50))
+    window.save_frame("endgame", flush=True)

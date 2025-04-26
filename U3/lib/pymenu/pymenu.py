@@ -33,9 +33,9 @@ class Window:
         self.__surf.fill((0,0,0,0))
 
         self.__collidables: dict[objectID, pg.Rect] = {}
-        self.__objects: dict[objectID, __Object] = {}
+        self._objects: dict[objectID, __Object] = {}
         self.__frames: dict[objectID, Any] = {}
-        # objects are held in __objects for recalculations based on hover and data status
+        # objects are held in _objects for recalculations based on hover and data status
         # object rects are held in __collidables for mouse collision purposes
 
     def pack(self, object, position: tuple[float]=(0,0), dimensions: tuple[int]=(0,0),ID = None) -> None:
@@ -48,7 +48,7 @@ class Window:
                 ID = _create_id(object)
             object: __Object = object
 
-            self.__objects[ID] = object
+            self._objects[ID] = object
             if dimensions != (0,0): # if dimensions are given use them
                 self.__collidables[ID] = pg.Rect(
                     position[0], 
@@ -81,7 +81,7 @@ class Window:
     def mouseInteraction(self, position):
         """Function which handles all mouseclick"""
         for ID in self.__collidables:
-            object = self.__objects[ID]
+            object = self._objects[ID]
             collidable = self.__collidables[ID]
             
             if object.type == "label": continue
@@ -95,14 +95,15 @@ class Window:
                 continue
             
             if object.type == "func":
-                print(*self.__objects[ID]._args)
-                if not self.__objects[ID]._func(*self.__objects[ID]._args): # if the function returns false, it means it should not update the surface
+                print(*self._objects[ID]._args)
+                ret = self._objects[ID]._func(*self._objects[ID]._args)
+                if not ret and ret is not None: # if the function returns false, it means it should not update the surface, however if it is none it should by default update
                     return
             elif object.type == "val":
-                self.__objects[ID].activated = True if not self.__objects[ID].activated else False
+                self._objects[ID].activated = True if not self._objects[ID].activated else False
             elif object.type == "textbox":
-                self.__objects[ID].activated = True
-                self.__objects[ID].cursor_pos = len(object.text)-1
+                self._objects[ID].activated = True
+                self._objects[ID].cursor_pos = len(object.text)-1
             self.update_surf(ID)
 
             
@@ -110,58 +111,58 @@ class Window:
     def keyboardInteraction(self, key):
         """Function which handles all keyboard interactions with objects"""
 
-        for ID in self.__objects:
-            object = self.__objects[ID]
+        for ID in self._objects:
+            object = self._objects[ID]
             if object.type != "textbox": continue
             if not object.activated: continue
 
             new_text = object.text[:object.cursor_pos+1] + key + object.text[object.cursor_pos+1:]
             if key == "\x08":
                 if len(object.text) != 0:
-                    self.__objects[ID].text = object.text[:object.cursor_pos] + object.text[object.cursor_pos+1:]
-                    self.__objects[ID].cursor_pos -= 1
+                    self._objects[ID].text = object.text[:object.cursor_pos] + object.text[object.cursor_pos+1:]
+                    self._objects[ID].cursor_pos -= 1
             elif key == "\r":
-                self.__objects[ID].activated = False
+                self._objects[ID].activated = False
             elif key == "lspr":
-                self.__objects[ID].cursor_pos -= 1
-                if self.__objects[ID].cursor_pos != 0:
-                    self.__objects[ID].cursor_pos %= len(object.text)
+                self._objects[ID].cursor_pos -= 1
+                if self._objects[ID].cursor_pos != 0:
+                    self._objects[ID].cursor_pos %= len(object.text)
             elif key == "rspr":
-                self.__objects[ID].cursor_pos += 1
-                if self.__objects[ID].cursor_pos != 0:
-                    self.__objects[ID].cursor_pos %= len(object.text)
+                self._objects[ID].cursor_pos += 1
+                if self._objects[ID].cursor_pos != 0:
+                    self._objects[ID].cursor_pos %= len(object.text)
             elif object.input_type == "num" and key in "1234567890":
                 
-                self.__objects[ID].text = new_text
-                self.__objects[ID].cursor_pos += len(key)
+                self._objects[ID].text = new_text
+                self._objects[ID].cursor_pos += len(key)
             elif object.input_type == "all":
 
-                self.__objects[ID].text = new_text
-                self.__objects[ID].cursor_pos += len(key)
+                self._objects[ID].text = new_text
+                self._objects[ID].cursor_pos += len(key)
             self.update_surf(ID)
 
-    def update_surf(self, ID):
+    def update_surf(self, ID,bg_color:int=(0,0,0,0)):
         collidable = self.__collidables[ID]
         orig_coords = collidable.topleft
-        pg.draw.rect(self.__surf, self.transparency_key, collidable)
-        self.__objects[ID].render()
-        self.__collidables[ID] = self.__objects[ID]._image.get_rect()
+        pg.draw.rect(self.__surf, bg_color, collidable)
+        self._objects[ID].render()
+        self.__collidables[ID] = self._objects[ID]._image.get_rect()
         self.__collidables[ID].topleft = orig_coords
-        self.__surf.blit(self.__objects[ID]._image,collidable)
+        self.__surf.blit(self._objects[ID]._image,collidable)
     
 
     def update_stat(self,ID,activated:bool=None,text:str=None, command=None, args:tuple[Any]=None, image_path:str=None):
         """A function to update all default values that can be stored in Object class. For use by user"""
         if activated is not None:
-            self.__objects[ID].activated = activated
+            self._objects[ID].activated = activated
         if text is not None:
-            self.__objects[ID].text = text
+            self._objects[ID].text = text
         if command is not None:
             if not callable(command):
                 raise Exception(f"Value {command} is not a callable method. Try removing the brackets from the passed function")
-            self.__objects[ID]._func = command
+            self._objects[ID]._func = command
         if args is not None:
-            self.__objects[ID]._args = args
+            self._objects[ID]._args = args
         
         if image_path is not None:
             if '/' in image_path and '\\' in image_path:
@@ -170,12 +171,12 @@ class Window:
                 image_path.split('/')
             elif '\\' in image_path:
                 image_path.split('\\')
-            self.__objects[ID].image_path = os.path.join(*image_path)
+            self._objects[ID].image_path = os.path.join(*image_path)
 
     def return_state(self, ID:str):
         """Returns the default state vars of the object with a given ID"""
         state_export = Empty()
-        object = self.__objects[ID]
+        object = self._objects[ID]
         state_export.activated = object.activated
         state_export.text = object.text
         state_export.command = object._func
@@ -188,7 +189,7 @@ class Window:
 
         self.__frames[ID] = { # if inheritance issues show up just put copies on everything
             "collidables" : self.__collidables, #{x:self.__collidables[x] for x in self.__collidables}, 
-            "objects" : self.__objects, #{x:self.__objects[x] for x in self.__objects},
+            "objects" : self._objects, #{x:self._objects[x] for x in self._objects},
             "surface": self.__surf
         }
         if flush:
@@ -205,8 +206,9 @@ class Window:
             raise Exception(f"No frame ID {ID} exists")
         frame = self.__frames[ID]
         self.__collidables = frame['collidables']
-        self.__objects = frame['objects']
+        self._objects = frame['objects']
         self.__surf = frame['surface']
+        return False
 
 
     def flush(self):
@@ -215,7 +217,7 @@ class Window:
         self.__surf.fill((0,0,0,0))
 
         self.__collidables: dict[objectID, pg.Rect] = {}
-        self.__objects: dict[objectID, __Object] = {}
+        self._objects: dict[objectID, __Object] = {}
 
 
     def surface(self):

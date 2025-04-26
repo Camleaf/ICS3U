@@ -9,24 +9,46 @@ import os
 
 class Menu:
     """Menu container which uses Pymenu to create a dynamic menu screen"""
-    def __init__(self, GAME_BASE, GAME_HEIGHT, pause_control):
+    def __init__(self, GAME_BASE, GAME_HEIGHT, container):
 
         self.window = mu.Window(GAME_BASE,GAME_HEIGHT, OFF_GREY)
         self.window.set_font_file(os.path.join(f'{os.getcwd()}','assets','gameFont.ttf'))
         create_frames(self.window,self, GAME_BASE,GAME_HEIGHT)
-        self.pause_control = pause_control
+        self.c = container
+
+        self.current_frame = 'welcome'
 
         self.window.load_frame("welcome")
 
     def switch_frame(self,target_frame):
         
         self.window.load_frame(target_frame)
+        self.current_frame = target_frame
         return False
     
+    def restart_game(self):
+        self.c.refresh_state()
+        return self.switch_frame('main')
+        
+
+
     def enter_game(self):
-        self.pause_control.time_control(False)
+        self.c.time_control(False)
         self.switch_frame("ingame")
         return False
+
+    def end_game(self, win):
+        self.c.end_game()
+        self.switch_frame('endgame')
+        print(win)
+        if win:
+            self.update_text('You Win!!!!', 'StatusLabel',(0,0,0,100))
+        else:
+            self.update_text('You Lost...', 'StatusLabel',(0,0,0,100))
+
+    def update_text(self, text:str, ID:str,bg_color:tuple[int]=(0,0,0,0)):
+        self.window.update_stat(ID, text=text)
+        self.window.update_surf(ID, bg_color)
 
     def render(self, DISPLAY: pg.Surface):
         DISPLAY.blit(self.surface())
