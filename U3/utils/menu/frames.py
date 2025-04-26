@@ -13,7 +13,7 @@ def create_frames(window:mu.Window, menu, GAME_BASE,GAME_HEIGHT):
 
 
 
-    # Welcome Screen
+    ### Welcome Screen
 
     background = mu.Background(window, width=GAME_BASE, height=GAME_HEIGHT, border_width=3, corner_radius=2,background_color=BLACK,border_color=BLACK,alpha=100)
     window.pack(background, (0,0))
