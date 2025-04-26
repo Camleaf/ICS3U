@@ -27,7 +27,7 @@ pg.init()
 
 class PauseControl:
     def __init__(self):
-        self.interrupt_menu_active = False
+        self.interrupt_menu_active = True
     def time_control(self, on_off:bool):
         if on_off:
             self.interrupt_menu_active = True
