@@ -32,6 +32,19 @@ class Container:
     """Acts as a container which keep state between game objects when they are passed between files"""
 
     def __init__(self):
+        self.max_difficulty = 7
+
+        self.diff_word = {
+            1:"civilian",
+            2:"cadet",
+            3:"ensign",
+            4:"captain",
+            5:"commodore",
+            6:"admiral",
+            7:"grand admiral",
+        }
+
+
         self.refresh_state()
 
     def refresh_state(self):
@@ -39,6 +52,7 @@ class Container:
         
         self.game_end = False
         self.interrupt_menu_active = True
+        self.difficulty = 1
         self.screen = Screen(DISPLAY_BASE,DISPLAY_HEIGHT, GAME_BASE, GAME_HEIGHT)
         self.walls = Walls(GAME_BASE,GAME_HEIGHT, DISPLAY_BASE, DISPLAY_HEIGHT)
         self.player = Player(40,40,DISPLAY_BASE, DISPLAY_HEIGHT, GAME_BASE, GAME_HEIGHT)

@@ -50,6 +50,22 @@ class Menu:
         self.window.update_stat(ID, text=text)
         self.window.update_surf(ID, bg_color)
 
+
+    def set_difficulty(self, level:bool=1,increment:bool=False):
+        if increment:
+            self.c.difficulty += 1
+            self.c.difficulty %= self.c.max_difficulty + 1
+        else:
+            self.c.difficulty = level
+            self.c.difficulty %= self.c.max_difficulty + 1
+
+
+
+
+
+
+
+
     def render(self, DISPLAY: pg.Surface):
         DISPLAY.blit(self.surface())
 

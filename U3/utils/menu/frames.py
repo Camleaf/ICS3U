@@ -81,10 +81,31 @@ def create_frames(window:mu.Window, menu, GAME_BASE,GAME_HEIGHT):
     grid.pack(label, row=2, column=3, columnspan=8, ID="WelcomeLabel")
 
 
+    label = mu.Label(window, 
+                    "Difficulty: Civilian", 
+                    width=400,
+                    text_size=20,
+                    text_color=LIGHT_ORANGE,
+                    background_alpha=0
+    )
+    grid.pack(label,row=4,column=1,columnspan=8, ID="DifficultyText")
 
+
+    window.set_font_file("segoeuisymbol", sysfont=True)
+    button = mu.Button(window, "▶", text_centre="centre",command=menu.switch_frame, args=("main",), width=25, text_size=30, border_width=3, corner_radius=2, border_color=OFF_GREY, background_color=LIGHT_ORANGE, text_color=VERY_DARK_PICKLE_GREEN)
+    window.pack(button, (495,420), ID="DifficultyIncrement") #update this diff to difficulty modify func
+
+    button = mu.Button(window, "◀", text_centre="centre",command=menu.switch_frame, args=("main",), width=25, text_size=30, border_width=3, corner_radius=2, border_color=OFF_GREY, background_color=LIGHT_ORANGE, text_color=VERY_DARK_PICKLE_GREEN)
+    window.pack(button, (445,420), ID="DifficultyDecrement") #update this diff to difficulty modify func
+    window.set_font_file(os.path.join(f'{os.getcwd()}','assets','gameFont.ttf'))
     
+    button = mu.Button(window, "Visit", text_centre="centre",command=menu.switch_frame, args=("shop",), width=80, text_size=30, border_width=3, corner_radius=2, border_color=OFF_GREY, background_color=LIGHT_ORANGE, text_color=VERY_DARK_PICKLE_GREEN)
+    window.pack(button, (175,420), ID="DifficultyDecrement")
+
+    # still need to create a lot of function
+
     button = mu.Button(window, "Play", command=menu.enter_game, args=tuple(), width=-1, text_size=25, border_width=3, corner_radius=2, border_color=OFF_GREY, background_color=LIGHT_ORANGE, text_color=VERY_DARK_PICKLE_GREEN)
-    window.pack(button, (327,475), ID="Playbutton")
+    window.pack(button, (327,485), ID="Playbutton")
 
 
     window.pack(grid, (100,50))
@@ -115,7 +136,7 @@ def create_frames(window:mu.Window, menu, GAME_BASE,GAME_HEIGHT):
 
     button = mu.Button(window, "Main Menu", command=menu.restart_game, args=tuple(), width=-1, text_size=25, border_width=3, corner_radius=3, border_color=OFF_GREY, background_color=VERY_DARK_PICKLE_GREEN, text_color=LIGHT_ORANGE)
     window.pack(button, (288,350), ID="Menubutton")
-    
+
 
     window.pack(grid, (100,50))
     window.save_frame("pause", flush=True)
@@ -138,9 +159,18 @@ def create_frames(window:mu.Window, menu, GAME_BASE,GAME_HEIGHT):
 
     label = mu.Label(window, "You WIN!", width=300, text_size=40, text_color=LIGHT_ORANGE, background_alpha=0)
     grid.pack(label, row=2, column=3, columnspan=8, ID="StatusLabel")
-
+    
     button = mu.Button(window, "Main Menu", command=menu.restart_game, args=tuple(), width=-1, text_size=25, border_width=3, corner_radius=3, border_color=OFF_GREY, background_color=VERY_DARK_PICKLE_GREEN, text_color=LIGHT_ORANGE)
     window.pack(button, (288,450), ID="Menubutton")
 
     window.pack(grid, (100,50))
     window.save_frame("endgame", flush=True)
+
+
+
+
+    ### shop
+
+
+    window.pack(grid, (100,50))
+    window.save_frame("shop", flush=True)

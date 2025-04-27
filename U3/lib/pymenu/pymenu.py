@@ -27,6 +27,7 @@ class Window:
         self.transparency_key = transparency_key
 
         self._default_font_file = os.path.join(f"{os.getcwd()}","gameFont.ttf")
+        self.sysfont = False
         self.__width = width
         self.__height = height
         self.__surf = pg.Surface([self.__width, self.__height],pg.SRCALPHA)
@@ -62,8 +63,12 @@ class Window:
             self.update_surf(ID)
     
     
-    def set_font_file(self, file_path):
+    def set_font_file(self, file_path, sysfont=False):
         self._default_font_file = file_path
+        if sysfont:
+            self.sysfont = True
+        else:
+            self.sysfont = False
     
     def __gridhandler(self, grid, position):
         """Private method whichs handles .pack operations for all subitems of a grid"""
@@ -278,12 +283,15 @@ def _splice(word,font,width,padding,current_width,word_width,size,lines,current_
             break
     return [lines,current_line,current_width, word]
 
-def _create_multiline_text(window:Window, text:str, padding=10, size=20, width=100, color: tuple[int]=BLACK, font_file=None) -> pg.Surface:
+def _create_multiline_text(window:Window, text:str, padding=10, size=20, width=100, color: tuple[int]=BLACK, font_file=None, sysfont:bool=False) -> pg.Surface:
     """Handles creating pygame text objects automatically using pg.freetype"""
     # this won't run very much so the overhead can be greater
     if font_file is None:
         font_file = window._default_font_file
-    font = pg.font.Font(font_file,size=size)
+    if sysfont:
+        font = pg.font.SysFont(font_file,size)
+    else:
+        font = pg.font.Font(font_file,size=size)
     if width == -1:
         width = padding//2
     surf = font.render(text,True, color, wraplength=width- padding//2)
@@ -344,10 +352,11 @@ grid = NewType('grid', Grid)
 
 class Label(__Object):
     """A label class meant for storing multiline text inheriting from __Object"""
-    def __init__(self, window, text:str = '', width:int=100, text_padding:int=8, text_size:int=20, border_width:int=3, corner_radius:int=5, background_color: tuple[int] = WHITE, text_color: tuple[int] = BLACK, border_color:tuple[int] = GRAY, background_alpha:int=255, text_alpha:int=255):
+    def __init__(self, window, text:str = '', text_centre:str = "left",width:int=100, text_padding:int=8, text_size:int=20, border_width:int=3, corner_radius:int=5, background_color: tuple[int] = WHITE, text_color: tuple[int] = BLACK, border_color:tuple[int] = GRAY, background_alpha:int=255, text_alpha:int=255):
         super().__init__(window, value=None, text=text, command=None, args=None)
         self.window = window
         self._default_font_file = self.window._default_font_file
+        self.sysfont = self.window.sysfont
         self.width = width
         self.text_padding = text_padding
         self.border_width = border_width
@@ -358,11 +367,13 @@ class Label(__Object):
         self.text_size = text_size
         self.background_alpha = background_alpha
         self.text_alpha = text_alpha
+        self.text_centre = text_centre
+
         
     
     def render(self):
         text_color = [x for x in self.text_color] + [self.text_alpha]
-        self.text_surf = _create_multiline_text(self.window, padding=self.text_padding, text=self.text, size=self.text_size, width=self.width, color=text_color, font_file=self._default_font_file)
+        self.text_surf = _create_multiline_text(self.window, padding=self.text_padding, text=self.text, size=self.text_size, width=self.width, color=text_color, font_file=self._default_font_file, sysfont=self.sysfont)
         # image is absed around self.text_surf plus the text padding needed for the border
         if self.width == -1:
             self.width = self.text_surf.get_rect().width
@@ -388,7 +399,20 @@ class Label(__Object):
         )
 
         self._image.blit(temp_surf, (0,0))
-        self._image.blit(self.text_surf, (self.text_padding,self.text_padding))
+
+        img_rect = self._image.get_rect()
+        img_size = self.text_surf.get_size()
+        if self.text_centre == "right":
+            pos_rect = pg.Rect(0,self.text_padding, *img_size)
+            pos_rect.right = img_rect.right-self.text_padding
+        elif self.text_centre == "left":
+            pos_rect = pg.Rect(self.text_padding,self.text_padding, *img_size)
+        elif self.text_centre == "centre":
+            pos_rect = pg.Rect(0,self.text_padding, *img_size)
+            pos_rect.centerx = img_rect.width//2
+        else:
+            raise Exception(f"Text centre position {self.text_centre} is not a valid argument")
+        self._image.blit(self.text_surf, pos_rect)
 
     def __str__(self):
         return "label"
@@ -397,8 +421,8 @@ class Label(__Object):
 class Button(Label):
     """A button which triggers a function onclick"""
     # inherits from label for styling options but also contains command
-    def __init__(self, window, text:str = '', command=None, args:tuple[Any]=None, width:int=100, text_padding:int=8, text_size:int=20, border_width:int=3, corner_radius:int=5, background_color: tuple[int] = WHITE, text_color: tuple[int] = BLACK, border_color:tuple[int] = GRAY, background_alpha:int=255, text_alpha:int=255):
-        super().__init__(window, text, width, text_padding, text_size, border_width, corner_radius, background_color, text_color, border_color, background_alpha, text_alpha)
+    def __init__(self, window, text:str = '', text_centre:str='left', command=None, args:tuple[Any]=None, width:int=100, text_padding:int=8, text_size:int=20, border_width:int=3, corner_radius:int=5, background_color: tuple[int] = WHITE, text_color: tuple[int] = BLACK, border_color:tuple[int] = GRAY, background_alpha:int=255, text_alpha:int=255):
+        super().__init__(window, text, text_centre, width, text_padding, text_size, border_width, corner_radius, background_color, text_color, border_color, background_alpha, text_alpha)
         self.activated = False
         self._func = command
         self._args = args
@@ -410,9 +434,10 @@ class Button(Label):
 
 class TextBox(__Object):
     """A textbox which the user can type in"""
-    def __init__(self, window, text:str = '', width:int=100, max_rows:int=1, text_padding:int=8, text_size:int=20, border_width:int=3, corner_radius:int=5, background_color: tuple[int] = WHITE, text_color: tuple[int] = BLACK, border_color:tuple[int] = GRAY, background_alpha:int=255, text_alpha:int=255):
+    def __init__(self, window:Window, text:str = '', width:int=100, max_rows:int=1, text_padding:int=8, text_size:int=20, border_width:int=3, corner_radius:int=5, background_color: tuple[int] = WHITE, text_color: tuple[int] = BLACK, border_color:tuple[int] = GRAY, background_alpha:int=255, text_alpha:int=255):
         super().__init__(window, value=False, text=text, command=None, args=None)
         self._default_font_file = window._default_font_file
+        self.sysfont = window.sysfont
         self.width = width
         self.text_padding = text_padding
         self.border_width = border_width
@@ -431,7 +456,7 @@ class TextBox(__Object):
     def render(self):
         text_color = [x for x in self.text_color] + [self.text_alpha]
         cursortext = self.text[:self.cursor_pos+1] + '|' + self.text[self.cursor_pos+1:] if self.activated else self.text
-        self.text_surf = _create_multiline_text(self.window, padding=self.text_padding, text=cursortext, size=self.text_size, width=self.width, color=text_color, font_file=self._default_font_file)
+        self.text_surf = _create_multiline_text(self.window, padding=self.text_padding, text=cursortext, size=self.text_size, width=self.width, color=text_color, font_file=self._default_font_file, sysfont=self.sysfont)
         while self.text_surf.height > self.max_height:
             self.text = self.text[:-1]
             self.text_surf = _create_multiline_text(self.window, padding=self.text_padding, text=self.text+'|' if self.activated else self.text, size=self.text_size, width=self.width, color=self.text_color, font_file=self.window._default_font_file)
