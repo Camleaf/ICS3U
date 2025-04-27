@@ -289,24 +289,6 @@ class Grid:
         return "grid"
 
 
-
-
-
-def _splice(word,font,width,padding,current_width,word_width,size,lines,current_line):
-    for i in range(len(word)-1,0,-1): # iterate over the length of the word to see the best fit for splicing the string
-        temp_width = font.get_rect(word[0:i+1], rotation=0, size=size).width
-        if temp_width > width-padding*2: continue
-        if current_width + temp_width <= width-padding*2:
-            lines[current_line].append(word[0:i+1] + ' ')
-            word = word[i:]
-            if font.get_rect(word, rotation=0, size=size).width > width-padding*2:
-                lines.append([])
-                current_line += 1
-                current_width = 0
-                return _splice(word,font,width,padding,current_width,word_width,size,lines,current_line)
-            break
-    return [lines,current_line,current_width, word]
-
 def _create_multiline_text(window:Window, text:str, padding=10, size=20, width=100, color: tuple[int]=BLACK, font_file=None, sysfont:bool=False) -> pg.Surface:
     """Handles creating pygame text objects automatically using pg.freetype"""
     # this won't run very much so the overhead can be greater
