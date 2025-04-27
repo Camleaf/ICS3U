@@ -30,11 +30,7 @@ clock = pg.time.Clock()
 # classes
 class Container:
     """Acts as a container which keep state between game objects when they are passed between files"""
-
-    def __init__(self):
-        self.max_difficulty = 7
-
-        self.diff_word = {
+    diff_word = {
             1:"civilian",
             2:"sailor",
             3:"cadet",
@@ -43,7 +39,9 @@ class Container:
             6:"captain",
             7:"admiral",
         }
-
+    def __init__(self):
+        self.max_difficulty = 7
+        self.gold = 0
 
         self.refresh_state()
 
