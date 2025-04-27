@@ -60,9 +60,9 @@ class Menu:
             self.c.difficulty -= 1
 
         if self.c.difficulty < 1:
-            self.c.difficulty = 7
-        elif self.c.difficulty > 7:
             self.c.difficulty = 1
+        elif self.c.difficulty > 7:
+            self.c.difficulty = 7
         
         self.update_text(self.c.diff_word[self.c.difficulty].title(),'DifficultyText',update_bg=False)
 
