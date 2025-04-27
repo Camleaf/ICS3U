@@ -43,9 +43,9 @@ class Menu:
         self.c.end_game()
         self.switch_frame('endgame')
         if win:
-            self.update_text('You Win!!!!', 'StatusLabel',(0,0,0,100))
+            self.update_text('VICTORY', 'StatusLabel',(0,0,0,100))
         else:
-            self.update_text('You Lost...', 'StatusLabel',(0,0,0,100))
+            self.update_text('DEFEAT', 'StatusLabel',(0,0,0,100))
 
     def update_text(self, text:str, ID:str,bg_color:tuple[int]=(0,0,0,0), update_bg:bool=True):
         self.window.update_stat(ID, text=text)

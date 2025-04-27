@@ -184,7 +184,7 @@ def create_frames(window:mu.Window, menu, GAME_BASE,GAME_HEIGHT):
     window.set_font_file(os.path.join(f'{os.getcwd()}','assets','gameFont.ttf'))
 
 
-    label = mu.Label(window, "You WIN!", width=300, text_size=40, text_color=LIGHT_ORANGE, background_alpha=0)
+    label = mu.Label(window, "VICTORY", width=200, text_size=40, text_color=LIGHT_ORANGE, background_alpha=0, text_centre="centre")
     grid.pack(label, row=2, column=3, columnspan=8, ID="StatusLabel")
     
     button = mu.Button(window, "Main Menu", command=menu.restart_game, args=tuple(), width=-1, text_size=25, border_width=3, corner_radius=3, border_color=OFF_GREY, background_color=VERY_DARK_PICKLE_GREEN, text_color=LIGHT_ORANGE)
@@ -194,7 +194,7 @@ def create_frames(window:mu.Window, menu, GAME_BASE,GAME_HEIGHT):
     window.save_frame("endgame", flush=True)
 
 
-    
+
 
 
 
