@@ -177,7 +177,7 @@ class Enemies:
     def check_shots(self, tick):
         for unit in self.units:
             if unit.activated:
-                if tick <= 5:
+                if tick <= 3:
                     continue
                 if unit.shot_cooldown < 20:
                     unit.shot_cooldown += 1
