@@ -12,6 +12,7 @@ class Menu:
     def __init__(self, GAME_BASE, GAME_HEIGHT, container):
 
         self.window = mu.Window(GAME_BASE,GAME_HEIGHT, OFF_GREY)
+        
         self.window.set_font_file(os.path.join(f'{os.getcwd()}','assets','gameFont.ttf'))
         create_frames(self.window,self, GAME_BASE,GAME_HEIGHT)
         self.c = container

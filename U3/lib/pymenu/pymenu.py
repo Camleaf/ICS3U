@@ -538,3 +538,52 @@ class Background(__Object):
         )
         
         self._image.blit(temp_surf,(0,0))
+    
+    def __str__(self):
+        return "background"
+
+
+class Image(__Object):
+    """Image class. Hasn't been tested yet but should, in theory, work. CHANGE THIS ONCE TESTED"""
+    def __init__(self,window:Window, image_path:str='',width:int=100, height:int=100, border_width:int=0,corner_radius:int=10, border_color: tuple[int] = GRAY, alpha:int=255, border_alpha:int=255):
+        # still need to finish this
+        ### todo
+        super().__init__(window, image_path=image_path)
+        self.width = width
+        self.height = height
+        self.alpha = alpha
+        self.border_width =border_width
+        self.corner_radius = corner_radius
+        self.border_alpha = border_alpha
+        self.border_color = border_color
+        self.type="label"
+    
+    def render(self):
+        self._image = pg.Surface([self.width,self.height],pg.SRCALPHA)
+        self._image.fill((0,0,0,0))
+
+
+        im_surf = pg.Surface([self.width-self.border_width*2,self.height-self.border_width*2], pg.SRCALPHA)
+        im_surf.blit(pg.transform.scale(pg.image.load(self.image_path),[self.width-self.border_width*2,self.height-self.border_width*2]))
+
+
+
+
+
+        # contineu this later
+        img_size = im_surf.get_size()
+        rect_img = pg.Surface(img_size,pg.SRCALPHA)
+        pg.draw.rect(rect_img, WHITE, (0, 0, *img_size), border_radius=self.corner_radius)
+
+        im_surf.blit(rect_img,(0,0),None, pg.BLEND_RGBA_MIN)
+
+        temp_surf = self._image.copy()
+
+
+        border_color = [x for x in self.border_color] + [self.border_alpha]
+        pg.draw.rect(temp_surf, border_color, (0,0,*img_size), border_radius=self.corner_radius)
+        #add a alpha in the centre to make a border
+        self._image.blit(im_surf, (0,0))
+    
+    def __str__(self):
+        return "image"
