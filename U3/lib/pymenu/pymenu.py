@@ -27,6 +27,7 @@ class Window:
         self.transparency_key = transparency_key
 
         self._default_font_file = os.path.join(f"{os.getcwd()}","gameFont.ttf")
+        self._placeholder_file = os.path.join(f"{os.getcwd()}","Placeholder.png")
         self.sysfont = False
         self.__width = width
         self.__height = height
@@ -70,6 +71,9 @@ class Window:
         else:
             self.sysfont = False
     
+    def set_placeholder_file(self, file_path):
+        self._placeholder_file = file_path
+
     def __gridhandler(self, grid, position):
         """Private method whichs handles .pack operations for all subitems of a grid"""
         grid:Grid = grid
@@ -145,10 +149,11 @@ class Window:
                 self._objects[ID].cursor_pos += len(key)
             self.update_surf(ID)
 
-    def update_surf(self, ID,bg_color:int=(0,0,0,0)):
+    def update_surf(self, ID,bg_color:int=(0,0,0,0), update_bg:bool=True):
         collidable = self.__collidables[ID]
         orig_coords = collidable.topleft
-        pg.draw.rect(self.__surf, bg_color, collidable)
+        if update_bg:
+            pg.draw.rect(self.__surf, bg_color, collidable)
         self._objects[ID].render()
         self.__collidables[ID] = self._objects[ID]._image.get_rect()
         self.__collidables[ID].topleft = orig_coords
@@ -574,6 +579,8 @@ class Image(__Object):
         # still need to finish this
         ### todo
         super().__init__(window, image_path=image_path)
+        
+
         self.width = width
         self.height = height
         self.alpha = alpha
@@ -582,6 +589,10 @@ class Image(__Object):
         self.border_alpha = border_alpha
         self.border_color = border_color
         self.type="label"
+        try:
+            pg.image.load(self.image_path)
+        except:
+            self.image_path = self.window._placeholder_file
     
     def render(self):
         self._image = pg.Surface([self.width,self.height],pg.SRCALPHA)

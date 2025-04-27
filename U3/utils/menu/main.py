@@ -14,6 +14,7 @@ class Menu:
         self.window = mu.Window(GAME_BASE,GAME_HEIGHT, OFF_GREY)
         
         self.window.set_font_file(os.path.join(f'{os.getcwd()}','assets','gameFont.ttf'))
+        self.window.set_placeholder_file(os.path.join(f'{os.getcwd()}','assets','Placeholder.png'))
         create_frames(self.window,self, GAME_BASE,GAME_HEIGHT)
         self.c = container
 
@@ -46,24 +47,24 @@ class Menu:
         else:
             self.update_text('You Lost...', 'StatusLabel',(0,0,0,100))
 
-    def update_text(self, text:str, ID:str,bg_color:tuple[int]=(0,0,0,0)):
+    def update_text(self, text:str, ID:str,bg_color:tuple[int]=(0,0,0,0), update_bg:bool=True):
         self.window.update_stat(ID, text=text)
-        self.window.update_surf(ID, bg_color)
+        self.window.update_surf(ID, bg_color, update_bg)
 
 
-    def set_difficulty(self, level:bool=1,increment:bool=False):
+    def set_difficulty(self, increment:bool=False):
         if increment:
             self.c.difficulty += 1
-            self.c.difficulty %= self.c.max_difficulty + 1
+
         else:
-            self.c.difficulty = level
-            self.c.difficulty %= self.c.max_difficulty + 1
+            self.c.difficulty -= 1
 
-
-
-
-
-
+        if self.c.difficulty < 1:
+            self.c.difficulty = 7
+        elif self.c.difficulty > 7:
+            self.c.difficulty = 1
+        
+        self.update_text(self.c.diff_word[self.c.difficulty].title(),'DifficultyText',update_bg=False)
 
 
     def render(self, DISPLAY: pg.Surface):

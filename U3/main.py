@@ -36,12 +36,12 @@ class Container:
 
         self.diff_word = {
             1:"civilian",
-            2:"cadet",
-            3:"ensign",
-            4:"captain",
-            5:"commodore",
-            6:"admiral",
-            7:"grand admiral",
+            2:"sailor",
+            3:"cadet",
+            4:"ensign",
+            5:"officer",
+            6:"captain",
+            7:"admiral",
         }
 
 

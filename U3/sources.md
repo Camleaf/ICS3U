@@ -41,3 +41,7 @@ https://www.vecteezy.com/vector-art/6331976-stone-wall-from-bricks-rock-game-bac
 
 Font:
 https://fonts.google.com/specimen/Ubuntu?lang=en_Latn&categoryFilters=Sans+Serif:%2FSans%2F*;Technology:!%2FTechnology%2F*
+
+
+Placeholder texture:
+https://godotshaders.com/shader/placeholder/
