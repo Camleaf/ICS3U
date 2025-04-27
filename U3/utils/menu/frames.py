@@ -115,9 +115,7 @@ def create_frames(window:mu.Window, menu, GAME_BASE,GAME_HEIGHT):
 
     button = mu.Button(window, "Main Menu", command=menu.restart_game, args=tuple(), width=-1, text_size=25, border_width=3, corner_radius=3, border_color=OFF_GREY, background_color=VERY_DARK_PICKLE_GREEN, text_color=LIGHT_ORANGE)
     window.pack(button, (288,350), ID="Menubutton")
-
-    image = mu.Image(window, image_path=os.path.join(f'{os.getcwd()}','assets','tileable.jpg'), width=100, height=100, corner_radius=10)
-    window.pack(image, (10,20))
+    
 
     window.pack(grid, (100,50))
     window.save_frame("pause", flush=True)

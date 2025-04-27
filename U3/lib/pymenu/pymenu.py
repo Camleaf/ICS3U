@@ -578,12 +578,14 @@ class Image(__Object):
         im_surf.blit(rect_img,(0,0),None, pg.BLEND_RGBA_MIN)
 
         temp_surf = self._image.copy()
-
+        self._image.blit(im_surf, (0,0))
 
         border_color = [x for x in self.border_color] + [self.border_alpha]
-        pg.draw.rect(temp_surf, border_color, (0,0,*img_size), border_radius=self.corner_radius)
-        #add a alpha in the centre to make a border
-        self._image.blit(im_surf, (0,0))
+        if self.border_width > 0:
+            pg.draw.rect(temp_surf, border_color, (0,0,*img_size), border_radius=self.corner_radius)
+            pg.draw.rect(temp_surf, (0,0,0,0),(self.border_width,self.border_width,img_size[0]-self.border_width*2, img_size[1]-self.border_width*2), border_radius=self.corner_radius)
+            #add a alpha in the centre to make a border
+            self._image.blit(temp_surf, (0,0))
     
     def __str__(self):
         return "image"
