@@ -13,11 +13,11 @@ class Enemies:
     units: list[Enemy]
     active_paths: list[threading.Thread]
 
-    def __init__(self, enemies_num, width, height, GAME_BASE, GAME_HEIGHT, DISPLAY_BASE, DISPLAY_HEIGHT, walls: Walls, camera_x, camera_y, stocks):
+    def __init__(self, enemies_num, width, height, GAME_BASE, GAME_HEIGHT, DISPLAY_BASE, DISPLAY_HEIGHT, walls: Walls, camera_x, camera_y, stocks, death_value:int=100):
 
         self.number = enemies_num
         self.active_paths = []
-
+        self.death_value = death_value
         self.units = []
         self.GAME_BASE = GAME_BASE
         self.GAME_HEIGHT = GAME_HEIGHT
@@ -29,6 +29,7 @@ class Enemies:
         self.stocks = stocks
         self.cur_id = 0
         self.walls = walls
+        self.current_gold_increase = 0
         # init the surface which holds the image of all the dead enemies
         self.dead_surf: pg.Surface = pg.Surface([GAME_BASE, GAME_HEIGHT])
         self.dead_surf.set_colorkey((255, 255, 255))
@@ -74,6 +75,8 @@ class Enemies:
                   self.cur_id
                   )
         )
+    def end_game(self):
+        return self.current_gold_increase
 
     def create_units(self, walls: Walls, camera_x, camera_y):
         """Creates the enemy class self.number and stores them in a wrapper"""
@@ -126,6 +129,7 @@ class Enemies:
         self.units = new
         if self.stocks != 0:
             self.create_indiv()  # add cam x and cam y to this
+        self.current_gold_increase += self.death_value
 
     def add_to_dead(self, unit: Enemy):
         unit.image_orig = pg.Surface([unit.width, unit.height])

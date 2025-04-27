@@ -176,6 +176,8 @@ def create_frames(window:mu.Window, menu, GAME_BASE,GAME_HEIGHT):
     button = mu.Button(window, "Resume Game", command=menu.enter_game, args=tuple(), width=-1, text_size=25, border_width=3, corner_radius=3, border_color=OFF_GREY, background_color=VERY_DARK_PICKLE_GREEN, text_color=LIGHT_ORANGE)
     window.pack(button, (269,250), ID="Playbutton")
 
+    label = mu.Label(window, text="(You will lose any gold gained)", text_centre="centre", width=-1, text_size=15, border_width=3, corner_radius=3, text_color=LIGHT_ORANGE, background_alpha=0)
+    window.pack(label, (258,400), ID="Menubutton1")
 
     button = mu.Button(window, "Main Menu", command=menu.restart_game, args=tuple(), width=-1, text_size=25, border_width=3, corner_radius=3, border_color=OFF_GREY, background_color=VERY_DARK_PICKLE_GREEN, text_color=LIGHT_ORANGE)
     window.pack(button, (288,350), ID="Menubutton")

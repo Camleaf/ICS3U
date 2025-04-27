@@ -67,7 +67,8 @@ class Menu:
         self.update_text(self.c.diff_word[self.c.difficulty].title(),'DifficultyText',update_bg=False)
 
     def update_gold_count(self,number): #gold count id will always be GoldNum
-        self.update_text(str(number), ID='GoldNum',update_bg=False)
+        if 'GoldNum' in self.window._objects:
+            self.update_text(str(number), ID='GoldNum',update_bg=False)
     def render(self, DISPLAY: pg.Surface):
         DISPLAY.blit(self.surface())
 
