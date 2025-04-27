@@ -37,9 +37,20 @@ class Window:
         self.__collidables: dict[objectID, pg.Rect] = {}
         self._objects: dict[objectID, __Object] = {}
         self.__frames: dict[objectID, Any] = {}
+        
+        self.__links: dict[objectID, dict[str, list[objectID]]] = {}
         # objects are held in _objects for recalculations based on hover and data status
         # object rects are held in __collidables for mouse collision purposes
+    def create_link(self, ID:str, linked_id:str=None, backward=True):
+        """Creates a render link between multiple objects"""
+        if linked_id == None: return
 
+        if backward:
+            self.__links[ID]["backward"].append(linked_id)
+        else:
+            self.__links[ID]["forward"].append(linked_id) # backward linked ID updates its images before the current surface, forward vice versa
+        return
+    
     def pack(self, object, position: tuple[float]=(0,0), dimensions: tuple[int]=(0,0),ID = None) -> None:
         """Assign the object to the current frame"""
         
@@ -61,6 +72,7 @@ class Window:
             else: # otherwise use the rect of the image
                 self.__collidables[ID] = object._image.get_rect()
                 self.__collidables[ID].topleft = position
+            self.__links[ID] = {"forward":[], "backward":[]}
             self.update_surf(ID)
     
     
@@ -157,7 +169,14 @@ class Window:
         self._objects[ID].render()
         self.__collidables[ID] = self._objects[ID]._image.get_rect()
         self.__collidables[ID].topleft = orig_coords
+
+        for linked_ID in self.__links[ID]["backward"]: #update backward linked ids
+            self.update_surf(linked_ID, update_bg=False)
+
         self.__surf.blit(self._objects[ID]._image,collidable)
+
+        for linked_ID in self.__links[ID]["forward"]: #update forward linked ids
+            self.update_surf(linked_ID, update_bg=False)
     
 
     def update_stat(self,ID,activated:bool=None,text:str=None, command=None, args:tuple[Any]=None, image_path:str=None):

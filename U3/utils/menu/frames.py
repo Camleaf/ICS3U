@@ -52,6 +52,7 @@ def create_frames(window:mu.Window, menu, GAME_BASE,GAME_HEIGHT):
     window.pack(button, (294,475), ID="ContinueButton") # I did this one manually because of the custom width fit
 
 
+
     # pack the grid into the frame and then save the frame
     window.pack(grid, (100,50))
     window.save_frame("welcome",flush=True)
@@ -122,14 +123,29 @@ def create_frames(window:mu.Window, menu, GAME_BASE,GAME_HEIGHT):
     label = mu.Label(window, 
                     "Civilian", 
                     text_centre='centre',
-                    width=60,
+                    width=78,
                     text_size=16,
                     text_color=LIGHT_ORANGE,
                     border_width=0,
-                    background_color=VERY_DARK_PICKLE_GREEN 
+                    background_color=VERY_DARK_PICKLE_GREEN
     )
-    window.pack(label, (450,357), ID="DifficultyText")
+    window.pack(label, (442,357), ID="DifficultyText")
     # still need to create a lot of function
+    label = mu.Label(window, 
+                    "0", 
+                    text_centre='right',
+                    width=80,
+                    text_size=16,
+                    text_color=LIGHT_ORANGE,
+                    border_width=0,
+                    background_color=VERY_DARK_PICKLE_GREEN
+    )
+    window.pack(label, (175,357), ID="GoldNum")
+
+    image = mu.Image(window, image_path=os.path.join(os.getcwd(),'assets','images','Gold.png'),width=20,height=20)
+    window.pack(image, (180, 364), ID="GoldImage")
+    
+    window.create_link("GoldNum", linked_id="GoldImage", backward=False)
 
     button = mu.Button(window, "Play", command=menu.enter_game, args=tuple(), width=-1, text_size=25, border_width=3, corner_radius=2, border_color=OFF_GREY, background_color=LIGHT_ORANGE, text_color=VERY_DARK_PICKLE_GREEN)
     window.pack(button, (327,485), ID="Playbutton")

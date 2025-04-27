@@ -161,7 +161,6 @@ while True:
             c.game_end = True
             menu.end_game(True)
 
-
     pg.display.flip()
     
 
