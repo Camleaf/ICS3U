@@ -218,7 +218,8 @@ class Window:
         self.__frames[ID] = { # if inheritance issues show up just put copies on everything
             "collidables" : self.__collidables, #{x:self.__collidables[x] for x in self.__collidables}, 
             "objects" : self._objects, #{x:self._objects[x] for x in self._objects},
-            "surface": self.__surf
+            "surface": self.__surf,
+            "links": self.__links
         }
         if flush:
             self.flush()
@@ -236,6 +237,7 @@ class Window:
         self.__collidables = frame['collidables']
         self._objects = frame['objects']
         self.__surf = frame['surface']
+        self.__links = frame['links']
         return False
 
 
@@ -244,8 +246,9 @@ class Window:
         self.__surf = pg.Surface([self.__width, self.__height],pg.SRCALPHA)
         self.__surf.fill((0,0,0,0))
 
-        self.__collidables: dict[objectID, pg.Rect] = {}
-        self._objects: dict[objectID, __Object] = {}
+        self.__links = {}
+        self.__collidables = {}
+        self._objects = {}
 
 
     def surface(self):
