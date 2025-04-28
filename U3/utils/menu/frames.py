@@ -177,13 +177,13 @@ def create_frames(window:mu.Window, menu, GAME_BASE,GAME_HEIGHT):
     window.set_font_file(os.path.join(f'{os.getcwd()}','assets','gameFont.ttf'))
 
 
-    button = mu.Button(window, "Resume Game", command=menu.enter_game, args=tuple(), width=-1, text_size=25, border_width=3, corner_radius=3, border_color=OFF_GREY, background_color=VERY_DARK_PICKLE_GREEN, text_color=LIGHT_ORANGE)
+    button = mu.Button(window, "Resume Game", command=menu.resume_game, args=tuple(), width=-1, text_size=25, border_width=3, corner_radius=3, border_color=OFF_GREY, background_color=VERY_DARK_PICKLE_GREEN, text_color=LIGHT_ORANGE)
     window.pack(button, (269,250), ID="Playbutton")
 
     label = mu.Label(window, text="(You will lose any gold gained)", text_centre="centre", width=-1, text_size=15, border_width=3, corner_radius=3, text_color=LIGHT_ORANGE, background_alpha=0)
     window.pack(label, (258,400), ID="Menubutton1")
 
-    button = mu.Button(window, "Main Menu", command=menu.restart_game, args=tuple(), width=-1, text_size=25, border_width=3, corner_radius=3, border_color=OFF_GREY, background_color=VERY_DARK_PICKLE_GREEN, text_color=LIGHT_ORANGE)
+    button = mu.Button(window, "Main Menu", command=menu.menu_exit, args=tuple(), width=-1, text_size=25, border_width=3, corner_radius=3, border_color=OFF_GREY, background_color=VERY_DARK_PICKLE_GREEN, text_color=LIGHT_ORANGE)
     window.pack(button, (288,350), ID="Menubutton")
 
 
@@ -209,14 +209,13 @@ def create_frames(window:mu.Window, menu, GAME_BASE,GAME_HEIGHT):
     label = mu.Label(window, "VICTORY", width=200, text_size=40, text_color=LIGHT_ORANGE, background_alpha=0, text_centre="centre")
     grid.pack(label, row=2, column=3, columnspan=8, ID="StatusLabel")
     
-    button = mu.Button(window, "Main Menu", command=menu.restart_game, args=tuple(), width=-1, text_size=25, border_width=3, corner_radius=3, border_color=OFF_GREY, background_color=VERY_DARK_PICKLE_GREEN, text_color=LIGHT_ORANGE)
+    # add you lost X gold or you won X gold
+
+    button = mu.Button(window, "Main Menu", command=menu.menu_exit, args=tuple(), width=-1, text_size=25, border_width=3, corner_radius=3, border_color=OFF_GREY, background_color=VERY_DARK_PICKLE_GREEN, text_color=LIGHT_ORANGE)
     window.pack(button, (288,450), ID="Menubutton")
 
     window.pack(grid, (100,50))
     window.save_frame("endgame", flush=True)
-
-
-
 
 
 

@@ -29,22 +29,27 @@ class Menu:
         self.update_gold_count(self.c.gold)
         return False
     
-    def restart_game(self):
+    def menu_exit(self):
         """Shorthand for switching to the main menu and refreshing all the variables"""
-        self.c.refresh_state()
+        self.c.end_game()
         return self.switch_frame('main')
         
-
-
+    def resume_game(self):
+        self.c.time_control(False)
+        self.switch_frame("ingame")
+        return False
+    
     def enter_game(self):
         """Shorthand for removing the menu and unpausing the game"""
         self.c.time_control(False)
         self.switch_frame("ingame")
+        self.c.refresh_state()
         return False
+    
 
     def end_game(self, win):
         """Changes the text on the winscreen during the end game"""
-        self.c.end_game()
+        self.c.end_game(win)
         self.switch_frame('endgame')
         if win:
             self.update_text('VICTORY', 'StatusLabel',(0,0,0,100))

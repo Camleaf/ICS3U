@@ -42,20 +42,20 @@ class Container:
     def __init__(self):
         self.max_difficulty = 7
         self.gold = 0
-
+        self.difficulty = 1
         self.refresh_state()
+        self.interrupt_menu_active = True
 
     def refresh_state(self):
         """Used for initalizing a game state, such as on game start or when going to main menu"""
-        
+        self.gold_gain = 0
         self.game_end = False
-        self.interrupt_menu_active = True
-        self.difficulty = 1
+        self.interrupt_menu_active = False
         self.screen = Screen(DISPLAY_BASE,DISPLAY_HEIGHT, GAME_BASE, GAME_HEIGHT)
         self.walls = Walls(GAME_BASE,GAME_HEIGHT, DISPLAY_BASE, DISPLAY_HEIGHT)
         self.player = Player(40,40,DISPLAY_BASE, DISPLAY_HEIGHT, GAME_BASE, GAME_HEIGHT)
         self.player_container = Create_Container(self.player)
-        self.enemies = Enemies(5,40,40,GAME_BASE, GAME_HEIGHT,DISPLAY_BASE, DISPLAY_HEIGHT, self.walls, self.player.camera_x, self.player.camera_y, 5,100)
+        self.enemies = Enemies(40,40,GAME_BASE, GAME_HEIGHT,DISPLAY_BASE, DISPLAY_HEIGHT, self.walls, self.player.camera_x, self.player.camera_y, self.difficulty, 100)
         self.player.create_magazine(self.walls)
         self.in_range_walls = threading.Thread(target = self.player.get_in_range_walls, args = (self.walls,))
         self.in_range_walls.daemon = True
@@ -68,11 +68,20 @@ class Container:
         else:
             self.interrupt_menu_active = False
 
-    def end_game(self):
+    def end_game(self,win=False):
         self.game_end = True
+        self.gold_gain = 0
+        if not self.interrupt_menu_active:
+            if win:
+                self.gold_gain = self.enemies.end_game()
+                self.gold += self.gold_gain
+                
+            else:
+                self.gold //= 2
+                self.gold_gain = -self.gold
+        
         self.interrupt_menu_active = True
         self.player.is_alive = False
-        self.gold += self.enemies.end_game()
         time.sleep(0.1)
 
 c = Container()

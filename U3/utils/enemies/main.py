@@ -12,12 +12,21 @@ class Enemies:
     """Class which contains all the enemies"""
     units: list[Enemy]
     active_paths: list[threading.Thread]
+    diff_presets = {
+        1:{"stocks":3, "number":2, "gold_mult":0.7}, # add type of guns to be used
+        2:{"stocks":6, "number":3, "gold_mult":0.9},
+        3:{"stocks":8, "number":3, "gold_mult":1},
+        4:{"stocks":10, "number":4, "gold_mult":1.2},
+        5:{"stocks":15, "number":5, "gold_mult":1.6},
+        6:{"stocks":15, "number":10, "gold_mult":2.2},
+        7:{"stocks":20, "number":10, "gold_mult":3},
+    }
 
-    def __init__(self, enemies_num, width, height, GAME_BASE, GAME_HEIGHT, DISPLAY_BASE, DISPLAY_HEIGHT, walls: Walls, camera_x, camera_y, stocks, death_value:int=100):
 
-        self.number = enemies_num
+    def __init__(self, width, height, GAME_BASE, GAME_HEIGHT, DISPLAY_BASE, DISPLAY_HEIGHT, walls: Walls, camera_x, camera_y, difficulty, death_value:int=100):
+
+        self.difficulty = difficulty
         self.active_paths = []
-        self.death_value = death_value
         self.units = []
         self.GAME_BASE = GAME_BASE
         self.GAME_HEIGHT = GAME_HEIGHT
@@ -26,7 +35,9 @@ class Enemies:
         self.unit_width = width
         self.unit_height = height
         self.offset = (70 - self.unit_width) / 2
-        self.stocks = stocks
+        self.number = self.diff_presets[difficulty]["number"]
+        self.stocks = self.diff_presets[difficulty]["stocks"]
+        self.death_value = int(death_value * self.diff_presets[difficulty]["gold_mult"])
         self.cur_id = 0
         self.walls = walls
         self.current_gold_increase = 0
