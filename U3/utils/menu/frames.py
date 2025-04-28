@@ -103,14 +103,18 @@ def create_frames(window:mu.Window, menu, GAME_BASE,GAME_HEIGHT):
     grid.pack(label,row=3,column=1,columnspan=8, ID="ShopLabel")
 
 
-    window.set_font_file("segoeuisymbol", sysfont=True)
-    button = mu.Button(window, "▶", text_centre="centre",command=menu.set_difficulty, args=(True,), width=25, text_size=30, border_width=3, corner_radius=2, border_color=OFF_GREY, background_color=LIGHT_ORANGE, text_color=VERY_DARK_PICKLE_GREEN)
+    button = mu.Button(window, "", text_centre="centre",command=menu.set_difficulty, args=(True,), width=25, text_size=30, border_width=3, corner_radius=2, border_color=OFF_GREY, background_color=LIGHT_ORANGE, text_color=VERY_DARK_PICKLE_GREEN)
     window.pack(button, (495,420), ID="DifficultyIncrement") #update this diff to difficulty modify func
 
-    button = mu.Button(window, "◀", text_centre="centre",command=menu.set_difficulty, args=(False,), width=25, text_size=30, border_width=3, corner_radius=2, border_color=OFF_GREY, background_color=LIGHT_ORANGE, text_color=VERY_DARK_PICKLE_GREEN)
+    button = mu.Button(window, "", text_centre="centre",command=menu.set_difficulty, args=(False,), width=25, text_size=30, border_width=3,corner_radius=2, border_color=OFF_GREY, background_color=LIGHT_ORANGE, text_color=VERY_DARK_PICKLE_GREEN)
     window.pack(button, (445,420), ID="DifficultyDecrement") #update this diff to difficulty modify func
-    window.set_font_file(os.path.join(f'{os.getcwd()}','assets','gameFont.ttf'))
     
+    image = mu.Image(window, image_path=os.path.join(os.getcwd(),'assets','images','button', 'bw.png'), width=40, height=40, corner_radius=0)
+    window.pack(image, (454,426), ID="DecrementImage")
+
+    image = mu.Image(window, image_path=os.path.join(os.getcwd(),'assets','images','button', 'fw.png'), width=40, height=40, corner_radius=0)
+    window.pack(image, (498,426), ID="IncrementImage")
+
     button = mu.Button(window, "Visit", text_centre="centre",command=menu.switch_frame, args=("shop",), width=80, text_size=30, border_width=3, corner_radius=2, border_color=OFF_GREY, background_color=LIGHT_ORANGE, text_color=VERY_DARK_PICKLE_GREEN)
     window.pack(button, (175,420), ID="ShopVisit")
 
