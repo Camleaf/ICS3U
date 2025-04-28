@@ -32,12 +32,12 @@ class Container:
     """Acts as a container which keep state between game objects when they are passed between files"""
     diff_word = {
             1:"civilian",
-            2:"sailor",
-            3:"cadet",
-            4:"ensign",
-            5:"officer",
-            6:"captain",
-            7:"admiral",
+            2:"cadet",
+            3:"enlist",
+            4:"corporal",
+            5:"sergeant",
+            6:"officer",
+            7:"general",
         }
     def __init__(self):
         self.max_difficulty = 7
@@ -102,7 +102,7 @@ while True:
         if event.type == pg.MOUSEBUTTONDOWN:
             if c.interrupt_menu_active:
                 menu.window.mouseInteraction(pg.mouse.get_pos())
-                menu.update_gold_count(c.gold)
+                
         # If i end up needing text I'll add it then
         if event.type == pg.KEYDOWN:
             

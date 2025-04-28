@@ -26,6 +26,7 @@ class Menu:
         """Calls pymenu.window function load_frame, and sets current frame to the target frame"""
         self.window.load_frame(target_frame)
         self.current_frame = target_frame
+        self.update_gold_count(self.c.gold)
         return False
     
     def restart_game(self):
