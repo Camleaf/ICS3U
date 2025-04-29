@@ -5,7 +5,7 @@ import math
 class Bullet:
     """Your standard tank bullet"""
 
-    def __init__(self, width, height, owner, speed, angle, start, grid):
+    def __init__(self, width, height, owner, speed, angle, start, grid, base_dist):
         
         self.rotation = 0
         self.width = width
@@ -25,7 +25,7 @@ class Bullet:
         self.xspeed = speed * vector[0]
         self.yspeed = speed * vector[1]
         self.traveled = 0
-        self.max_dist = 300 if self.owner == "player" else 350 # bots have longer range than players to force close engagement
+        self.max_dist = base_dist if self.owner == "player" else base_dist + 50 # bots have longer range than players to force close engagement
         # add a medium significance random distance for the bullet max distance so that it isn't as easy for the player to use the
         # disappearance to their advantage
 

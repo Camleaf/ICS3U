@@ -26,7 +26,7 @@ class Menu:
         """Calls pymenu.window function load_frame, and sets current frame to the target frame"""
         self.window.load_frame(target_frame)
         self.current_frame = target_frame
-        self.update_gold_count(self.c.gold, self.c.gold_gain)
+        self.update_gold_count()
         return False
     
     def menu_exit(self):
@@ -89,12 +89,12 @@ class Menu:
         self.update_text(self.c.diff_word[self.c.difficulty].title(),'DifficultyText',update_bg=False)
         return False
     
-    def update_gold_count(self,number, gained=0): #gold count id will always be GoldNum
+    def update_gold_count(self): #gold count id will always be GoldNum
         """Updates the text on screen with ID \'GoldNum\' to match the current number count if it exists"""
         if 'GoldNum' in self.window._objects:
-            self.update_text(str(number), ID='GoldNum',update_bg=False)
+            self.update_text(str(self.c.gold), ID='GoldNum',update_bg=False)
         if 'GoldGain' in self.window._objects:
-            self.update_text(str(abs(gained)), ID='GoldGain', update_bg=False)
+            self.update_text(str(abs(self.c.gold_gain)), ID='GoldGain', update_bg=False)
 
     def render(self, DISPLAY: pg.Surface):
         DISPLAY.blit(self.surface())

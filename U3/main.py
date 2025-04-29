@@ -134,7 +134,6 @@ while True:
                     elif menu.current_frame == 'ingame':
                         menu.switch_frame('pause')
                         c.time_control(True)
-                        menu.update_gold_count(c.gold)
 
 
 

@@ -4,7 +4,7 @@ from .bullet import Bullet
 class Magazine:
     """Container for all the bullets"""
 
-    def __init__(self, owner, walls, GAME_BASE, GAME_HEIGHT, DISPLAY_BASE, DISPLAY_HEIGHT):
+    def __init__(self, owner, walls, GAME_BASE, GAME_HEIGHT, DISPLAY_BASE, DISPLAY_HEIGHT, dist_mult=1):
 
         self.magazine:list[Bullet] = []
         self.GAME_BASE = GAME_BASE
@@ -14,6 +14,7 @@ class Magazine:
         self.owner = owner
         self.walls = walls.walls
         self.bullet_speed = 8
+        self.bullet_base_distance = 300 * dist_mult
          # all coordinates will be based off of top left so that writing code later is easier
         self.create_grid()
 
@@ -28,7 +29,8 @@ class Magazine:
                 self.bullet_speed,
                 angle,
                 (x, y),
-                self.grid
+                self.grid,
+                self.bullet_base_distance
             )
         )
     def update_bullets(self, enemies, player):
