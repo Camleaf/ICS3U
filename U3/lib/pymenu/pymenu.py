@@ -3,7 +3,7 @@ The pygame menu library that I made just for a school tanks game
 
 Dependencies: 
 - Python >= 3.11.9
-- Pygame >= 2.2.6
+- Pygame-ce >= 2.5.3
 """
 import pygame as pg
 from typing import NewType
