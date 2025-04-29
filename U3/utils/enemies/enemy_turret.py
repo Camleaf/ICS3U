@@ -6,7 +6,7 @@ import math
 class Turret:
     """The turret animation for the player"""
 
-    def __init__(self, width, height, DISPLAY_HEIGHT, DISPLAY_BASE):
+    def __init__(self, width, height, DISPLAY_HEIGHT, DISPLAY_BASE, gun_type):
 
         self.rotation = 0
         self.fwidth = width
@@ -14,10 +14,17 @@ class Turret:
         self.image_orig = pg.Surface([self.fwidth, self.fheight])
         self.image_orig.set_colorkey(BLACK)
         self.image_orig.fill(BLACK)
-        pg.draw.rect(self.image_orig, OFF_BLACK, (self.fwidth/2 -
-                     5, self.fheight/2-5, 10, 10), border_radius=4)
-        pg.draw.rect(self.image_orig, OFF_BLACK, (self.fwidth/2-5,
-                     self.fheight/2-30, 10, 30), border_radius=2)
+        self.gun_type = gun_type
+        if self.gun_type == 'machine':
+            pg.draw.rect(self.image_orig, OFF_BLACK, (self.fwidth/2 -
+                        5, self.fheight/2-5, 10, 10), border_radius=4)
+            pg.draw.rect(self.image_orig, OFF_BLACK, (self.fwidth/2-5,
+                        self.fheight/2-30, 10, 30), border_radius=2)
+        elif self.gun_type == 'shotgun':
+            pg.draw.rect(self.image_orig, OFF_BLACK, (self.fwidth/2 -
+                        10, self.fheight/2-10, 20, 20), border_radius=10)
+            pg.draw.rect(self.image_orig, OFF_BLACK, (self.fwidth/2-10,
+                        self.fheight/2-25, 20, 25), border_radius=2)
         self.image = self.image_orig.copy()
 
         self.DISPLAY_HEIGHT = DISPLAY_HEIGHT

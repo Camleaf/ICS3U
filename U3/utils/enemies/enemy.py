@@ -17,7 +17,7 @@ class Enemy:
     
     
     """
-    def __init__(self, width, height, posx, posy, DISPLAY_HEIGHT, DISPLAY_BASE, GAME_BASE, GAME_HEIGHT, camera_x, camera_y, grid, offset, identity):
+    def __init__(self, width, height, posx, posy, DISPLAY_HEIGHT, DISPLAY_BASE, GAME_BASE, GAME_HEIGHT, camera_x, camera_y, grid, offset, identity, gun_type):
         self.image_orig = pg.Surface([width,height])
         self.image_orig.set_colorkey((255,255,255))
         self.image_orig.fill(WHITE)
@@ -27,8 +27,8 @@ class Enemy:
         pg.draw.rect(self.image_orig,DARK_RED,(width/2-10, height/2-15,20,30),border_radius=2)
 
 
-
-        self.turret = Turret(width+20,height+20,DISPLAY_HEIGHT,DISPLAY_BASE)
+        self.gun_type = gun_type
+        self.turret = Turret(width+20,height+20,DISPLAY_HEIGHT,DISPLAY_BASE, self.gun_type)
 
         self.x = posx
         self.y = posy

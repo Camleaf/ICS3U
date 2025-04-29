@@ -21,7 +21,10 @@ class Enemies:
         6:{"stocks":15, "number":10, "gold_mult":2.2,"bdist_mult":1.6, "shotgun%":40},
         7:{"stocks":25, "number":15, "gold_mult":3, "bdist_mult":1.8, "shotgun%":50},
     }
-
+    gun_presets = {
+        'machine': {'cooldown':20, 'range_mult':1},
+        'shotgun': {'cooldown':50, 'factor':30, 'range_mult':0.7}
+    }
 
     def __init__(self, width, height, GAME_BASE, GAME_HEIGHT, DISPLAY_BASE, DISPLAY_HEIGHT, walls: Walls, camera_x, camera_y, difficulty, death_value:int=100):
 
@@ -37,6 +40,7 @@ class Enemies:
         self.offset = (70 - self.unit_width) / 2
         self.number = self.diff_presets[difficulty]["number"]
         self.stocks = self.diff_presets[difficulty]["stocks"]
+        self.shotgun_perc = self.diff_presets[difficulty]["shotgun%"]
         self.orig_stocks = self.stocks
         self.camera_x = GAME_BASE/2
         self.camera_y = GAME_HEIGHT/2
@@ -59,6 +63,7 @@ class Enemies:
         # maybe as QOL later I could make it so that this function spawns units outside of the player's POV
         y = None
         x = None
+        
         for r in range(10000):
             ry = random.randint(0, self.GAME_HEIGHT//70 - 1)
             rx = random.randint(0, self.GAME_BASE // 70 - 1)
@@ -75,6 +80,10 @@ class Enemies:
         self.cur_id += 1
         if self.stocks == 0:
             return
+        shotgun_tally = random.randint(0, 100)
+        gun_type = 'machine'
+        if shotgun_tally < self.shotgun_perc:
+            gun_type = 'shotgun'
         self.stocks -= 1
         self.units.append(
             Enemy(self.unit_width,
@@ -89,7 +98,8 @@ class Enemies:
                   0,
                   self.grid,
                   self.offset,
-                  self.cur_id
+                  self.cur_id,
+                  gun_type
                   )
         )
     def end_game(self):
@@ -117,6 +127,11 @@ class Enemies:
                 break
             self.cur_id = i
             self.stocks -= 1
+
+            shotgun_tally = random.randint(0, 100)
+            gun_type = 'machine'
+            if shotgun_tally < self.shotgun_perc:
+                gun_type = 'shotgun'
             already_created.append([x, y])
             self.units.append(
                 Enemy(self.unit_width,
@@ -131,7 +146,8 @@ class Enemies:
                       camera_y,
                       self.grid,
                       self.offset,
-                      i
+                      i,
+                      gun_type
                       )
             )
 
@@ -202,10 +218,15 @@ class Enemies:
             if unit.activated:
                 if tick <= 3:
                     continue
-                if unit.shot_cooldown < 20:
+                if unit.shot_cooldown < self.gun_presets[unit.gun_type]['cooldown']:
                     unit.shot_cooldown += 1
                     continue
                 unit.shot_cooldown = 0
                 if unit.raycast(self.magazine.bullet_speed):
                     self.magazine.create_bullet(
-                        unit.turret.rotation, unit.x+35-unit.rot_offset, unit.y+35-unit.rot_offset)
+                        unit.turret.rotation, unit.x+35-unit.rot_offset, unit.y+35-unit.rot_offset,self.gun_presets[unit.gun_type]['range_mult'])
+                    if unit.gun_type == 'shotgun':
+                        for i in range(5):
+                            random_factor = random.randint(-self.gun_presets[unit.gun_type]['factor'],self.gun_presets[unit.gun_type]['factor'])
+                            self.magazine.create_bullet(unit.turret.rotation+random_factor, unit.x+35-unit.rot_offset, unit.y+35-unit.rot_offset, self.gun_presets[unit.gun_type]['range_mult'])
+                    

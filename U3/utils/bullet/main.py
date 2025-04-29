@@ -19,7 +19,7 @@ class Magazine:
         self.create_grid()
 
 
-    def create_bullet(self,angle, x, y): # x,y refers to centre of playing object
+    def create_bullet(self,angle, x, y, mult=1): # x,y refers to centre of playing object
         # if i need ideas for any QOL stuff make it so the bullet spawns at the end of the turret not the centre of the tank
         self.magazine.append(
             Bullet(
@@ -30,7 +30,7 @@ class Magazine:
                 angle,
                 (x, y),
                 self.grid,
-                self.bullet_base_distance
+                self.bullet_base_distance*mult
             )
         )
     def update_bullets(self, enemies, player):
