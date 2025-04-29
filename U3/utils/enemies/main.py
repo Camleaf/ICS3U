@@ -13,13 +13,13 @@ class Enemies:
     units: list[Enemy]
     active_paths: list[threading.Thread]
     diff_presets = {
-        1:{"stocks":3, "number":2, "gold_mult":0.7}, # add type of guns to be used
-        2:{"stocks":6, "number":3, "gold_mult":0.9},
-        3:{"stocks":8, "number":3, "gold_mult":1},
-        4:{"stocks":10, "number":4, "gold_mult":1.2},
-        5:{"stocks":15, "number":5, "gold_mult":1.6},
-        6:{"stocks":15, "number":10, "gold_mult":2.2},
-        7:{"stocks":20, "number":10, "gold_mult":3},
+        1:{"stocks":3, "number":2, "gold_mult":0.7,"bdist_mult":0.9, "shotgun%":1}, # add type of guns to be used
+        2:{"stocks":6, "number":3, "gold_mult":0.9,"bdist_mult":0.9, "shotgun%":7}, # add shotgun functionality
+        3:{"stocks":8, "number":4, "gold_mult":1,"bdist_mult":1, "shotgun%":10},
+        4:{"stocks":10, "number":4, "gold_mult":1.2,"bdist_mult":1.1, "shotgun%":12},
+        5:{"stocks":15, "number":5, "gold_mult":1.6,"bdist_mult":1.8, "shotgun%":22},
+        6:{"stocks":15, "number":10, "gold_mult":2.2,"bdist_mult":2.2, "shotgun%":40},
+        7:{"stocks":25, "number":15, "gold_mult":3, "bdist_mult":2.5, "shotgun%":50},
     }
 
 
@@ -37,6 +37,9 @@ class Enemies:
         self.offset = (70 - self.unit_width) / 2
         self.number = self.diff_presets[difficulty]["number"]
         self.stocks = self.diff_presets[difficulty]["stocks"]
+        self.orig_stocks = self.stocks
+        self.camera_x = GAME_BASE/2
+        self.camera_y = GAME_HEIGHT/2
         self.death_value = int(death_value * self.diff_presets[difficulty]["gold_mult"])
         self.cur_id = 0
         self.walls = walls
@@ -47,7 +50,7 @@ class Enemies:
         self.dead_surf.fill(WHITE)
         # end init
         self.magazine = Magazine(
-            "bot", walls, GAME_BASE, GAME_HEIGHT, DISPLAY_BASE, DISPLAY_HEIGHT)
+            "bot", walls, GAME_BASE, GAME_HEIGHT, DISPLAY_BASE, DISPLAY_HEIGHT, self.diff_presets[difficulty]["bdist_mult"])
         self.create_pathfinding_grid(walls)
         self.create_units(walls, camera_x, camera_y)
 
@@ -56,7 +59,7 @@ class Enemies:
         # maybe as QOL later I could make it so that this function spawns units outside of the player's POV
         y = None
         x = None
-        for r in range(1000):
+        for r in range(10000):
             ry = random.randint(0, self.GAME_HEIGHT//70 - 1)
             rx = random.randint(0, self.GAME_BASE // 70 - 1)
             if [rx, ry] in self.walls.walls:
@@ -64,8 +67,11 @@ class Enemies:
             if any([round(unit.x//70), round(unit.y//70)] == [rx, ry] for unit in self.units):
 
                 continue
+            if abs(rx-(self.camera_x//70)) + abs(ry-(self.camera_y//70)) < 8:
+                continue
             y = ry
             x = rx
+            break
         self.cur_id += 1
         if self.stocks == 0:
             return
@@ -87,7 +93,7 @@ class Enemies:
                   )
         )
     def end_game(self):
-        return self.current_gold_increase
+        return {"increase":self.current_gold_increase, "repair_cost": self.death_value*self.orig_stocks//2}
 
     def create_units(self, walls: Walls, camera_x, camera_y):
         """Creates the enemy class self.number and stores them in a wrapper"""
@@ -166,6 +172,8 @@ class Enemies:
             self.units[i].move(self.units)
 
     def render(self, DISPLAY: pg.Surface, camera_x: int, camera_y: int):
+        self.camera_x = camera_x
+        self.camera_y = camera_y
         # very much a temporary render function
         DISPLAY.blit(self.dead_surf, (-camera_x+self.DISPLAY_BASE /
                      2, -camera_y+self.DISPLAY_HEIGHT/2))

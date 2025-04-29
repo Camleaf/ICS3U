@@ -26,7 +26,7 @@ class Menu:
         """Calls pymenu.window function load_frame, and sets current frame to the target frame"""
         self.window.load_frame(target_frame)
         self.current_frame = target_frame
-        self.update_gold_count(self.c.gold)
+        self.update_gold_count(self.c.gold, self.c.gold_gain)
         return False
     
     def menu_exit(self):
@@ -53,8 +53,19 @@ class Menu:
         self.switch_frame('endgame')
         if win:
             self.update_text('VICTORY', 'StatusLabel',(0,0,0,100))
+            self.update_text('Destroying those tanks sure brings a reward...',"DescrText", update_bg=False)
+            
         else:
             self.update_text('DEFEAT', 'StatusLabel',(0,0,0,100))
+            self.update_text('Getting repairs cost you; Try not to do that...',"DescrText", update_bg=False)
+            
+        if self.c.gold_gain < 0:
+            self.update_text("You lost", ID='GoldGainedText',update_bg=False)
+        else:
+            self.update_text("You gained", ID='GoldGainedText',update_bg=False)
+        self.update_text(str(abs(self.c.gold_gain)), ID='GoldGained',update_bg=False)
+        self.update_text(f"Gain: {self.c.raw_gain}", ID="RawGain", update_bg=False)
+        self.update_text(f"Repair: {self.c.repair}", ID="RawRepair", update_bg=False)
 
     def update_text(self, text:str, ID:str,bg_color:tuple[int]=(0,0,0,0), update_bg:bool=True):
         """Updates the text of the given ID, can choose to update the background"""
@@ -78,10 +89,12 @@ class Menu:
         self.update_text(self.c.diff_word[self.c.difficulty].title(),'DifficultyText',update_bg=False)
         return False
     
-    def update_gold_count(self,number): #gold count id will always be GoldNum
+    def update_gold_count(self,number, gained=0): #gold count id will always be GoldNum
         """Updates the text on screen with ID \'GoldNum\' to match the current number count if it exists"""
         if 'GoldNum' in self.window._objects:
             self.update_text(str(number), ID='GoldNum',update_bg=False)
+        if 'GoldGain' in self.window._objects:
+            self.update_text(str(abs(gained)), ID='GoldGain', update_bg=False)
 
     def render(self, DISPLAY: pg.Surface):
         DISPLAY.blit(self.surface())

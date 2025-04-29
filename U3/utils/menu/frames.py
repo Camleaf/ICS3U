@@ -208,11 +208,93 @@ def create_frames(window:mu.Window, menu, GAME_BASE,GAME_HEIGHT):
 
     label = mu.Label(window, "VICTORY", width=200, text_size=40, text_color=LIGHT_ORANGE, background_alpha=0, text_centre="centre")
     grid.pack(label, row=2, column=3, columnspan=8, ID="StatusLabel")
-    
-    # add you lost X gold or you won X gold
+    label = mu.Label(window, 
+                    "Destroying those tanks sure brings a reward...", 
+                    text_centre='centre',
+                    width=200,
+                    text_size=16,
+                    text_color=LIGHT_ORANGE,
+                    border_width=3,
+                    background_color=VERY_DARK_PICKLE_GREEN
+    )
+    window.pack(label, (250,230), ID="DescrText")
+    # total gold
+    label = mu.Label(window, 
+                    "New Total:", 
+                    text_centre='right',
+                    width=85,
+                    text_size=16,
+                    text_color=LIGHT_ORANGE,
+                    border_width=3,
+                    background_color=VERY_DARK_PICKLE_GREEN
+    )
+    window.pack(label, (370,377), ID="GoldTotalText")
+
+    label = mu.Label(window, 
+                    "0", 
+                    text_centre='right',
+                    width=85,
+                    text_size=16,
+                    text_color=LIGHT_ORANGE,
+                    border_width=3,
+                    background_color=VERY_DARK_PICKLE_GREEN
+    )
+    window.pack(label, (370,417), ID="GoldNum")
+
+    image = mu.Image(window, image_path=os.path.join(os.getcwd(),'assets','images','Gold.png'),width=20,height=20)
+    window.pack(image, (375, 424), ID="GoldImage")
+    window.create_link("GoldNum", linked_id="GoldImage", backward=False)
+    # gold gained/lost
+    label = mu.Label(window, 
+                    "You gained", 
+                    text_centre='right',
+                    width=85,
+                    text_size=16,
+                    text_color=LIGHT_ORANGE,
+                    border_width=3,
+                    background_color=VERY_DARK_PICKLE_GREEN
+    )
+    window.pack(label, (245,377), ID="GoldGainedText")
+    label = mu.Label(window, 
+                    "0", 
+                    text_centre='right',
+                    width=85,
+                    text_size=16,
+                    text_color=LIGHT_ORANGE,
+                    border_width=3,
+                    background_color=VERY_DARK_PICKLE_GREEN
+    )
+    window.pack(label, (245,417), ID="GoldGained")
+    #show raw gain/loss
+    label = mu.Label(window, 
+                    "Gained: 0", 
+                    text_centre='centre',
+                    width=150,
+                    text_size=16,
+                    text_color=LIGHT_ORANGE,
+                    border_width=3,
+                    background_color=VERY_DARK_PICKLE_GREEN
+    )
+    window.pack(label, (275,297), ID="RawGain")
+
+    label = mu.Label(window, 
+                    "Repair: 0", 
+                    text_centre='centre',
+                    width=150,
+                    text_size=16,
+                    text_color=LIGHT_ORANGE,
+                    border_width=3,
+                    background_color=VERY_DARK_PICKLE_GREEN
+    )
+    window.pack(label, (275,330), ID="RawRepair")
+    # show total gain/loss and total remaining
+    image = mu.Image(window, image_path=os.path.join(os.getcwd(),'assets','images','Gold.png'),width=20,height=20)
+    window.pack(image, (250, 424), ID="GoldImage2")
+
+    window.create_link("GoldGained", linked_id="GoldImage2", backward=False)
 
     button = mu.Button(window, "Main Menu", command=menu.menu_exit, args=tuple(), width=-1, text_size=25, border_width=3, corner_radius=3, border_color=OFF_GREY, background_color=VERY_DARK_PICKLE_GREEN, text_color=LIGHT_ORANGE)
-    window.pack(button, (288,450), ID="Menubutton")
+    window.pack(button, (288,480), ID="Menubutton")
 
     window.pack(grid, (100,50))
     window.save_frame("endgame", flush=True)

@@ -42,6 +42,9 @@ class Container:
     def __init__(self):
         self.max_difficulty = 7
         self.gold = 0
+        self.raw_gain = 0
+        self.repair = 0
+        self.gold_gain = 0
         self.difficulty = 1
         self.refresh_state()
         self.interrupt_menu_active = True
@@ -49,6 +52,8 @@ class Container:
     def refresh_state(self):
         """Used for initalizing a game state, such as on game start or when going to main menu"""
         self.gold_gain = 0
+        self.raw_gain = 0
+        self.repair = 0
         self.game_end = False
         self.interrupt_menu_active = False
         self.screen = Screen(DISPLAY_BASE,DISPLAY_HEIGHT, GAME_BASE, GAME_HEIGHT)
@@ -72,13 +77,18 @@ class Container:
         self.game_end = True
         self.gold_gain = 0
         if not self.interrupt_menu_active:
+            raw = self.enemies.end_game()
+            self.raw_gain = raw['increase']
+            self.repair = raw['repair_cost'] # the repair cost is proportional to the difficulty of the mission. High risk high reward. See end_Game function in enemies/main.py
             if win:
-                self.gold_gain = self.enemies.end_game()
-                self.gold += self.gold_gain
-                
+                self.gold_gain = self.raw_gain
+                self.repair = 0
             else:
-                self.gold //= 2
-                self.gold_gain = -self.gold
+                self.gold_gain = self.raw_gain - self.repair
+            
+            self.gold += self.gold_gain
+            if self.gold < 0:
+                self.gold = 0
         
         self.interrupt_menu_active = True
         self.player.is_alive = False
