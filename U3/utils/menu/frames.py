@@ -353,7 +353,7 @@ def create_frames(window:mu.Window, menu, GAME_BASE,GAME_HEIGHT):
     fl = [
         ['Distance', os.path.join(os.getcwd(),'assets','images','BulletRange.png'), coords[0], 300],
         ['Speed', os.path.join(os.getcwd(),'assets','images','Speed.png'), coords[1], 400],
-        ['Health', os.path.join(os.getcwd(),'assets','images','Health.png'), coords[2], 6000],
+        ['Health', os.path.join(os.getcwd(),'assets','images','Health.png'), coords[2], 3000],
     ]
     for cost_ID, image_link, coords, price in fl:
         image = mu.Image(window, image_path=image_link, width=100, height=140)

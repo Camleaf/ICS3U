@@ -87,8 +87,6 @@ while True:
                 y_vector -= 2.5
             if keys_pressed[pg.K_s]:
                 y_vector += 2.5
-            if keys_pressed[pg.K_q]:
-                c.gold += 60000
             if keys_pressed[pg.K_SPACE]:
                 
                 if player_shot_cooldown > 20:

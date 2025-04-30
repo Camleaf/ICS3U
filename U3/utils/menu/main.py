@@ -94,7 +94,7 @@ class Menu:
             self.c.player_bullet_dist_mult += 0.1
         elif up_type == "Speed":
             self.c.player_speed_mult += 0.1
-        self.update_text(ID=up_type+"Cost", text=str(cost*2), update_bg=False)
+        self.update_text(ID=up_type+"Cost", text=str(round(cost*1.5)), update_bg=False)
         self.update_text(ID=up_type+"LevelNum", text=str(level+1), update_bg=False)
         self.c.gold -= cost
         self.update_gold_count()
