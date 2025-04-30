@@ -125,6 +125,17 @@ def create_frames(window:mu.Window, menu, GAME_BASE,GAME_HEIGHT):
     window.pack(image, (173,255), ID="ShopImage")
 
     label = mu.Label(window, 
+                    "0", 
+                    text_centre='right',
+                    width=80,
+                    text_size=16,
+                    text_color=LIGHT_ORANGE,
+                    border_width=0,
+                    background_color=VERY_DARK_PICKLE_GREEN
+    )
+    window.pack(label, (175,357), ID="GoldNum")
+
+    label = mu.Label(window, 
                     "Civilian", 
                     text_centre='centre',
                     width=78,
@@ -135,16 +146,6 @@ def create_frames(window:mu.Window, menu, GAME_BASE,GAME_HEIGHT):
     )
     window.pack(label, (442,357), ID="DifficultyText")
     # still need to create a lot of function
-    label = mu.Label(window, 
-                    "0", 
-                    text_centre='right',
-                    width=80,
-                    text_size=16,
-                    text_color=LIGHT_ORANGE,
-                    border_width=0,
-                    background_color=VERY_DARK_PICKLE_GREEN
-    )
-    window.pack(label, (175,357), ID="GoldNum")
 
     image = mu.Image(window, image_path=os.path.join(os.getcwd(),'assets','images','Gold.png'),width=20,height=20)
     window.pack(image, (180, 364), ID="GoldImage")
@@ -305,5 +306,104 @@ def create_frames(window:mu.Window, menu, GAME_BASE,GAME_HEIGHT):
     background = mu.Background(window, width=GAME_BASE, height=GAME_HEIGHT, border_width=3, corner_radius=2,background_color=BLACK,border_color=BLACK,alpha=100)
     window.pack(background, (0,0))
 
+    background = mu.Background(window, width=500, height=400, border_width=6, corner_radius=10,background_color=VERY_DARK_PICKLE_GREEN,border_color=OFF_GREY,alpha=255)
+    window.pack(background, (100,150))
 
+    grid = mu.Grid(columns=10, rows=10, columnwidth=50,rowheight=50)
+
+    # title
+    window.set_font_file(os.path.join(f'{os.getcwd()}','assets','titleFont.ttf')) # switch to title font for the title
+    label = mu.Label(window, "VERY COOL TANKS", width=1000, text_size=60, text_color=LIGHT_ORANGE,background_alpha=0)
+    grid.pack(label, row=0, column=1, columnspan=8, ID="Title")
+    window.set_font_file(os.path.join(f'{os.getcwd()}','assets','gameFont.ttf'))
+    
+    label = mu.Label(window, "Shop", width=300, text_size=40, border_width=0, text_color=LIGHT_ORANGE, background_alpha=0)
+    grid.pack(label, row=2, column=4, columnspan=8, ID="WelcomeLabel")
+    # end title
+
+    # gold text
+    label = mu.Label(window, 
+                    "0", 
+                    text_centre='right',
+                    width=85,
+                    text_size=16,
+                    text_color=LIGHT_ORANGE,
+                    border_width=0,
+                    background_color=VERY_DARK_PICKLE_GREEN
+    )
+    window.pack(label, (105,155), ID="GoldNum")
+
+    image = mu.Image(window, image_path=os.path.join(os.getcwd(),'assets','images','Gold.png'),width=20,height=20)
+    window.pack(image, (110, 162), ID="GoldImage")
+    # end gold text
+    window.create_link("GoldNum", linked_id="GoldImage", backward=False)
+
+    # put buttons
+    start_coord = ((133,255),(135,404),(140, 413), (135,357),(112,205))
+    x_gap = 166
+    coords = [[(x+x_gap*i,y) for x,y in start_coord] for i in range(3)]
+    fl = [
+        ['Distance', os.path.join(os.getcwd(),'assets','images','Shop.png'), coords[0]],
+        ['Speed', os.path.join(os.getcwd(),'assets','images','Shop.png'), coords[1]],
+        ['Health', os.path.join(os.getcwd(),'assets','images','Shop.png'), coords[2]],
+    ]
+    for cost_ID, image_link, coords in fl:
+        image = mu.Image(window, image_path=image_link, width=100, height=140)
+        window.pack(image, coords[0], ID=cost_ID+"Image")
+
+        label = mu.Button(window, 
+                        command=menu.switch_frame, # change this later
+                        args= ("shop",),
+                        text = "0", 
+                        text_centre='right',
+                        width=80,
+                        text_size=16,
+                        text_color=VERY_DARK_PICKLE_GREEN,
+                        border_width=3,
+                        background_color=LIGHT_ORANGE
+        )
+        window.pack(label, coords[1], ID=cost_ID+"Cost")
+        image = mu.Image(window, image_path=os.path.join(os.getcwd(),'assets','images','Gold.png'),width=20,height=20)
+        window.pack(image, coords[2], ID=cost_ID+"GoldImage")
+        
+        window.create_link(cost_ID+"Cost", linked_id=cost_ID+"GoldImage", backward=False)
+
+        label = mu.Label(window, 
+                        text = "0", 
+                        text_centre='right',
+                        width=80,
+                        text_size=16,
+                        text_color=LIGHT_ORANGE,
+                        border_width=0,
+                        background_color=VERY_DARK_PICKLE_GREEN
+        )
+        window.pack(label, coords[3], ID=cost_ID+"LevelNum")
+        label = mu.Label(window, 
+                        text = "Level:", 
+                        text_centre='left',
+                        width=80,
+                        text_size=16,
+                        text_color=LIGHT_ORANGE,
+                        border_width=0,
+                        background_alpha=0
+        )
+        
+        window.pack(label, coords[3], ID=cost_ID+"LevelText")
+        window.create_link(cost_ID+"LevelNum", linked_id=cost_ID+"LevelText", backward=False)
+        label = mu.Label(window, 
+                    cost_ID,
+                    text_centre="centre",
+                    width=124,
+                    text_size=30,
+                    text_color=LIGHT_ORANGE,
+                    background_alpha=0
+        )
+        window.pack(label,coords[4], ID=cost_ID + 'label')
+    # end buttons    
+        
+
+    button = mu.Button(window, "Main menu", command=menu.switch_frame, args=("main",), width=-1, text_size=25, border_width=3, corner_radius=2, border_color=OFF_GREY, background_color=LIGHT_ORANGE, text_color=VERY_DARK_PICKLE_GREEN)
+    window.pack(button, (289,485), ID="ContinueButton")
+
+    window.pack(grid, (100,50))
     window.save_frame("shop", flush=True)
