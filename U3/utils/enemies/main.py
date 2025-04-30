@@ -103,7 +103,7 @@ class Enemies:
                   )
         )
     def end_game(self):
-        return {"increase":self.current_gold_increase, "repair_cost": self.death_value*self.orig_stocks//2}
+        return {"increase":self.current_gold_increase, "repair_cost": int(self.death_value*self.orig_stocks//2.5)}
 
     def create_units(self, walls: Walls, camera_x, camera_y):
         """Creates the enemy class self.number and stores them in a wrapper"""
@@ -182,8 +182,8 @@ class Enemies:
         self.dead_surf.blit(unit.turret.image, (unit.x+unit.turret.offset -
                             unit.turret.rot_offset, unit.y+unit.turret.offset-unit.turret.rot_offset))
 
-    def move(self, player):
-        self.magazine.update_bullets(self, player)
+    def move(self, player, menu):
+        self.magazine.update_bullets(self, player, menu)
         for i in range(len(self.units)):
             self.units[i].move(self.units)
 

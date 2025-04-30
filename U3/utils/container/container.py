@@ -33,6 +33,9 @@ class Container:
         self.repair = 0
         self.gold_gain = 0
         self.difficulty = 1
+        self.lives = 1
+        self.player_bullet_dist_mult = 1
+        self.player_speed_mult = 1
         self.refresh_state()
         self.interrupt_menu_active = True
 
@@ -45,7 +48,7 @@ class Container:
         self.interrupt_menu_active = False
         self.screen = Screen(self.DISPLAY_BASE,self.DISPLAY_HEIGHT, self.GAME_BASE, self.GAME_HEIGHT)
         self.walls = Walls(self.GAME_BASE,self.GAME_HEIGHT, self.DISPLAY_BASE, self.DISPLAY_HEIGHT)
-        self.player = Player(40,40,self.DISPLAY_BASE, self.DISPLAY_HEIGHT, self.GAME_BASE, self.GAME_HEIGHT)
+        self.player = Player(40,40,self.DISPLAY_BASE, self.DISPLAY_HEIGHT, self.GAME_BASE, self.GAME_HEIGHT,self.player_bullet_dist_mult,self.player_speed_mult,lives=self.lives)
         self.player_container = Create_Container(self.player)
         self.enemies = Enemies(40,40,self.GAME_BASE, self.GAME_HEIGHT, self.DISPLAY_BASE, self.DISPLAY_HEIGHT, self.walls, self.player.camera_x, self.player.camera_y, self.difficulty, 100)
         self.player.create_magazine(self.walls)

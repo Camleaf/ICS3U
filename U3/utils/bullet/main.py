@@ -33,7 +33,7 @@ class Magazine:
                 self.bullet_base_distance*mult
             )
         )
-    def update_bullets(self, enemies, player):
+    def update_bullets(self, enemies, player,menu):
         self.targets = []
         if self.owner == "player": # recalculate targets every runthrough
             for unit in enemies.units:
@@ -45,7 +45,7 @@ class Magazine:
         r = len(self.magazine)
         new = []
         for i in range(r):
-            if not self.magazine[i].move(self.targets, enemies, player):
+            if not self.magazine[i].move(self.targets, enemies, player,menu):
                 new.append(self.magazine[i])
         self.magazine = new
             

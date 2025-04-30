@@ -13,7 +13,7 @@ class Player(pg.sprite.Sprite):
     """
     image: pg.Surface
     magazine: Magazine
-    def __init__(self, width:int, height:int, DISPLAY_BASE:int, DISPLAY_HEIGHT:int, GAME_BASE:int, GAME_HEIGHT:int):
+    def __init__(self, width:int, height:int, DISPLAY_BASE:int, DISPLAY_HEIGHT:int, GAME_BASE:int, GAME_HEIGHT:int, player_speed_mult, bullet_mult=1,lives=1):
       pg.sprite.Sprite.__init__(self)
 
 
@@ -22,6 +22,10 @@ class Player(pg.sprite.Sprite):
       self.image_orig = pg.Surface([width,height])
       self.image_orig.set_colorkey((255,255,255))
       self.image_orig.fill(WHITE)
+      self.max_lives = 10
+      self.lives = lives
+      self.bullet_mult = bullet_mult
+      self.speed_mult = player_speed_mult
      
       pg.draw.rect(self.image_orig,OFF_BLACK, (0, 1, width, height-2), border_radius=2)
       pg.draw.rect(self.image_orig, PICKLE_GREEN, (7,0,width-14,height),border_radius=2)
@@ -50,6 +54,7 @@ class Player(pg.sprite.Sprite):
       self.camera_y = GAME_HEIGHT / 2
       self.rotation_target = 180
       self.prev_case = 180
+      self.immunity = 0
       self.difference = 0
       self.in_range = []
       self.is_alive = True
@@ -57,17 +62,18 @@ class Player(pg.sprite.Sprite):
        self.magazine = Magazine("player", walls, self.GAME_BASE, self.GAME_HEIGHT, self.DISPLAY_BASE, self.DISPLAY_HEIGHT)
       
     def move(self, x, y, units):
+        if self.immunity > 0: self.immunity -= 1
         if not self.is_alive: return
         self.turret.rotation_manager() #may have to optimize so that this doesn't run every time but for now it should work
        
         if self.width/2 < self.camera_x + x < self.GAME_BASE - self.width/2:
-            self.camera_x += x
+            self.camera_x += x*self.speed_mult
    
         if self.collision(x,0,1,units):
            x = 0
         
         if self.height/2 < self.camera_y + y < self.GAME_HEIGHT - self.height/2:
-            self.camera_y += y
+            self.camera_y += y*self.speed_mult
 
         if self.collision(0,y,0,units):
            y= 0
@@ -207,7 +213,7 @@ class Player(pg.sprite.Sprite):
 
     def fire(self):
        if not self.is_alive: return
-       self.magazine.create_bullet(self.turret.rotation,self.camera_x,self.camera_y)
+       self.magazine.create_bullet(self.turret.rotation,self.camera_x,self.camera_y,self.bullet_mult)
 
 def Create_Container(player):
   """Creates a container which wraps the player for render. \nInput : object of class Player.\nOutput : pg.sprite.Group() object containing player object"""

@@ -15,8 +15,8 @@ class Menu:
         
         self.window.set_font_file(os.path.join(f'{os.getcwd()}','assets','gameFont.ttf'))
         self.window.set_placeholder_file(os.path.join(f'{os.getcwd()}','assets','Placeholder.png'))
-        create_frames(self.window,self, GAME_BASE,GAME_HEIGHT)
         self.c = container
+        create_frames(self.window,self, GAME_BASE,GAME_HEIGHT)
 
         self.current_frame = 'welcome'
 
@@ -44,8 +44,16 @@ class Menu:
         self.c.time_control(False)
         self.switch_frame("ingame")
         self.c.refresh_state()
+        self.update_lives()
         return False
     
+    def update_lives(self):
+        for life in range(self.c.player.max_lives):
+            if life >= self.c.player.lives:
+                self.window.update_stat("Life"+str(life), image_path=os.path.join(f"{os.getcwd()}","assets","Transparent.png"))
+            else:
+                self.window.update_stat("Life"+str(life), image_path=os.path.join(f"{os.getcwd()}","assets","images","Heart.png"))
+            self.window.update_surf("Life"+str(life), False)
 
     def end_game(self, win):
         """Changes the text on the winscreen during the end game"""
@@ -79,12 +87,17 @@ class Menu:
         
         if cost > self.c.gold:
             return False
-        
+
+        if up_type == "Health" and self.c.lives+1 <= self.c.player.max_lives:
+            self.c.lives += 1
+        elif up_type == "Distance":
+            self.c.player_bullet_dist_mult += 0.1
+        elif up_type == "Speed":
+            self.c.player_speed_mult += 0.1
         self.update_text(ID=up_type+"Cost", text=str(cost*2), update_bg=False)
         self.update_text(ID=up_type+"LevelNum", text=str(level+1), update_bg=False)
         self.c.gold -= cost
         self.update_gold_count()
-
         # actually add upgrade
         return False
         

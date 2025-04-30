@@ -88,7 +88,7 @@ while True:
             if keys_pressed[pg.K_s]:
                 y_vector += 2.5
             if keys_pressed[pg.K_q]:
-                time.sleep(10)
+                c.gold += 60000
             if keys_pressed[pg.K_SPACE]:
                 
                 if player_shot_cooldown > 20:
@@ -102,8 +102,8 @@ while True:
     if not c.interrupt_menu_active and not c.game_end:
         c.player.move(x_vector,y_vector, c.enemies.units)
         c.enemies.check_shots(tick)
-        c.player.magazine.update_bullets(c.enemies,c.player)
-        c.enemies.move(c.player)
+        c.player.magazine.update_bullets(c.enemies,c.player, menu)
+        c.enemies.move(c.player, menu)
     # run all the time
     c.screen.render(c.player, c.player_container, c.walls, c.enemies, menu)
     if not c.game_end:

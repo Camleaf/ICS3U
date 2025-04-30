@@ -7,7 +7,15 @@ import os
 def create_frames(window:mu.Window, menu, GAME_BASE,GAME_HEIGHT):
     """Creates all frames used in the game"""
     # ingame screen
+    coords = [10,0]
+    for life in range(menu.c.player.max_lives):
+        if life < menu.c.player.lives:
+            image =  mu.Image(window, image_path=os.path.join(os.getcwd(),'assets','images','Heart.png'),width=20,height=28)
+        else:
+            image =  mu.Image(window, image_path=os.path.join(os.getcwd(),'assets','Transparent.png'),width=20,height=28)
 
+        window.pack(image, coords, ID="Life"+str(life))
+        coords[0] += 30
 
     window.save_frame("ingame",flush=True)
 
@@ -343,9 +351,9 @@ def create_frames(window:mu.Window, menu, GAME_BASE,GAME_HEIGHT):
     x_gap = 166
     coords = [[(x+x_gap*i,y) for x,y in start_coord] for i in range(3)]
     fl = [
-        ['Distance', os.path.join(os.getcwd(),'assets','images','Shop.png'), coords[0], 300],
-        ['Speed', os.path.join(os.getcwd(),'assets','images','Shop.png'), coords[1], 400],
-        ['Health', os.path.join(os.getcwd(),'assets','images','Shop.png'), coords[2], 6000],
+        ['Distance', os.path.join(os.getcwd(),'assets','images','BulletRange.png'), coords[0], 300],
+        ['Speed', os.path.join(os.getcwd(),'assets','images','Speed.png'), coords[1], 400],
+        ['Health', os.path.join(os.getcwd(),'assets','images','Health.png'), coords[2], 6000],
     ]
     for cost_ID, image_link, coords, price in fl:
         image = mu.Image(window, image_path=image_link, width=100, height=140)

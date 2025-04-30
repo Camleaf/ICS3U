@@ -32,11 +32,11 @@ class Bullet:
 
         
     
-    def move(self, targets, enemies, player):
+    def move(self, targets, enemies, player,menu):
         self.x += self.xspeed
         self.y += self.yspeed
         self.traveled += self.speed
-        if self.collision(targets, enemies, player):
+        if self.collision(targets, enemies, player,menu):
             return True
         elif self.traveled > self.max_dist:
             return True
@@ -45,12 +45,12 @@ class Bullet:
         
         
 
-    def collision(self,targets, enemies, player):
+    def collision(self,targets, enemies, player,menu):
 
         if self.y < 0 or (len(self.grid))*70 <= self.y or self.x < 0 or (len(self.grid[0]))*70 <=self.x: 
             return True
         if self.grid[int((self.y)//70)][int((self.x)//70)] == 1:
-            self.hit(enemies, player,playerhit=False, bot=False, bot_index=None)
+            self.hit(enemies, player,menu, playerhit=False, bot=False, bot_index=None)
             return True
         if self.owner == "player":
             for i,unit in enumerate(targets):
@@ -60,13 +60,13 @@ class Bullet:
 
                 collider = pg.Rect(n_x,n_y, unit.width, unit.height)
                 if collider.collidepoint(self.x, self.y):
-                    self.hit( enemies, player,playerhit=False, bot=True, bot_index=unit.id)
+                    self.hit( enemies, player,menu, playerhit=False, bot=True, bot_index=unit.id)
                     return True
         else:
             n_x, n_y = targets[0]
             collider = pg.Rect(n_x,n_y, 40, 40)
             if collider.collidepoint(self.x, self.y):
-                self.hit(enemies, player,playerhit=True, bot=False, bot_index=None)
+                self.hit(enemies, player,menu, playerhit=True, bot=False, bot_index=None)
                 return True
         
 
@@ -74,9 +74,14 @@ class Bullet:
         return False
     
 
-    def hit(self, enemies, player, playerhit=False, bot=False, bot_index=None):
+    def hit(self, enemies, player, menu, playerhit=False, bot=False, bot_index=None):
         if playerhit:
-            player.game_over()
+            if player.immunity == 0:
+                player.lives -= 1
+            player.immunity = 5
+            menu.update_lives()
+            if player.lives == 0:
+                player.game_over()
             
         elif bot:
             enemies.destroy_unit(bot_index)

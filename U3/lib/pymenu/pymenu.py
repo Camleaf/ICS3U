@@ -193,13 +193,7 @@ class Window:
             self._objects[ID]._args = args
         
         if image_path is not None:
-            if '/' in image_path and '\\' in image_path:
-                raise Exception(f"Image path {image_path} contains both types of slashes")
-            if  '/' in image_path:
-                image_path.split('/')
-            elif '\\' in image_path:
-                image_path.split('\\')
-            self._objects[ID].image_path = os.path.join(*image_path)
+            self._objects[ID].image_path = image_path
 
     def return_state(self, ID:str):
         """Returns the default state vars of the object with a given ID"""
