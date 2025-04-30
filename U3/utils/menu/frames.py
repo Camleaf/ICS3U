@@ -343,18 +343,18 @@ def create_frames(window:mu.Window, menu, GAME_BASE,GAME_HEIGHT):
     x_gap = 166
     coords = [[(x+x_gap*i,y) for x,y in start_coord] for i in range(3)]
     fl = [
-        ['Distance', os.path.join(os.getcwd(),'assets','images','Shop.png'), coords[0]],
-        ['Speed', os.path.join(os.getcwd(),'assets','images','Shop.png'), coords[1]],
-        ['Health', os.path.join(os.getcwd(),'assets','images','Shop.png'), coords[2]],
+        ['Distance', os.path.join(os.getcwd(),'assets','images','Shop.png'), coords[0], 300],
+        ['Speed', os.path.join(os.getcwd(),'assets','images','Shop.png'), coords[1], 400],
+        ['Health', os.path.join(os.getcwd(),'assets','images','Shop.png'), coords[2], 6000],
     ]
-    for cost_ID, image_link, coords in fl:
+    for cost_ID, image_link, coords, price in fl:
         image = mu.Image(window, image_path=image_link, width=100, height=140)
         window.pack(image, coords[0], ID=cost_ID+"Image")
 
-        label = mu.Button(window, 
-                        command=menu.switch_frame, # change this later
-                        args= ("shop",),
-                        text = "0", 
+        button = mu.Button(window, 
+                        command=menu.upgrade, # change this later
+                        args= (cost_ID,),
+                        text = str(price), 
                         text_centre='right',
                         width=80,
                         text_size=16,
@@ -362,14 +362,15 @@ def create_frames(window:mu.Window, menu, GAME_BASE,GAME_HEIGHT):
                         border_width=3,
                         background_color=LIGHT_ORANGE
         )
-        window.pack(label, coords[1], ID=cost_ID+"Cost")
+        window.pack(button, coords[1], ID=cost_ID+"Cost")
+        print(button.type)
         image = mu.Image(window, image_path=os.path.join(os.getcwd(),'assets','images','Gold.png'),width=20,height=20)
         window.pack(image, coords[2], ID=cost_ID+"GoldImage")
         
         window.create_link(cost_ID+"Cost", linked_id=cost_ID+"GoldImage", backward=False)
 
         label = mu.Label(window, 
-                        text = "0", 
+                        text = "1", 
                         text_centre='right',
                         width=80,
                         text_size=16,

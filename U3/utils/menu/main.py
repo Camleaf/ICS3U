@@ -72,6 +72,22 @@ class Menu:
         self.window.update_stat(ID, text=text)
         self.window.update_surf(ID, bg_color, update_bg)
 
+    def upgrade(self, up_type:str):
+
+        cost = int(self.window.return_state(up_type+"Cost").text)
+        level = int(self.window.return_state(up_type+"LevelNum").text)
+        
+        if cost > self.c.gold:
+            return False
+        
+        self.update_text(ID=up_type+"Cost", text=str(cost*2), update_bg=False)
+        self.update_text(ID=up_type+"LevelNum", text=str(level+1), update_bg=False)
+        self.c.gold -= cost
+        self.update_gold_count()
+
+        # actually add upgrade
+        return False
+        
 
     def set_difficulty(self, increment:bool=False):
         """Sets the difficulty with a min of 1 and a max of 7. Can increment or decrement"""
