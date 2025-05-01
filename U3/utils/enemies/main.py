@@ -152,6 +152,7 @@ class Enemies:
             )
 
     def destroy_unit(self, id):
+        """Destroys a unit based on ID. Adds to current gold increase value. If there are any lives left creates a new unit with a unique ID"""
         new = []
         for unit in self.units:
             if unit.id != id:
@@ -165,6 +166,7 @@ class Enemies:
         self.current_gold_increase += self.death_value
 
     def add_to_dead(self, unit: Enemy):
+        """Changes the color of the current unit to shades of black and grey and blits it to a surface which renders as part of the background"""
         unit.image_orig = pg.Surface([unit.width, unit.height])
         unit.image_orig.set_colorkey((255, 255, 255))
         unit.image_orig.fill(WHITE)
@@ -188,6 +190,7 @@ class Enemies:
             self.units[i].move(self.units)
 
     def render(self, DISPLAY: pg.Surface, camera_x: int, camera_y: int):
+        """Renders the unit image and unit turret image of every unit. Passes the current camera_X and camera_Y to unit"""
         self.camera_x = camera_x
         self.camera_y = camera_y
         # very much a temporary render function
@@ -203,6 +206,7 @@ class Enemies:
                          unit.turret.rot_offset, unit.y-camera_y+self.DISPLAY_HEIGHT//2+unit.turret.offset-unit.turret.rot_offset))
 
     def create_pathfinding_grid(self, walls):
+        """Creates a grid based on given walls for each units pathfinding algorithm to use"""
         self.grid = []
         for y in range(self.GAME_HEIGHT//70):
             temp = []

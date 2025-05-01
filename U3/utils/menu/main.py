@@ -35,6 +35,7 @@ class Menu:
         return self.switch_frame('main')
         
     def resume_game(self):
+        """Resumes the game without refreshing the state"""
         self.c.time_control(False)
         self.switch_frame("ingame")
         return False
@@ -81,7 +82,7 @@ class Menu:
         self.window.update_surf(ID, bg_color, update_bg)
 
     def upgrade(self, up_type:str):
-
+        """Checks based on current cost and status of gold, whether given upgrade type is possible"""
         cost = int(self.window.return_state(up_type+"Cost").text)
         level = int(self.window.return_state(up_type+"LevelNum").text)
         
@@ -126,6 +127,7 @@ class Menu:
             self.update_text(str(abs(self.c.gold_gain)), ID='GoldGain', update_bg=False)
 
     def render(self, DISPLAY: pg.Surface):
+        """Renders self.surface to a given display at (0,0)"""
         DISPLAY.blit(self.surface())
 
     def surface(self):

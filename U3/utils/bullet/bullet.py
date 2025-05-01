@@ -33,6 +33,7 @@ class Bullet:
         
     
     def move(self, targets, enemies, player,menu):
+        """Moves based on predefined vectors"""
         self.x += self.xspeed
         self.y += self.yspeed
         self.traveled += self.speed
@@ -46,7 +47,7 @@ class Bullet:
         
 
     def collision(self,targets, enemies, player,menu):
-
+        """Checks for collision with walls, player, or enemy"""
         if self.y < 0 or (len(self.grid))*70 <= self.y or self.x < 0 or (len(self.grid[0]))*70 <=self.x: 
             return True
         if self.grid[int((self.y)//70)][int((self.x)//70)] == 1:
@@ -75,6 +76,7 @@ class Bullet:
     
 
     def hit(self, enemies, player, menu, playerhit=False, bot=False, bot_index=None):
+        """Checks if the bullet hit the player or an enemy, if player, subtracts lives until none left. If enemy deletes the enemy"""
         if playerhit:
             if player.immunity == 0:
                 player.lives -= 1

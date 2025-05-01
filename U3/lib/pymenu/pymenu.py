@@ -16,6 +16,8 @@ BLACK = (0,0,0)
 WHITE = (255,255,255)
 GRAY = (100,100,100)
 BLUE = (0,0,255)
+objectID = NewType('objectID', str)
+objectRect = NewType('objectRect', list[float])
 
 class Empty:
     ...
@@ -249,7 +251,9 @@ class Window:
         return self.__surf
     
 class Grid:
-    """Grid class. will work similary to tkinter grid"""
+    """
+    Grid class 
+    """
     def __init__(self, columns:int=1, rows:int=1, columnwidth:float = 10, rowheight:float = 10):
         # if an object doesn't fit in its defined grid space crop it
 
@@ -262,7 +266,19 @@ class Grid:
         self._objects:dict[objectID, list] = {}
         # list is defined as [object, (col_pos, row_pos, span)]
 
-    def pack(self, object, row:int = 0, column:int = 0, columnspan:int = 1, ID:str=None):
+    def pack(self, object, row:int = 0, column:int = 0, columnspan:int = 1, ID:str=None) -> None:
+        """
+        self.pack(object, row, column, columnspan, ID) -> None
+        Adds an object to a slot in the grid\n
+        Arguments:
+            object: __Object derived class
+            row: int from 0 to number of rows - 1
+            column: int from 0 to number of columns - 1
+            columnspan: int from 1 to number of columns
+            ID: unique identifier of object; if none passed one is generated
+        Returns:
+          return: None
+        """
         object:__Object = object
         if object == "grid":
             raise Exception("Grid object attempted to pack other Grid object")
@@ -280,29 +296,42 @@ class Grid:
 
 
     def __eq__(self,other):
+        """
+        self.__eq__(other) -> "object"
+        Arguments:
+            other: any string
+        Returns:
+            return: other == "grid"
+        """
         return other == "grid"
 
     def __str__(self):
+        """
+        self.__str__() -> "grid"
+        Returns:
+            return: "grid"
+        """
         return "grid"
 
-
-def _create_multiline_text(window:Window, text:str, padding=10, size=20, width=100, color: tuple[int]=BLACK, font_file=None, sysfont:bool=False) -> pg.Surface:
-    """Handles creating pygame text objects automatically using pg.freetype"""
-    # this won't run very much so the overhead can be greater
-    if font_file is None:
-        font_file = window._default_font_file
-    if sysfont:
-        font = pg.font.SysFont(font_file,size)
-    else:
-        font = pg.font.Font(font_file,size=size)
-    if width == -1:
-        width = padding//2
-    surf = font.render(text,True, color, wraplength=width- padding//2)
-    surf.convert_alpha()
-    return surf
-
 class __Object:
-    """Default object class which all sub-objects like buttons inherit from"""
+    """
+    __Object(window, value=None, text='', command=None, args=None, image_path='') -> __Object()
+    Default object class which all sub-objects inherit from\n
+    Arguments:
+        window: Window() object
+        value: starting activation setting
+        text: string text value
+        command: method to execute; Incompatible with value
+        args: arguments passed to the command
+        image_path: string image path
+    
+    Returns:
+        return: __Object
+    
+    Methods:
+        render: Empty function to be overwritten
+        __str__: returns "object"
+    """
 
     def __init__(self, window, value:bool=None, text:str = '', command=None, args:tuple[Any]=None, image_path:str = ''):
         self._image = pg.Surface([0,0],pg.SRCALPHA)
@@ -322,20 +351,59 @@ class __Object:
         else:
             self.type = "label"
 
-    def render(self):
+    def render(self) -> None:
+        """Empty function to fill in in each individual object"""
         ...
         # add the color purple when this finishes, as all indiv functions will need their own render func
 
 
     def __str__(self):
+        """
+        self.__str__() -> "object"
+        Returns:
+            return: "object"
+        """
         return "object"    
         
     
+def _create_multiline_text(window:Window, text:str, padding=10, size=20, width=100, color: tuple[int]=BLACK, font_file:str=None, sysfont:bool=False) -> pg.Surface:
+    """
+    _create_multiline_text(window, text, padding=10, width=100, color=(0,0,0), font_file=None, sysfont=False) -> pygame.Surface
+    Creates a pygame.Surface object containing the text.\n
+    Arguments:
+        window: Window() object
+        font_file: absolute path of a .ttf file; defaults to window._default_font_file; if sysfont the name of the font
+        sysfont: a boolean value determining the usage of a .ttf or a system font
+        size: font size of the text   width: maximum width of the text before a newline is created; -1 scales the width to the text
+        padding: padding in pixels afforded to each edge of the text
+        color: the RGB color value of the text
+    Returns:
+        return: pygame.surface() object
+    """
 
+    # this won't run very much so the overhead can be greater
+    if font_file is None:
+        font_file = window._default_font_file
+    if sysfont:
+        font = pg.font.SysFont(font_file,size)
+    else:
+        font = pg.font.Font(font_file,size=size)
+    if width == -1:
+        width = padding//2
+    surf = font.render(text,True, color, wraplength=width- padding//2)
+    surf.convert_alpha()
+    return surf
 
 __past_ids = []
-def _create_id(object:__Object) -> str:
-    """Given an object inherited from the Object class, returns a unique id"""
+def _create_id(object:__Object) -> objectID:
+    """
+    _create_id(object) -> objectID:str
+    Creates a unique object identifier\n
+    Arguments:
+        object: object inherited from __Object class
+    Returns:
+        return: objectID:str
+    """
     id_suffix = 0
     object_type = str(object)
 
@@ -346,8 +414,6 @@ def _create_id(object:__Object) -> str:
         
 
 # define custom types
-objectID = NewType('objectID', str)
-objectRect = NewType('objectRect', list[float])
 grid = NewType('grid', Grid)
 
 # everything above is for infrastructure, below is usable Objects

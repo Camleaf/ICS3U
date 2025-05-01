@@ -64,6 +64,7 @@ class Container:
             self.interrupt_menu_active = False
 
     def end_game(self,win=False):
+        """Ends the game, checks if from menu or from death/win and updates accordingly"""
         self.game_end = True
         self.gold_gain = 0
         if not self.interrupt_menu_active:
