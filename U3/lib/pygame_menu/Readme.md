@@ -1,4 +1,6 @@
 # Pygame-Menu
+
+### These docs are very incomplete and I am doing them in the order that I feel like so It may skip around a lot
 ## License
 
 ## How to use
@@ -37,8 +39,8 @@ import lib.pygame_menu as mu
 - `surface`
 
 
-
-## Makeup of an Object
+## Making your own pygame_menu object classes
+### Makeup of an Object
 You may have seen the __Object referenced more than once in the previous description, but what does it represent?
 
 ```python
