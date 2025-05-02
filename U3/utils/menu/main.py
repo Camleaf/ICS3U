@@ -10,8 +10,7 @@ import os
 class Menu:
     """Menu container which uses Pymenu to create a dynamic menu screen"""
     def __init__(self, GAME_BASE, GAME_HEIGHT, container):
-
-        self.window = mu.Window(GAME_BASE,GAME_HEIGHT, OFF_GREY)
+        self.window = mu.Window(GAME_BASE,GAME_HEIGHT)
         
         self.window.set_font_file(os.path.join(f'{os.getcwd()}','assets','gameFont.ttf'))
         self.window.set_placeholder_file(os.path.join(f'{os.getcwd()}','assets','Placeholder.png'))

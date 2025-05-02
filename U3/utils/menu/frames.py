@@ -371,7 +371,6 @@ def create_frames(window:mu.Window, menu, GAME_BASE,GAME_HEIGHT):
                         background_color=LIGHT_ORANGE
         )
         window.pack(button, coords[1], ID=cost_ID+"Cost")
-        print(button.type)
         image = mu.Image(window, image_path=os.path.join(os.getcwd(),'assets','images','Gold.png'),width=20,height=20)
         window.pack(image, coords[2], ID=cost_ID+"GoldImage")
         
