@@ -17,73 +17,7 @@ Built-in classes:
     Background
 Use .__doc__ to learn more about each class
 
-
-
-Basic Usage:
-### Play around with these steps and code, use .__doc__ on functions, to learn their usage and capabilities
-
-# Terminal
-### this project is dependent on pygame-ce as opposed to pygame, and the two are not compatible. Pygame-ce contains backwards compatibility with pygame, however
-pip3 uninstall pygame\n
-pip3 install pygame-ce
-
-# Code
-import pygame as pg # import pygame-ce
-import .pymenulocation.pymenu as mu # import pymenu from local source
-
-pg.init() # initialize pygame
-screen = pg.display.set_mode((600,600),pg.SRCALPHA) # pygame screen is different than pymenu window, allowing you to use pymenu as a addon, in isolation.
-
-
-### set default font file and placeholder file
-window.set_font_file(os.path.join(f'{os.getcwd()}','assets','gameFont.ttf'))
-window.set_placeholder_file(os.path.join(f'{os.getcwd()}','assets','Placeholder.png'))
-
-
-
-
-### create a label
-label = mu.Label(window, text="Hi! I'm a Label!", text_centre="left", width=100, text_padding=8, text_size=20, border_width=3, corner_radius=5, background_color=mu.WHITE, text_color=mu.BLACK, border_color=mu.GRAY, background_alpha=255, text_alpha=255)
-window.pack(label, position=(0,0), dimensions=None) # pack the label into the window
-
-def buttoninteract(arg): # function we will pass into the buttons
-    window.load_frame(arg)
-
-button = mu.Button(window, text="Hi! Click Me!", command=buttoninteract, args=("Frame_2",),text_centre="left", width=100, text_padding=8, text_size=20, border_width=3, corner_radius=5, background_color=mu.WHITE, text_color=mu.BLACK, border_color=mu.GRAY, background_alpha=255, text_alpha=255)
-window.pack(button, position=(0,100), dimensions=None) # pack the label into the window
-
-window.save_frame("Frame_1", flush=True) # save frame 1 and flush the frame to start anew
-
-
-
-
-button = mu.Button(window, text="Hi! Click Me! I'm Frame 2!", command=buttoninteract, args=("Frame_1",),text_centre="left", width=100, text_padding=8, text_size=20, border_width=3, corner_radius=5, background_color=mu.WHITE, text_color=mu.BLACK, border_color=mu.GRAY, background_alpha=255, text_alpha=255)
-window.pack(button, position=(0,100), dimensions=None) # pack the label into the window
-
-window.save_frame("Frame_2", flush=True) # save frame 2
-
-
-
-
-window.load_frame("Frame_1")
-### run pygame mainloop
-while True:
-
-    for event in pg.event.get():
-    
-        if event.type == QUIT: # default pygame function
-            pg.quit()
-            sys.exit()
-        
-        if event.type == pg.MOUSEBUTTONDOWN: # if click
-                window.mouseInteraction(pg.mouse.get_pos()) # call mouse interaction
-                
-        if event.type == pg.KEYDOWN: # if keydown
-            key = event.dict['unicode'] # get unicode of key
-            window.keyboardInteraction(key) # call keyboard interaction
-    screen.fill((255,255,255))
-    screen.blit(window.Surface(), (0,0))
-
+Check Readme.md for basic usage.
 """
 import pygame as pg
 from typing import NewType
@@ -175,7 +109,7 @@ class Window:
         Arguments:
             object: __Object derived class
             position: tuple[int] designating the (left,top) of the object
-            dimensions: tuple[int] designating the (width,length) of the object; if none is provided, it will be generated
+            dimensions: LEGACY FUNCTION; Generates dimensions based off image_rectl tuple[int] designating the (width,length) of the object
             ID: unique identifier of object; if none passed one is generated
         Returns:
             None
@@ -582,8 +516,8 @@ class __Object:
         __Object
     
     Methods:
-        render: Empty function to be overwritten
-        __str__: returns "object"
+        render
+        __str__
     """
 
     def __init__(self, window, value:bool=None, text:str = '', command=None, args:tuple[Any]=None, image_path:str = ''):
@@ -673,8 +607,31 @@ grid = NewType('grid', Grid)
 
 
 class Label(__Object):
-    """A label class meant for storing multiline text inheriting from __Object"""
-    def __init__(self, window, text:str = '', text_centre:str = "left",width:int=100, text_padding:int=8, text_size:int=20, border_width:int=3, corner_radius:int=5, background_color: tuple[int] = WHITE, text_color: tuple[int] = BLACK, border_color:tuple[int] = GRAY, background_alpha:int=255, text_alpha:int=255):
+    """
+    Label(window, text, text_center, width, text_padding, text_size, border_width, corner_radius, background_color, text_color, border_color, background_alpha, text_alpha) -> Label()
+    A customizable label meant for storing multiline text inheriting from __Object\n
+    Arguments:
+        window: Window() object
+        text_center: text aligns "left" by default; "center" aligns text to center of box; "right" aligns text to right of box
+        width: maximum width of the label object; -1 scales width to text
+        text_padding: distance in pixels between edges of label and text
+        text_size: font size of text
+        border_width: uniform width in pixels of the border
+        corner_radius: corner rounding aggressiveness
+        background_color: RGB value representing background color of label
+        text_color: RGB value representing color of text
+        border_color: RGB value representing the color of the border
+        background_alpha: Integer value from 0-255 representing alpha channel of border color and background_color
+        text_alpha: Integer value from 0-255 representing alpha channel of text_color
+    Returns:
+        Label()
+
+    Methods:
+        render
+        __str__
+    use .__doc__ to get more info on sub-methods
+    """
+    def __init__(self, window, text:str = '', text_center:str = "left",width:int=100, text_padding:int=8, text_size:int=20, border_width:int=3, corner_radius:int=5, background_color: tuple[int] = WHITE, text_color: tuple[int] = BLACK, border_color:tuple[int] = GRAY, background_alpha:int=255, text_alpha:int=255):
         super().__init__(window, value=None, text=text, command=None, args=None)
         self.window = window
         self._default_font_file = self.window._default_font_file
@@ -689,11 +646,17 @@ class Label(__Object):
         self.text_size = text_size
         self.background_alpha = background_alpha
         self.text_alpha = text_alpha
-        self.text_centre = text_centre
+        self.text_center = text_center
 
         
     
     def render(self):
+        """
+        self.render() -> None
+        Takes the current values in the object to render the current surface of the Label, overwriting the previous surface\n
+        Returns:
+            None
+        """
         text_color = [x for x in self.text_color] + [self.text_alpha]
         self.text_surf = _create_multiline_text(self.window, padding=self.text_padding, text=self.text, size=self.text_size, width=self.width, color=text_color, font_file=self._default_font_file, sysfont=self.sysfont)
         # image is absed around self.text_surf plus the text padding needed for the border
@@ -724,38 +687,98 @@ class Label(__Object):
 
         img_rect = self._image.get_rect()
         img_size = self.text_surf.get_size()
-        if self.text_centre == "right":
+        if self.text_center == "right":
             pos_rect = pg.Rect(0,self.text_padding, *img_size)
             pos_rect.right = img_rect.right-self.text_padding
-        elif self.text_centre == "left":
+        elif self.text_center == "left":
             pos_rect = pg.Rect(self.text_padding,self.text_padding, *img_size)
-        elif self.text_centre == "centre":
+        elif self.text_center == "centre":
             pos_rect = pg.Rect(0,self.text_padding, *img_size)
             pos_rect.centerx = img_rect.width//2
         else:
-            raise Exception(f"Text centre position {self.text_centre} is not a valid argument")
+            raise Exception(f"Text centre position {self.text_center} is not a valid argument")
         self._image.blit(self.text_surf, pos_rect)
 
     def __str__(self):
+        """
+        self.__str__() -> "label"
+        Returns:
+            "label"
+        """
         return "label"
 
 
 class Button(Label):
-    """A button which triggers a function onclick"""
+    """
+    Button(window, text, text_center, command, args, width, text_padding, text_size, border_width, corner_radius, background_color, text_color, border_color, background_alpha, text_alpha) -> Label()
+    A customizable label meant for storing multiline text inheriting from __Object\n
+    Arguments:
+        window: Window() object
+        text_center: text aligns "left" by default; "center" aligns text to center of box; "right" aligns text to right of box
+        command: method passed to be executed on activation
+        args: arguments to be passed into the method
+        width: maximum width of the label object; -1 scales width to text
+        text_padding: distance in pixels between edges of label and text
+        text_size: font size of text
+        border_width: uniform width in pixels of the border
+        corner_radius: corner rounding aggressiveness
+        background_color: RGB value representing background color of label
+        text_color: RGB value representing color of text
+        border_color: RGB value representing the color of the border
+        background_alpha: Integer value from 0-255 representing alpha channel of border color and background_color
+        text_alpha: Integer value from 0-255 representing alpha channel of text_color
+    Returns:
+        Label()
+
+    Methods:
+        render; Inherits from Label render function
+        __str__
+    use .__doc__ to get more info on sub-methods
+    """
     # inherits from label for styling options but also contains command
-    def __init__(self, window, text:str = '', text_centre:str='left', command=None, args:tuple[Any]=None, width:int=100, text_padding:int=8, text_size:int=20, border_width:int=3, corner_radius:int=5, background_color: tuple[int] = WHITE, text_color: tuple[int] = BLACK, border_color:tuple[int] = GRAY, background_alpha:int=255, text_alpha:int=255):
-        super().__init__(window, text, text_centre, width, text_padding, text_size, border_width, corner_radius, background_color, text_color, border_color, background_alpha, text_alpha)
+    def __init__(self, window, text:str = '', text_center:str='left', command=None, args:tuple[Any]=None, width:int=100, text_padding:int=8, text_size:int=20, border_width:int=3, corner_radius:int=5, background_color: tuple[int] = WHITE, text_color: tuple[int] = BLACK, border_color:tuple[int] = GRAY, background_alpha:int=255, text_alpha:int=255):
+        super().__init__(window, text, text_center, width, text_padding, text_size, border_width, corner_radius, background_color, text_color, border_color, background_alpha, text_alpha)
         self.activated = False
         self._func = command
         self._args = args
         self.type = "func"
     
     def __str__(self):
+        """
+        self.__str__() -> "button"
+        Returns:
+            "button"
+        """
         return "button"
 
 
 class TextBox(__Object):
-    """A textbox which the user can type in"""
+    """
+    TextBox(window, text, width, max_rows, text_padding, text_size, border_width, corner_radius, background_color, text_color, border_color, background_alpha, text_alpha) -> TextBox()
+    A customizable Textbox which the user can iteract with and type in\n
+    Arguments:
+        window: Window() object
+        text: starting text of textbox
+        width: maximum width in pixels of the textbox
+        max_rows: maximum rows of text allowed in textbox
+        text_padding: distance from edges of textbox in pixels of text
+        text_size: font size of text
+        border_width: uniform width in pixels of the border
+        corner_radius: corner rounding aggressiveness
+        background_color: RGB value of background
+        text_color: RGB value of text
+        border_color: RGB value of border
+        background_alpha: int from 0-255 representing alpha channel of border_color and background_color
+        text_alpha: int from 0-255 representing alpha channel of text_color
+
+    Returns:
+        TextBox()
+
+    Methods:
+        render
+        __str__
+    use .__doc__ for more info on methods
+    """
     def __init__(self, window:Window, text:str = '', width:int=100, max_rows:int=1, text_padding:int=8, text_size:int=20, border_width:int=3, corner_radius:int=5, background_color: tuple[int] = WHITE, text_color: tuple[int] = BLACK, border_color:tuple[int] = GRAY, background_alpha:int=255, text_alpha:int=255):
         super().__init__(window, value=False, text=text, command=None, args=None)
         self._default_font_file = window._default_font_file
@@ -776,6 +799,12 @@ class TextBox(__Object):
         self.cursor_pos = len(text)
     
     def render(self):
+        """
+        self.render() -> None
+        Takes the current values in the object to render the current surface of the Textbox, overwriting the previous surface\n
+        Returns:
+            None
+        """
         text_color = [x for x in self.text_color] + [self.text_alpha]
         cursortext = self.text[:self.cursor_pos+1] + '|' + self.text[self.cursor_pos+1:] if self.activated else self.text
         self.text_surf = _create_multiline_text(self.window, padding=self.text_padding, text=cursortext, size=self.text_size, width=self.width, color=text_color, font_file=self._default_font_file, sysfont=self.sysfont)
@@ -808,10 +837,29 @@ class TextBox(__Object):
         self._image.blit(self.text_surf, (self.text_padding,self.text_padding))
 
     def __str__(self):
+        """
+        self.__str__() -> "textbox"
+        Returns:
+            "textbox"
+        """
         return "textbox"
 
 class CheckBox(__Object):
-    """A box which the user can tick on and off"""
+    """
+    CheckBox(window, value, width, height, border_width, corner_radius, background_color, on_color, border_color) -> CheckBox()
+    A box which the user can tick on and off. Does not pass an alpha channel\n
+    Arguments:
+        window: Window() class
+        value: Boolean determining initial state of the Checkbox
+        width: integer width of checkbox
+        height integer height of checkbox
+        border_width: uniform width of border
+        corner_radius: aggressiveness of corner rounding
+        background_color: RGB value of background
+        on_color: RGB of background when activated
+        border_color: RGB colour of border
+
+    """
     def __init__(self, window, value:bool=False, width=20, height=20, border_width:int=1, corner_radius:int=10, background_color: tuple[int] = WHITE, on_color: tuple[int] = BLUE, border_color:tuple[int] = GRAY):
         super().__init__(window, value=value)
         self.width = width
@@ -824,7 +872,12 @@ class CheckBox(__Object):
         self.type = "val"
 
     def render(self):
-
+        """
+        self.render() -> None
+        Takes the current values in the object to render the current surface of the CheckBox, overwriting the previous surface\n
+        Returns:
+            None
+        """
         # redefine image in case of any state changes
         self._image = pg.Surface([self.width,self.height],pg.SRCALPHA)
         self._image.fill((0,0,0,0))
@@ -852,7 +905,28 @@ class CheckBox(__Object):
         return "checkbox"
 
 class Background(__Object):
-    """Object which only contains colors. Holds an alpha channel"""
+    """
+    Background(window, width, height, border_width, corner_radius, background_color, border_color, alpha) -> Background()
+    Object which only contains colors. Holds an alpha channel
+    Arguments:
+        window: Window()
+        width: integer width of the object
+        height: integer height of the object
+        border_width: uniform width of the border
+        corner_radius: aggressiveness of corner rounding
+        background_color: RGB value of background
+        border_color: RGB value of corner
+        alpha: Alpha channel of background and corner
+
+    Returns:
+        Background()
+    
+    Methods:
+        render
+        __str__
+
+    use .__doc__ for more info on methods
+    """
     def __init__(self, window, width:int=100, height:int=100, border_width:int=3, corner_radius:int=2, background_color: tuple[int] = WHITE, border_color:tuple[int] = GRAY, alpha:int=255):
         super().__init__(window, value=None, text='', command=None, args=None)
         self.width = width
@@ -865,6 +939,12 @@ class Background(__Object):
         
     
     def render(self):
+        """
+        self.render() -> None
+        Takes the current values in the object to render the current surface of the Background, overwriting the previous surface\n
+        Returns:
+            None
+        """
         self._image = pg.Surface([self.width,self.height],pg.SRCALPHA)
         self._image.fill((0,0,0,0))
         # I could do this more efficiently but it's a template for the others where I can't
@@ -887,11 +967,37 @@ class Background(__Object):
         self._image.blit(temp_surf,(0,0))
     
     def __str__(self):
+        """
+        self.__str__() -> "background"
+        Returns:
+            "background"
+        """
         return "background"
 
 
 class Image(__Object):
-    """Image class. Hasn't been tested yet but should, in theory, work. CHANGE THIS ONCE TESTED"""
+    """
+    Image(window, image_path, width, height, border_width, corner_radius, border_color, alpha, border_alpha) -> Image
+
+    Arguments:
+        window: Window() class
+        image_path: absolute path of any image file supported by pygame-ce
+        width: integer width of the image; may strech/compress image if not aligned with image pixel values
+        height: integer height of the image; may strech/compress image if not aligned with image pixel values
+        border_width: uniform width of border around image
+        corner_radius: aggressiveness of corner rounding
+        border_color: RGB value of border
+        alpha: alpha channel of image
+        border_alpha: alpha channel of border_color
+    Returns:
+        Image()
+
+    Methods:
+        render
+        __str__
+
+    """
+    
     def __init__(self,window:Window, image_path:str='',width:int=100, height:int=100, border_width:int=0,corner_radius:int=10, border_color: tuple[int] = GRAY, alpha:int=255, border_alpha:int=255):
         # still need to finish this
         ### todo
@@ -912,6 +1018,12 @@ class Image(__Object):
             self.image_path = self.window._placeholder_file
     
     def render(self):
+        """
+        self.render() -> None
+        Takes the current values in the object to render the current surface of the Image, overwriting the previous surface\n
+        Returns:
+            None
+        """
         self._image = pg.Surface([self.width,self.height],pg.SRCALPHA)
         self._image.fill((0,0,0,0))
 
@@ -941,4 +1053,9 @@ class Image(__Object):
             self._image.blit(temp_surf, (0,0))
     
     def __str__(self):
+        """
+        self.__str__() -> "image"
+        Returns:
+            "image"
+        """
         return "image"

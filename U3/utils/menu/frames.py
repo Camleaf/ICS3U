@@ -92,7 +92,7 @@ def create_frames(window:mu.Window, menu, GAME_BASE,GAME_HEIGHT):
 
     label = mu.Label(window, 
                     "Difficulty", 
-                    text_centre='right',
+                    text_center='right',
                     width=145,
                     text_size=30,
                     text_color=LIGHT_ORANGE,
@@ -102,7 +102,7 @@ def create_frames(window:mu.Window, menu, GAME_BASE,GAME_HEIGHT):
 
     label = mu.Label(window, 
                     "Shop",
-                    text_centre="centre",
+                    text_center="centre",
                     width=125,
                     text_size=30,
                     text_color=LIGHT_ORANGE,
@@ -111,10 +111,10 @@ def create_frames(window:mu.Window, menu, GAME_BASE,GAME_HEIGHT):
     grid.pack(label,row=3,column=1,columnspan=8, ID="ShopLabel")
 
 
-    button = mu.Button(window, "", text_centre="centre",command=menu.set_difficulty, args=(True,), width=25, text_size=30, border_width=3, corner_radius=2, border_color=OFF_GREY, background_color=LIGHT_ORANGE, text_color=VERY_DARK_PICKLE_GREEN)
+    button = mu.Button(window, "", text_center="centre",command=menu.set_difficulty, args=(True,), width=25, text_size=30, border_width=3, corner_radius=2, border_color=OFF_GREY, background_color=LIGHT_ORANGE, text_color=VERY_DARK_PICKLE_GREEN)
     window.pack(button, (495,420), ID="DifficultyIncrement") #update this diff to difficulty modify func
 
-    button = mu.Button(window, "", text_centre="centre",command=menu.set_difficulty, args=(False,), width=25, text_size=30, border_width=3,corner_radius=2, border_color=OFF_GREY, background_color=LIGHT_ORANGE, text_color=VERY_DARK_PICKLE_GREEN)
+    button = mu.Button(window, "", text_center="centre",command=menu.set_difficulty, args=(False,), width=25, text_size=30, border_width=3,corner_radius=2, border_color=OFF_GREY, background_color=LIGHT_ORANGE, text_color=VERY_DARK_PICKLE_GREEN)
     window.pack(button, (445,420), ID="DifficultyDecrement") #update this diff to difficulty modify func
     
     image = mu.Image(window, image_path=os.path.join(os.getcwd(),'assets','images','button', 'bw.png'), width=40, height=40, corner_radius=0)
@@ -123,7 +123,7 @@ def create_frames(window:mu.Window, menu, GAME_BASE,GAME_HEIGHT):
     image = mu.Image(window, image_path=os.path.join(os.getcwd(),'assets','images','button', 'fw.png'), width=40, height=40, corner_radius=0)
     window.pack(image, (498,426), ID="IncrementImage")
 
-    button = mu.Button(window, "Visit", text_centre="centre",command=menu.switch_frame, args=("shop",), width=80, text_size=30, border_width=3, corner_radius=2, border_color=OFF_GREY, background_color=LIGHT_ORANGE, text_color=VERY_DARK_PICKLE_GREEN)
+    button = mu.Button(window, "Visit", text_center="centre",command=menu.switch_frame, args=("shop",), width=80, text_size=30, border_width=3, corner_radius=2, border_color=OFF_GREY, background_color=LIGHT_ORANGE, text_color=VERY_DARK_PICKLE_GREEN)
     window.pack(button, (175,420), ID="ShopVisit")
 
     image = mu.Image(window, image_path=os.path.join(os.getcwd(),'assets','images','Difficulty.png'), width=100, height=140)
@@ -134,7 +134,7 @@ def create_frames(window:mu.Window, menu, GAME_BASE,GAME_HEIGHT):
 
     label = mu.Label(window, 
                     "0", 
-                    text_centre='right',
+                    text_center='right',
                     width=80,
                     text_size=16,
                     text_color=LIGHT_ORANGE,
@@ -145,7 +145,7 @@ def create_frames(window:mu.Window, menu, GAME_BASE,GAME_HEIGHT):
 
     label = mu.Label(window, 
                     "Civilian", 
-                    text_centre='centre',
+                    text_center='centre',
                     width=78,
                     text_size=16,
                     text_color=LIGHT_ORANGE,
@@ -189,7 +189,7 @@ def create_frames(window:mu.Window, menu, GAME_BASE,GAME_HEIGHT):
     button = mu.Button(window, "Resume Game", command=menu.resume_game, args=tuple(), width=-1, text_size=25, border_width=3, corner_radius=3, border_color=OFF_GREY, background_color=VERY_DARK_PICKLE_GREEN, text_color=LIGHT_ORANGE)
     window.pack(button, (269,250), ID="Playbutton")
 
-    label = mu.Label(window, text="(You will lose any gold gained)", text_centre="centre", width=-1, text_size=15, border_width=3, corner_radius=3, text_color=LIGHT_ORANGE, background_alpha=0)
+    label = mu.Label(window, text="(You will lose any gold gained)", text_center="centre", width=-1, text_size=15, border_width=3, corner_radius=3, text_color=LIGHT_ORANGE, background_alpha=0)
     window.pack(label, (258,400), ID="Menubutton1")
 
     button = mu.Button(window, "Main Menu", command=menu.menu_exit, args=tuple(), width=-1, text_size=25, border_width=3, corner_radius=3, border_color=OFF_GREY, background_color=VERY_DARK_PICKLE_GREEN, text_color=LIGHT_ORANGE)
@@ -215,11 +215,11 @@ def create_frames(window:mu.Window, menu, GAME_BASE,GAME_HEIGHT):
     window.set_font_file(os.path.join(f'{os.getcwd()}','assets','gameFont.ttf'))
 
 
-    label = mu.Label(window, "VICTORY", width=200, text_size=40, text_color=LIGHT_ORANGE, background_alpha=0, text_centre="centre")
+    label = mu.Label(window, "VICTORY", width=200, text_size=40, text_color=LIGHT_ORANGE, background_alpha=0, text_center="centre")
     grid.pack(label, row=2, column=3, columnspan=8, ID="StatusLabel")
     label = mu.Label(window, 
                     "Destroying those tanks sure brings a reward...", 
-                    text_centre='centre',
+                    text_center='centre',
                     width=200,
                     text_size=16,
                     text_color=LIGHT_ORANGE,
@@ -230,7 +230,7 @@ def create_frames(window:mu.Window, menu, GAME_BASE,GAME_HEIGHT):
     # total gold
     label = mu.Label(window, 
                     "New Total:", 
-                    text_centre='right',
+                    text_center='right',
                     width=85,
                     text_size=16,
                     text_color=LIGHT_ORANGE,
@@ -241,7 +241,7 @@ def create_frames(window:mu.Window, menu, GAME_BASE,GAME_HEIGHT):
 
     label = mu.Label(window, 
                     "0", 
-                    text_centre='right',
+                    text_center='right',
                     width=85,
                     text_size=16,
                     text_color=LIGHT_ORANGE,
@@ -256,7 +256,7 @@ def create_frames(window:mu.Window, menu, GAME_BASE,GAME_HEIGHT):
     # gold gained/lost
     label = mu.Label(window, 
                     "You gained", 
-                    text_centre='right',
+                    text_center='right',
                     width=85,
                     text_size=16,
                     text_color=LIGHT_ORANGE,
@@ -266,7 +266,7 @@ def create_frames(window:mu.Window, menu, GAME_BASE,GAME_HEIGHT):
     window.pack(label, (245,377), ID="GoldGainedText")
     label = mu.Label(window, 
                     "0", 
-                    text_centre='right',
+                    text_center='right',
                     width=85,
                     text_size=16,
                     text_color=LIGHT_ORANGE,
@@ -277,7 +277,7 @@ def create_frames(window:mu.Window, menu, GAME_BASE,GAME_HEIGHT):
     #show raw gain/loss
     label = mu.Label(window, 
                     "Gained: 0", 
-                    text_centre='centre',
+                    text_center='centre',
                     width=150,
                     text_size=16,
                     text_color=LIGHT_ORANGE,
@@ -288,7 +288,7 @@ def create_frames(window:mu.Window, menu, GAME_BASE,GAME_HEIGHT):
 
     label = mu.Label(window, 
                     "Repair: 0", 
-                    text_centre='centre',
+                    text_center='centre',
                     width=150,
                     text_size=16,
                     text_color=LIGHT_ORANGE,
@@ -332,7 +332,7 @@ def create_frames(window:mu.Window, menu, GAME_BASE,GAME_HEIGHT):
     # gold text
     label = mu.Label(window, 
                     "0", 
-                    text_centre='right',
+                    text_center='right',
                     width=85,
                     text_size=16,
                     text_color=LIGHT_ORANGE,
@@ -363,7 +363,7 @@ def create_frames(window:mu.Window, menu, GAME_BASE,GAME_HEIGHT):
                         command=menu.upgrade, # change this later
                         args= (cost_ID,),
                         text = str(price), 
-                        text_centre='right',
+                        text_center='right',
                         width=80,
                         text_size=16,
                         text_color=VERY_DARK_PICKLE_GREEN,
@@ -378,7 +378,7 @@ def create_frames(window:mu.Window, menu, GAME_BASE,GAME_HEIGHT):
 
         label = mu.Label(window, 
                         text = "1", 
-                        text_centre='right',
+                        text_center='right',
                         width=80,
                         text_size=16,
                         text_color=LIGHT_ORANGE,
@@ -388,7 +388,7 @@ def create_frames(window:mu.Window, menu, GAME_BASE,GAME_HEIGHT):
         window.pack(label, coords[3], ID=cost_ID+"LevelNum")
         label = mu.Label(window, 
                         text = "Level:", 
-                        text_centre='left',
+                        text_center='left',
                         width=80,
                         text_size=16,
                         text_color=LIGHT_ORANGE,
@@ -400,7 +400,7 @@ def create_frames(window:mu.Window, menu, GAME_BASE,GAME_HEIGHT):
         window.create_link(cost_ID+"LevelNum", linked_id=cost_ID+"LevelText", backward=False)
         label = mu.Label(window, 
                     cost_ID,
-                    text_centre="centre",
+                    text_center="centre",
                     width=124,
                     text_size=30,
                     text_color=LIGHT_ORANGE,
