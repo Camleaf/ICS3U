@@ -1,6 +1,6 @@
 import pygame as pg
 from ..display.colours import *
-from lib.pygame_menu import pygame_menu as mu
+from lib.pymenu import pymenu as mu
 
 import os
 

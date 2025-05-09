@@ -2,7 +2,7 @@ import time
 import pygame as pg
 from typing import Any
 from ..display.colours import *
-from lib.pygame_menu import pygame_menu as mu
+from lib.pymenu import pymenu as mu
 from .frames import create_frames
 import os
 

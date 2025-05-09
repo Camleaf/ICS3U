@@ -13,10 +13,10 @@ class Enemies:
     units: list[Enemy]
     active_paths: list[threading.Thread]
     diff_presets = {
-        1:{"stocks":3, "number":2, "gold_mult":0.5,"bdist_mult":0.9, "shotgun%":1}, # add type of guns to be used
-        2:{"stocks":6, "number":3, "gold_mult":0.7,"bdist_mult":0.9, "shotgun%":7}, # add shotgun functionality
-        3:{"stocks":8, "number":4, "gold_mult":1,"bdist_mult":1, "shotgun%":10},
-        4:{"stocks":10, "number":4, "gold_mult":1.2,"bdist_mult":1.1, "shotgun%":12},
+        1:{"stocks":2, "number":1, "gold_mult":0.5,"bdist_mult":0.6, "shotgun%":1}, # add type of guns to be used
+        2:{"stocks":3, "number":2, "gold_mult":0.7,"bdist_mult":0.9, "shotgun%":7}, # add shotgun functionality
+        3:{"stocks":6, "number":3, "gold_mult":1,"bdist_mult":1, "shotgun%":10},
+        4:{"stocks":8, "number":4, "gold_mult":1.1,"bdist_mult":1.1, "shotgun%":12},
         5:{"stocks":15, "number":5, "gold_mult":1.6,"bdist_mult":1.5, "shotgun%":22},
         6:{"stocks":15, "number":10, "gold_mult":2.2,"bdist_mult":1.6, "shotgun%":40},
         7:{"stocks":25, "number":15, "gold_mult":3, "bdist_mult":1.8, "shotgun%":50},
@@ -99,7 +99,7 @@ class Enemies:
                   self.grid,
                   self.offset,
                   self.cur_id,
-                  gun_type
+                  gun_type,
                   )
         )
     def end_game(self):

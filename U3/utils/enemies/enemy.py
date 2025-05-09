@@ -29,7 +29,6 @@ class Enemy:
 
         self.gun_type = gun_type
         self.turret = Turret(width+20,height+20,DISPLAY_HEIGHT,DISPLAY_BASE, self.gun_type)
-
         self.x = posx
         self.y = posy
         self.xs = 0
