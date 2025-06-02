@@ -231,10 +231,6 @@ class Enemy:
 
     def a_star(self,visited,end_node,heap, maze, start_node):
         """A star algorithm modified for the grid used in this projects"""
-        # once bullets get introduced I can just temporarily modify the maze in each cycle to have bullets as the maze. Then the bots will pathfind away from bullets
-        # so the astar breaks whenever the player goes past or equal to 10 on x or y axis
-        #    update: start node is fine. end node is fine. all the passed inputs are fine WHAT THE HELL IS HAPPENING
-        #    update: i fixed it the issue was I swapped game height/bsae with display height/base :facepalm:
         
         while heap:
             current_tile:Tile = heapq.heappop(heap) # because of heap object we always have lowest cost
