@@ -1,73 +1,53 @@
-import sys,time,threading, pygame as pg
-from lib.pymenu import pymenu as mu
+import pygamenu as pm
+import sys,pygame as pg
 from pygame.locals import *
 
-
-
-from utils.container.container import Container
-from utils.menu.main import Menu
-from utils.display.colours import *
-
-DISPLAY_BASE = 700
-DISPLAY_HEIGHT = 700
-
 pg.init()
-clock = pg.time.Clock()
+
+View = pm.initialize('./tests/abcd.pym', [400,400])
+View.append_frame('bg')
+View.append_frame('welcome')
+clock = pg.Clock()
+display= pg.display.set_mode((400,400),pg.SRCALPHA)
+
+text = View.getStateById('textState')
+el = View.getElementById('welcome')
 
 
-c:Container = Container(DISPLAY_BASE, DISPLAY_HEIGHT)
-menu:Menu = Menu(DISPLAY_BASE, DISPLAY_HEIGHT, c)
+x = True
+def myfunc(element):
+    global x
+    if x:
+        el.setstyleattribute('background','(255,255,255)')
+        x = False
+    else:
+        el.setstyleattribute('background','(255,0,0)')
+        x = True
 
-
-# mainloop vars
-frames_num = 1
-tick = 0
-
-menu_input_timer = 0
-
-# mainloop
+r = True
+def myfunc2(event, global_dict):
+    global r
+    if r:
+        text.set('Wieewwww I was updated')
+        r = False
+    else:
+        text.set('hello I am reactive state')
+        r = True
+    
+# View.addEventListener('keydown',myfunc2)
 
 while True:
-
+    display.fill((0,0,0))
     for event in pg.event.get():
+
+        View.passEvent(event, globals())
+        
         if event.type == QUIT:
             pg.quit()
             sys.exit()
-        if event.type == pg.MOUSEBUTTONDOWN:
-            menu.window.mouseInteraction(pg.mouse.get_pos())
-                
-        # This code needs handling for backspace and stuff but I'll blow up that bridge when I get to it
-        if event.type == pg.KEYDOWN:
-            
-            key = event.dict['unicode']
-            menu.window.keyboardInteraction(key)
 
-
-
-
-    c.screen.fill(BLACK)
-
-    if keys_pressed := pg.key.get_pressed():
-        # Add textbox interactions alter
-        ...
         
-        
-
-                
-
-
-    # run all the time
-    c.screen.render(menu)
-
-
+    display.blit(View.surf,(0,0))
     pg.display.flip()
+    clock.tick(24)
     
-
-    if tick == 0:
-        print(f"{frames_num} second")
-        frames_num += 1
-    tick += 1
-    tick %= 60
-    if menu_input_timer < 11:
-        menu_input_timer += 1
-    clock.tick(60)
