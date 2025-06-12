@@ -1,0 +1,9 @@
+
+
+
+>frame id='bg' style='width:100%/height:100%/background:(0, 109, 173)'
+    >/frame
+
+>frame id='welcome' style='width:70%/height:70%/cy:50%/background:(172, 44, 7)'
+
+    >/frame
