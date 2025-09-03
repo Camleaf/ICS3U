@@ -5,3 +5,5 @@
 3. Install Pygame-ce (uninstall normal pygame if installed)
 4. cd u3 / u4 ( depending on which game you want to play)
 5. bash run.sh
+
+As it turns out the entire u4 game just disappeared from the repo for some reason so that happened.
