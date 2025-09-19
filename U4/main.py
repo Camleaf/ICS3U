@@ -4,11 +4,10 @@
 # because of lag and the pygame-ce 
 # dependency
 
-
+import sys,math, pygame as pg
 import pygamenu as pm
 from pygamenu.compiler import Element, DivElement,\
         TextElement, FrameElement, ImageElement, PolygonElement
-import sys,math, pygame as pg
 from pygame.locals import *
 
 # My game will be the card game speed
