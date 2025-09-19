@@ -1,5 +1,0 @@
-2025-06-12 10:26:24.700297 [FATAL] 
-
-
-Line 6| "    >frame id='welcome' style='width:70%/height:70%/cy:50%/background:(172, 44, 7)'    "    >>  StyleError : Style `cy` does not exist
-Exiting due to fatal error

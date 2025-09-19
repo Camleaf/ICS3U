@@ -1,0 +1,69 @@
+// imports
+;;markdown < './src/pym_files/welcome.pym'
+
+;$name < 'noNamedWizard'
+;$moves < '0 moves'
+
+
+//locals
+>frame id='background' style='width:100%/height:100%'
+    >div style='width:170/height:75/cx:92%/cy:8%/background:(0,0,0)/opacity:40%/corner-radius:4'
+        // Text elements make great hitboxes
+        >text style='width:100%/height:100%' onclick='restart_game' 
+        >/text
+
+        // heres the real text
+        >text style='width:70%/height:50%/font-size:30/cy:55%/cx:50%'
+            Restart
+        >/text
+    >/div
+    >text style='width:50%/height:50/top:90%/left:30/font-size:30'
+        $$moves
+    >/text
+>/frame
+
+
+
+>frame id='intermission' style='width:100%/height:100%/background:(0, 109, 173)'
+    >div style='width:100%/height:100%/background:(0,0,0)/opacity:40%'
+        >text style='width:40%/height:30%/cx:50%/cy:50%/font-size:40/font-color:(255,255,255)'
+            Restarting....
+            This could be a minute.
+        >/text
+    >/div
+
+>/frame
+
+
+
+
+
+
+
+>frame id='playfield' style='width:100%/height:100%'
+    
+>/frame
+
+
+
+
+
+// Frame that displays on a win
+>frame id='winFrame' style='width:90%/height:90%/cx:50%/cy:50%/background:(54, 28, 19)'
+    >text style='width:35%/height:30%/cx:50%/cy:20%/font-size:40/font-color:(218, 149, 75)'
+        $$name
+        ... You Won!!
+    >/text
+
+    >text style='width:35%/height:30%/cx:50%/cy:40%/font-size:40/font-color:(218, 149, 75)'
+        $$moves
+    >/text
+
+    
+    // will need to add onclick to this
+    >div style='height:15%/width:30%/cy:85%/cx:50%/background:(218, 149, 75)/corner-radius:20' onclick='restart_game'
+        >text style='height:100%/width:50%/cx:50%/cy:65%/font-size:40/font-color:(0,0,0)' modifiable='False'
+            Restart
+        >/text
+    >/div
+>/frame

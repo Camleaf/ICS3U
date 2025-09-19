@@ -1,2 +1,2 @@
-pygame-ce==2.5.3
-pygamenu==0.0.10
+pygamenu==0.0.56
+pygame-ce==2.5.5
